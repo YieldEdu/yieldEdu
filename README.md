@@ -2,7 +2,7 @@
 
 A decentralized fixed-yield protocol built on EDU Chain that enables users to earn guaranteed yields on their EDU tokens while contributing to the educational ecosystem.
 
-![Protocol Banner](https://image)
+![EDU](https://github.com/user-attachments/assets/6e7cd216-f018-4f28-8485-1ab3669e9927)
 
 ## 🎯 Overview
 
