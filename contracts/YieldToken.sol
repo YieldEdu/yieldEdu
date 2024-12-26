@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title YieldToken
- * @dev Represents tokenized yield positions.
+ * @dev Represents token.
  */
 contract YieldToken is ERC20, Ownable {
     constructor(
@@ -15,11 +15,20 @@ contract YieldToken is ERC20, Ownable {
         string memory _symbol
     ) ERC20(_name, _symbol) Ownable(initialOwner) {}
 
-    // only the owner of this contract can mint or burn tokens
+    /**
+     * @notice only the owner can mint tokens
+     * @param to Address of the candidate
+     * @param amount Name of the candidate
+     */
     function mint(address to, uint256 amount) external onlyOwner {
         _mint(to, amount);
     }
 
+    /**
+     * @notice only the owner can burn tokens
+     * @param from Address of the candidate
+     * @param amount Name of the candidate
+     */
     function burn(address from, uint256 amount) external onlyOwner {
         _burn(from, amount);
     }

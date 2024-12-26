@@ -8,13 +8,21 @@ if (!accountAddress) {
 	);
 }
 
-const YieldTokenModule = buildModule("YieldTokenModule", (m) => {
-	const YieldToken = m.contract("YieldToken", [
+const yieldPoolModule = buildModule("yieldPoolModule", (m) => {
+	const eduToken = m.contract("YieldToken", [
 		accountAddress,
 		"Fixed Yield Token",
 		"FYT",
-	]); //constructor args
-	return { YieldToken };
+	]);
+	const yieldPool = m.contract("YieldPool", [
+		eduToken,
+		"Fixed Yield Token",
+		"FYT",
+	]);
+
+	return {
+		yieldPool,
+	};
 });
 
-export default YieldTokenModule;
+export default yieldPoolModule;

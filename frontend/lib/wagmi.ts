@@ -1,8 +1,9 @@
-import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { arbitrum } from "wagmi/chains";
-import { defineChain } from "viem";
-
-const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
+import { cookieStorage, createStorage } from "@wagmi/core";
+import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
+import { mainnet, arbitrum } from "@reown/appkit/networks";
+import { defineChain } from "@reown/appkit/networks";
+// Get projectId from https://cloud.reown.com
+export const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
 if (!projectId) {
 	throw new Error("PROJECT_ID environment variable is not defined");
 }
@@ -10,8 +11,8 @@ if (!projectId) {
 export const edu = defineChain({
 	id: 41923,
 	name: "EDU Chain",
-	iconURL:
-		"https://opencampus.xyz/static/media/coin-logo.39cbd6c42530e57817a5b98ac7621ca7.svg",
+	chainNamespace: "eip155",
+	caipNetworkId: "eip155:41923",
 	nativeCurrency: {
 		name: "EDU Chain",
 		symbol: "EDU",
@@ -29,11 +30,12 @@ export const edu = defineChain({
 		},
 	},
 });
+
 export const eduTestnet = defineChain({
 	id: 656476,
-	iconURL:
-		"https://opencampus.xyz/static/media/coin-logo.39cbd6c42530e57817a5b98ac7621ca7.svg",
 	name: "EDU Chain Testnet",
+	chainNamespace: "eip155",
+	caipNetworkId: "eip155:656476",
 	nativeCurrency: {
 		name: "EDU Chain",
 		symbol: "EDU",
@@ -54,13 +56,16 @@ export const eduTestnet = defineChain({
 	},
 });
 
-export const config = getDefaultConfig({
-	appName: "YieldStake",
-	projectId,
-	chains: [
-		arbitrum,
-		edu,
-		...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === "true" ? [eduTestnet] : []),
-	],
+export const networks = [eduTestnet, edu, mainnet, arbitrum];
+
+//Set up the Wagmi Adapter (Config)
+export const wagmiAdapter = new WagmiAdapter({
+	storage: createStorage({
+		storage: cookieStorage,
+	}),
 	ssr: true,
+	projectId,
+	networks,
 });
+
+export const config = wagmiAdapter.wagmiConfig;

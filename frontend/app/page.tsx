@@ -2,13 +2,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ShieldCheck, Timer, Percent, Vault } from "lucide-react";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Analytics from "@/components/Analytics";
 import DepositForm from "@/components/DepositForm";
 import { ActivePositionTable } from "@/components/ActivePositionTable";
 import Link from "next/link";
 import Image from "next/image";
 import X from "@/public/x.svg";
+import ConnectButton from "@/components/ui/ConnectButton";
 const FixedYieldDashboard = () => {
 	const userPosition = {
 		deposited: "1000",
@@ -28,10 +28,10 @@ const FixedYieldDashboard = () => {
 									Earn guaranteed yields on your EDU tokens
 								</p>
 							</div>
-							<ConnectButton showBalance={true} />
+							<ConnectButton />
 						</div>
 
-						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+						<div className="grid grid-cols-1 min-[500px]:grid-cols-2 lg:grid-cols-4 gap-4">
 							<Card className="bg-[#1A1B1F] border-none text-white">
 								<CardContent className="p-6">
 									<div className="flex items-center justify-between">
@@ -65,6 +65,17 @@ const FixedYieldDashboard = () => {
 									</div>
 								</CardContent>
 							</Card>
+							<Card className="bg-[#1A1B1F] border-none text-white">
+								<CardContent className="p-6">
+									<div className="flex items-center justify-between">
+										<div>
+											<p className="text-sm text-slate-400">Your Balance</p>
+											<p className="text-3xl md:text-4xl font-bold">0.5</p>
+										</div>
+										<Vault className="size-10 text-green-500" />
+									</div>
+								</CardContent>
+							</Card>
 						</div>
 
 						<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
@@ -88,13 +99,13 @@ const FixedYieldDashboard = () => {
 											<div className="space-y-6 h-full">
 												<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 													<div className="bg-zinc-800 p-4 rounded-lg">
-														<p className="text-sm text-gray-600">Deposited</p>
+														<p className="text-sm text-slate-400">Deposited</p>
 														<p className="text-xl font-bold">
 															{userPosition.deposited} EDU
 														</p>
 													</div>
 													<div className="bg-zinc-800 p-4 rounded-lg">
-														<p className="text-sm  text-gray-600">
+														<p className="text-sm  text-slate-400">
 															Current Yield
 														</p>
 														<p className="text-xl font-bold">
@@ -102,7 +113,7 @@ const FixedYieldDashboard = () => {
 														</p>
 													</div>
 													<div className="bg-zinc-800 p-4 rounded-lg">
-														<p className="text-sm text-gray-600">Time Left</p>
+														<p className="text-sm text-slate-400">Time Left</p>
 														<p className="text-xl font-bold">
 															{userPosition.timeLeft}
 														</p>

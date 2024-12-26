@@ -27,15 +27,15 @@ EDU Fixed Yield Protocol introduces an innovative approach to DeFi yield generat
 
 1. **YieldToken.sol**
 
-   - ERC20-compliant yield token
-   - Represents tokenized yield positions
+   - ERC20-compliant token
+   - Represents tokenized positions
    - Controlled minting/burning mechanisms
 
 2. **YieldPool.sol**
 
-   - Core yield generation logic
+   - yield generation logic
    - Position management
-   - Duration-based yield calculations
+   - Duration based yield calculations
 
 3. **StakingRewards.sol**
    - EDU token staking functionality
@@ -94,16 +94,13 @@ npx hardhat node
 npx hardhat compile
 
 # Deploying the smartContract to EDU Chain
-npx hardhat ignition deploy ./ignition/modules/YieldToken.ts
-
-# Run tests
-npx hardhat test
+npx hardhat ignition deploy ./ignition/modules/stakingRewards.ts
 
 ```
 
 ### Smart Contract Addresses
 
-- EDU Token: `[EDU_TOKEN_ADDRESS]`
+- YieldToken: `[EDU_TOKEN_ADDRESS]`
 - YieldPool: `[YIELD_POOL_ADDRESS]`
 - StakingRewards: `[STAKING_REWARDS_ADDRESS]`
 
@@ -116,7 +113,13 @@ npx hardhat test
 REPORT_GAS=true npx hardhat test
 
 # Run specific test file
-npx hardhat test test/YieldPool.test.js
+npx hardhat test test/YieldPool.ts
+npx hardhat test test/YieldToken.ts
+npx hardhat test test/stakingRewards.ts
+
+# or for a global test
+npx hardhat test
+
 
 # Get coverage report
 npx hardhat coverage

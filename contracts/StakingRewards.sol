@@ -25,13 +25,14 @@ contract StakingRewards is ReentrancyGuard {
     event Staked(address indexed user, uint256 amount);
     event Unstaked(address indexed user, uint256 amount);
 
+    /**
+     * @notice initialize contract with token and yield pool addresses.
+     * @param eduToken The address of the EDU token contract.
+     * @param yieldPoolAddress The address of the YieldPool contract.
+     */
     constructor(address eduToken, address yieldPoolAddress) {
         _eduToken = IERC20(eduToken);
         _yieldPool = YieldPool(yieldPoolAddress);
-    }
-
-    function getEduToken() external view returns (IERC20) {
-        return _eduToken;
     }
 
     function getYieldPool() external view returns (YieldPool) {
@@ -42,26 +43,26 @@ contract StakingRewards is ReentrancyGuard {
         return _stakes[user];
     }
 
+    /**
+     * @notice Stakes a specified amount of EDU tokens.
+     * @param amount The amount of EDU tokens to stake.
+     */
     function stake(uint256 amount) external nonReentrant {
         require(amount > 0, "Amount must be greater than 0");
 
-        require(
-            _eduToken.transferFrom(msg.sender, address(this), amount),
-            "Transfer failed"
-        );
+        _eduToken.transferFrom(msg.sender, address(this), amount);
 
-        // Using unchecked for gas optimization where overflow is impossible
-        unchecked {
-            _stakes[msg.sender].amount += amount;
-        }
-
-        if (_stakes[msg.sender].startTime == 0) {
-            _stakes[msg.sender].startTime = block.timestamp;
-        }
+        _stakes[msg.sender] = Stake({
+            amount: amount,
+            startTime: block.timestamp
+        });
 
         emit Staked(msg.sender, amount);
     }
 
+    /**
+     * @notice Unstakes the staked EDU tokens.
+     */
     function unstake() external nonReentrant {
         Stake memory userStake = _stakes[msg.sender];
         require(userStake.amount > 0, "No stake found");
@@ -69,7 +70,7 @@ contract StakingRewards is ReentrancyGuard {
         uint256 amount = userStake.amount;
         delete _stakes[msg.sender];
 
-        require(_eduToken.transfer(msg.sender, amount), "Transfer failed");
+        _eduToken.transfer(msg.sender, amount);
 
         emit Unstaked(msg.sender, amount);
     }
