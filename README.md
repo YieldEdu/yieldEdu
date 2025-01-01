@@ -1,233 +1,126 @@
 # 🌟 EDU Fixed Yield Protocol
 
-A decentralized fixed-yield protocol built on EDU Chain that enables users to earn guaranteed yields on their EDU tokens while contributing to the educational ecosystem.
+A decentralized fixed-yield protocol built on EDU Chain that enables users to earn guaranteed yields on their EDU tokens.
 
-![EDU](https://github.com/user-attachments/assets/6e7cd216-f018-4f28-8485-1ab3669e9927)
+## 🔧 Prerequisites
 
-## 🎯 Overview
+- Node.js v18+
+- Git
+- A wallet with EDU testnet tokens
+- An IDE (VS Code recommended)
 
-EDU Fixed Yield Protocol introduces an innovative approach to DeFi yield generation by:
+## 🚀 Quick Start
 
-- Providing fixed-rate yields on EDU token deposits
-- Implementing a staking mechanism for enhanced returns
-- Creating a sustainable yield generation model
-- Contributing to EDU Chain's TVL and ecosystem growth
-
-### 🌟 Key Features
-
-- **Fixed Yield Generation**: Lock EDU tokens for predetermined periods (7-365 days) and earn guaranteed yields
-- **Yield Token System**: Receive FYT tokens representing your yield position
-- **Flexible Lock Durations**: Choose lock periods that suit your investment strategy
-- **Staking Rewards**: Stake EDU tokens to earn additional rewards
-- **Gas Optimized**: Implemented with gas efficiency in mind
-
-## 🛠 Technical Implementation
-
-### Smart Contracts
-
-1. **YieldToken.sol**
-
-   - ERC20-compliant token
-   - Represents tokenized positions
-   - Controlled minting/burning mechanisms
-
-2. **YieldPool.sol**
-
-   - yield generation logic
-   - Position management
-   - Duration based yield calculations
-
-3. **StakingRewards.sol**
-   - EDU token staking functionality
-   - Additional reward mechanisms
-   - Stake tracking system
-
-### Architecture
-
-```README.md
-
-User
-  │
-  ├─ YieldPool
-  │   ├─ Deposit EDU
-  │   ├─ Receive YieldTokens
-  │   └─ Withdraw Principal + Yield
-  │
-  └─ StakingRewards
-      ├─ Stake EDU
-      └─ Earn Staking Rewards
-```
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js v16+
-- NPM or Yarn
-- Hardhat
-
-### Installation
+1. **Clone the repository**
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/edu-fixed-yield
-
-# Install dependencies
-cd edu-fixed-yield
-npm install
-
-# Configure environment variables
-# Add wallet address
- npx hardhat vars set ACCOUNT_ADDRESS
-✔ Enter value: ********************************
-# Account address is the same as your wallet address
-
-![for more information on Configure environment variables ](https://hardhat.org/hardhat-runner/docs/guides/configuration-variables)
-
-# Configuration variables are stored in plain text on your disk. Avoid using this feature for data you wouldn’t normally save in an unencrypted file. Run npx hardhat vars path to find the storage's file location.
-
-
-# (optional) create a localhost JSON-RPC server. add this network to metamask by creating a custom network. Import the private key into metamask to see funds.
-npx hardhat node
-
-# Compile smartContract
-npx hardhat compile
-
-# Deploying the smartContract to EDU Chain
-npx hardhat ignition deploy ./ignition/modules/stakingRewards.ts
-
+git clone https://github.com/Kamasah-Dickson/Risein-ICP-bootcamp
+cd Risein-ICP-bootcamp
 ```
 
-### Smart Contract Addresses
+2. **Install dependencies**
 
-- YieldToken: `[EDU_TOKEN_ADDRESS]`
-- YieldPool: `[YIELD_POOL_ADDRESS]`
-- StakingRewards: `[STAKING_REWARDS_ADDRESS]`
+```bash
+# Install root dependencies
+npm install
+
+# Install frontend dependencies
+cd frontend
+npm install
+```
+
+3. **Set up environment variables**
+
+````bash
+# In the root directory
+npx hardhat vars set ACCOUNT_PRIVATE_KEY
+# Enter your wallet's private key when prompted
+
+4. **Compile Smart Contracts**
+
+```bash
+# In the root directory
+npx hardhat compile
+````
+
+5. **Run Tests**
+
+```bash
+npx hardhat test
+```
+
+6. **Start Frontend Development Server**
+
+```bash
+# In the frontend directory
+cd frontend
+npm run dev
+```
+
+7. **Access the Application**
+   Open `http://localhost:3000` in your browser
+
+## 📝 Contract Addresses (EDU Testnet)
+
+<!-- - YieldToken: `0xaE90E60d95396012D611148899f66c0989246337`
+- YieldPool: `0x9D27d14D8Ea738823Ab0a74493F4B7DA11F3F005` -->
 
 ## 🧪 Testing
 
-```shell
-
-# Run all tests
-npx hardhat test
+```bash
+# Run all tests with gas reporting
 REPORT_GAS=true npx hardhat test
 
-# Run specific test file
-npx hardhat test test/YieldPool.ts
-npx hardhat test test/YieldToken.ts
-npx hardhat test test/stakingRewards.ts
-
-# or for a global test
-npx hardhat test
-
-
-# Get coverage report
+# Run coverage
 npx hardhat coverage
-
-#help
-npx hardhat help
-
-
 ```
 
-## 📈 Project Impact
+## 🔍 Features
 
-### Ecosystem Contribution
+- Fixed yield generation on EDU token deposits
+- Flexible lock durations (7-365 days)
+- Real-time yield tracking
+- User-friendly dashboard
+- Interactive analytics
 
-- Increases EDU Chain TVL
-- Provides new utility for EDU tokens
-- Encourages long-term token locking
-- Attracts new users to the ecosystem
+## 🛠 Tech Stack
 
-### Innovation
+- **Frontend**: Next.js, TailwindCSS, shadcn/ui
+- **Web3**: Reown AppKit, wagmi, viem
+- **Smart Contracts**: Solidity, Hardhat
+- **Testing**: Hardhat, Chai
 
-- Fixed yield mechanism
-- Educational integration potential
-- Scalable architecture
-- Gas-optimized implementation
+## 📈 Local Development
 
-## 🛣 Future Roadmap
+1. **Start Local Hardhat Node**
 
-1. **Phase 1**: Core Protocol Launch
-
-   - Basic fixed yield functionality
-   - Staking mechanism
-   - Frontend interface
-
-2. **Phase 2**: Enhanced Features
-
-   - Educational milestones integration
-   - Dynamic yield rates
-   - Governance implementation
-
-3. **Phase 3**: Ecosystem Expansion
-   - Cross-chain integration
-   - Additional yield strategies
-   - Advanced analytics
-
-## 💻 Frontend Interface
-
-Our protocol features a modern, user-friendly interface built with:
-
-- React.js
-- TailwindCSS
-- shadcn/ui components
-- Web3 integration
-
-### Features
-
-- Interactive deposit/withdraw interface
-- Real-time yield calculations
-- Position tracking dashboard
-- Analytics visualization
-- Wallet integration
-
-## 🔒 Security Considerations
-
-- Implemented ReentrancyGuard for all external functions
-- Comprehensive input validation
-- Access control mechanisms
-- Emergency withdrawal functionality
-- Gas optimization without compromising security
-
-## Running the frontend
-
-```shell
- cd frontend
-# pnpm install or npm install
-#pnpm dev or npm run dev
-
+```bash
+npx hardhat node
 ```
 
-## Learn More
+2. **Deploy Contracts Locally**
 
-To learn more about this stack, take a look at the following resources:
+```bash
+npx hardhat run scripts/deploy.ts --network localhost
+```
 
-- [RainbowKit Documentation](https://rainbowkit.com) - Learn how to customize your wallet connection flow.
-- [wagmi Documentation](https://wagmi.sh) - Learn how to interact with Ethereum.
-- [Next.js Documentation](https://nextjs.org/docs) - Learn how to build a Next.js application.
+3. **Configure Frontend**
 
-You can check out [the RainbowKit GitHub repository](https://github.com/rainbow-me/rainbowkit) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-
-## 👥 Team
-
-- Kamasah Dickson - Smart Contract Developer
-- SmartContract dev, Web3 and Fullstack Dev
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- Update contract addresses in `frontend/lib/utils.ts`
+- Ensure your wallet is connected to localhost network
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
+
+## 📄 License
+
+MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-Built with 💙 for RISEIN EDU Chain Hackathon 2024
+Built by [Kamasah Dickson](https://kamasahdickson.vercel.app)

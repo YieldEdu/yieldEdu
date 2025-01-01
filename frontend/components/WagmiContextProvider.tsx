@@ -1,15 +1,18 @@
 "use client";
 
-import { wagmiAdapter, projectId, eduTestnet, edu } from "@/lib/wagmi";
+import { wagmiAdapter, projectId, eduTestnet, localHost } from "@/lib/wagmi";
 import { createAppKit } from "@reown/appkit/react";
 import { cookieToInitialState, WagmiProvider, type Config } from "wagmi";
+// import { arbitrum } from "@reown/appkit/networks";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 if (!projectId) {
 	throw new Error("Project ID is not defined");
 }
 
-const client = new QueryClient({
+const clientFromReactQuery = new QueryClient({
 	defaultOptions: {
 		queries: {
 			refetchOnWindowFocus: false,
@@ -30,7 +33,7 @@ const metadata = {
 createAppKit({
 	adapters: [wagmiAdapter],
 	projectId,
-	networks: [eduTestnet, edu],
+	networks: [eduTestnet, localHost],
 	defaultNetwork: eduTestnet,
 	metadata,
 	features: {
@@ -56,12 +59,17 @@ const WagmiContextProvider = ({
 		cookies
 	);
 	return (
-		<WagmiProvider
-			config={wagmiAdapter.wagmiConfig as Config}
-			initialState={initialState}
-		>
-			<QueryClientProvider client={client}>{children}</QueryClientProvider>
-		</WagmiProvider>
+		<>
+			<WagmiProvider
+				config={wagmiAdapter.wagmiConfig as Config}
+				initialState={initialState}
+			>
+				<QueryClientProvider client={clientFromReactQuery}>
+					{children}
+					<ReactQueryDevtools initialIsOpen={false} />
+				</QueryClientProvider>
+			</WagmiProvider>
+		</>
 	);
 };
 

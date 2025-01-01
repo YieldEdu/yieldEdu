@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import {
 	Table,
 	TableBody,
@@ -34,15 +34,22 @@ import {
 	getSortedRowModel,
 	Column,
 } from "@tanstack/react-table";
-
-interface ActivePosition {
+import WithDraw from "./WithDraw";
+import { useAppKitAccount } from "@reown/appkit/react";
+export interface ActivePosition {
+	id: string;
 	address: string;
-	amount: string;
-	lockDuration: string;
+	amount: number;
+	lockDuration: number;
 	startTime: number;
 	timeLeft: number;
-	expectedYield: string;
-	Actions?: string;
+	expectedYield: number;
+}
+
+interface ActivePositionTableProps {
+	positions: ActivePosition[];
+	currentUserAddress?: string;
+	setShowWithDrawModal: Dispatch<SetStateAction<boolean>>;
 }
 
 interface DataTableColumnHeaderProps<TData, TValue>
@@ -94,8 +101,22 @@ export function DataTableColumnHeader<TData, TValue>({
 	);
 }
 
-export function ActivePositionTable() {
+export function ActivePositionTable({
+	positions,
+	currentUserAddress,
+	setShowWithDrawModal,
+}: ActivePositionTableProps) {
 	const [sorting, setSorting] = useState<SortingState>([]);
+	const { isConnected } = useAppKitAccount();
+
+	const latestPosition = positions.filter(
+		(position) => position.address === currentUserAddress
+	);
+
+	//get latest position
+	const userPosition = latestPosition.reduce((latest, current) => {
+		return current.startTime > latest.startTime ? current : latest;
+	}, latestPosition[0]);
 
 	const columns: ColumnDef<
 		ActivePosition,
@@ -121,7 +142,12 @@ export function ActivePositionTable() {
 			),
 			cell: ({ row }) => {
 				const lockDuration = row.getValue("lockDuration") as string;
-				return <div className="font-medium">{lockDuration}</div>;
+				const formatted = Math.floor(Number(lockDuration) / (60 * 60 * 24));
+				return (
+					<div className="font-medium">
+						{formatted} {Number(formatted) > 1 ? "days" : "day"}
+					</div>
+				);
 			},
 		},
 		{
@@ -130,7 +156,10 @@ export function ActivePositionTable() {
 				<DataTableColumnHeader column={column} title="StartTime" />
 			),
 			cell: ({ row }) => {
-				const startTime = new Date(row.getValue("startTime"));
+				const startTimeUnix = row.getValue("startTime") as number;
+				if (!startTimeUnix) return <div className="font-medium">-</div>;
+
+				const startTime = new Date(startTimeUnix * 1000);
 				const formattedDate = startTime.toLocaleDateString("en-US", {
 					year: "numeric",
 					month: "long",
@@ -143,11 +172,18 @@ export function ActivePositionTable() {
 		{
 			accessorKey: "timeLeft",
 			header: ({ column }) => (
-				<DataTableColumnHeader column={column} title="TimeLeft" />
+				<DataTableColumnHeader column={column} title="Time Left" />
 			),
 			cell: ({ row }) => {
-				const timeLeft = new Date(row.getValue("timeLeft"));
-				const formattedDate = timeLeft.toLocaleDateString("en-US", {
+				const startTime = row.getValue("startTime") as number;
+				const lockDuration = row.getValue("lockDuration") as number;
+
+				if (!startTime || !lockDuration)
+					return <div className="font-medium">-</div>;
+
+				const endTime = new Date((startTime + lockDuration) * 1000);
+
+				const formattedDate = endTime.toLocaleDateString("en-US", {
 					year: "numeric",
 					month: "long",
 					day: "numeric",
@@ -162,71 +198,59 @@ export function ActivePositionTable() {
 				<DataTableColumnHeader column={column} title="ExpectedYield" />
 			),
 			cell: ({ row }) => {
-				const expectedYield = row.getValue("expectedYield") as string;
-				return <div className="font-medium">{expectedYield}</div>;
+				const expectedYield = row.getValue("expectedYield") as number;
+				return <div className="font-medium">{expectedYield.toFixed(8)}</div>;
 			},
 		},
 		{
 			accessorKey: "Actions",
 			id: "actions",
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			cell: ({ row }: CellContext<ActivePosition, any>) => {
-				// access the row data using row.original
+				// =row data using row.original
 				// const payment = row.original;
 
 				return (
 					<DropdownMenu modal={false}>
-						<DropdownMenuTrigger asChild>
-							<Button variant="ghost" className="h-8 w-8 p-0">
-								<span className="sr-only">Open menu</span>
-								<MoreHorizontal className="h-4 w-4" />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent
-							className="bg-[#1A1B1F]  text-white"
-							align="end"
-						>
-							<Button
-								type="button"
-								variant={"default"}
-								className="hover:bg-[#0E76FD] w-full"
+						{row.original.address === currentUserAddress ? (
+							<DropdownMenuTrigger asChild>
+								<Button variant="ghost" className="h-8 w-8 p-0">
+									<span className="sr-only">Open menu</span>
+									<MoreHorizontal className="h-4 w-4" />
+								</Button>
+							</DropdownMenuTrigger>
+						) : (
+							"-"
+						)}
+						{row.original.address === currentUserAddress && (
+							<DropdownMenuContent
+								className="bg-[#1A1B1F]  text-white"
+								align="end"
 							>
-								Unstake
-							</Button>
-							<Button
-								type="button"
-								variant={"default"}
-								className="hover:bg-[#0E76FD] w-full"
-							>
-								Withdraw
-							</Button>
-						</DropdownMenuContent>
+								<Button
+									type="button"
+									variant={"default"}
+									className="hover:bg-[#0E76FD] w-full"
+								>
+									Unstake
+								</Button>
+								<WithDraw
+									positionId={row.original.id}
+									setShowWithDrawModal={setShowWithDrawModal}
+									isConnected={isConnected}
+									lockDuration={Number(userPosition.lockDuration)}
+									startTime={userPosition.startTime}
+								/>
+							</DropdownMenuContent>
+						)}
 					</DropdownMenu>
 				);
 			},
 		},
 	];
-	const [allPositions] = useState([
-		{
-			address: "0xd5Ff4A4458BC8d2684A452C0C57531731410F3f4",
-			amount: "1000",
-			lockDuration: "30",
-			startTime: Date.now() / 1000,
-			timeLeft: 25,
-			expectedYield: "25.5",
-		},
-		{
-			address: "0xd5Ff4A4458BC8d2684A4573mk47531731410F3f4",
-			amount: "500",
-			lockDuration: "90",
-			startTime: (Date.now() - 86400000) / 1000, // 1 day ago
-			timeLeft: 89,
-			expectedYield: "12.3",
-		},
-	]);
 
 	const table = useReactTable({
-		data: allPositions,
+		data: positions,
 		columns,
 		getPaginationRowModel: getPaginationRowModel(),
 		getCoreRowModel: getCoreRowModel(),
@@ -236,24 +260,13 @@ export function ActivePositionTable() {
 			sorting,
 		},
 	});
-	const [currentPosition] = useState<ActivePosition>({
-		address: "0xd5Ff4A4458BC8d2684A452C0C57531731410F3f4",
-		amount: "1000",
-		lockDuration: "30",
-		startTime: Date.now() / 1000,
-		timeLeft: 25,
-		expectedYield: "25.5",
-	});
 
 	const sortedRows = table.getSortedRowModel().rows;
 	const currentPositionIndex = sortedRows.findIndex(
-		(row) =>
-			row.original.amount === currentPosition.amount &&
-			row.original.address === currentPosition.address &&
-			row.original.expectedYield === currentPosition.expectedYield
+		(row) => row.original.address === currentUserAddress
 	);
 
-	console.log(currentPositionIndex);
+	// console.log(currentPositionIndex);
 	return (
 		<Card className="mt-6 bg-transparent border-none text-white">
 			<CardContent className="px-0">
@@ -284,12 +297,11 @@ export function ActivePositionTable() {
 							{sortedRows?.length ? (
 								<>
 									{sortedRows.map((row) => (
-										// {sortedRows.slice(0, 10).map((row) => (
 										<TableRow
 											key={row.id}
 											className={cn("", {
 												"bg-[#0E76FD80] hover:bg-[#0E76FD]":
-													row.index === currentPositionIndex,
+													row.original.address === currentUserAddress,
 											})}
 											data-state={row.getIsSelected() && "selected"}
 										>

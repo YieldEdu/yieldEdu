@@ -21,7 +21,7 @@ describe("YieldPool", async () => {
 	let YEAR = 365 * 24 * 60 * 60;
 	let amount = hre.ethers.parseUnits("1000", 18);
 	let duration = 7 * 24 * 60 * 60;
-	let eduToken: any;
+	let FYTToken: any;
 
 	beforeEach(async () => {
 		yieldTokenFactory = await hre.ethers.getContractFactory("YieldToken");
@@ -39,16 +39,16 @@ describe("YieldPool", async () => {
 			tokenName,
 			tokenSymbol
 		);
-		eduToken = yieldToken;
+		FYTToken = yieldToken;
 
 		// Mint tokens to the owner
 		await yieldToken.mint(owner.address, amount);
-		await eduToken.approve(yieldPool.getAddress(), amount);
+		await FYTToken.approve(yieldPool.getAddress(), amount);
 	});
 
-	it("returns the correct eduToken address", async () => {
-		const eduTokenAddress = await yieldPool.getEduToken();
-		expect(eduTokenAddress).to.equal(await yieldToken.getAddress());
+	it("returns the correct FYTToken address", async () => {
+		const FYTTokenAddress = await yieldPool.getFYTToken();
+		expect(FYTTokenAddress).to.equal(await yieldToken.getAddress());
 	});
 
 	it("gets the position of a funder", async () => {
@@ -81,7 +81,7 @@ describe("YieldPool", async () => {
 	});
 
 	it("allows deposits and emits Deposited event", async () => {
-		await eduToken.approve(yieldPool.getAddress(), amount);
+		await FYTToken.approve(yieldPool.getAddress(), amount);
 
 		await expect(yieldPool.deposit(amount, duration))
 			.to.emit(yieldPool, "Deposited")
@@ -94,20 +94,13 @@ describe("YieldPool", async () => {
 
 	it("reverts when YieldPool doesn't have enough tokens to pay out principal and yield", async () => {
 		// approve tokens for deposit
-		const eduTokenAddress = await yieldPool.getEduToken();
-		const eduToken = await hre.ethers.getContractAt(
+		const FYTTokenAddress = await yieldPool.getFYTToken();
+		const FYTToken = await hre.ethers.getContractAt(
 			"YieldToken",
-			eduTokenAddress
+			FYTTokenAddress
 		);
-		await eduToken.approve(yieldPool.getAddress(), amount);
-
+		await FYTToken.approve(yieldPool.getAddress(), amount);
 		await yieldPool.deposit(amount, duration);
-
-		// Calculate expected yield
-		const expectedYield =
-			(BigInt(amount) * BigInt(duration) * BigInt(YIELD_RATE)) /
-			(BigInt(YEAR) * BigInt(100));
-		const totalAmount = BigInt(amount) + expectedYield;
 
 		// forward time to after the lock duration
 		await hre.network.provider.send("evm_increaseTime", [duration]);
@@ -120,12 +113,12 @@ describe("YieldPool", async () => {
 
 	it("allows withdrawals and emits Withdrawn event", async () => {
 		// approve tokens for deposit
-		const eduTokenAddress = await yieldPool.getEduToken();
-		const eduToken = await hre.ethers.getContractAt(
+		const FYTTokenAddress = await yieldPool.getFYTToken();
+		const FYTToken = await hre.ethers.getContractAt(
 			"YieldToken",
-			eduTokenAddress
+			FYTTokenAddress
 		);
-		await eduToken.approve(yieldPool.getAddress(), amount);
+		await FYTToken.approve(yieldPool.getAddress(), amount);
 
 		await yieldPool.deposit(amount, duration);
 
@@ -136,7 +129,7 @@ describe("YieldPool", async () => {
 		const totalAmount = BigInt(amount) + expectedYield;
 
 		// Mint additional tokens to the YieldPool for yield payments
-		await eduToken.mint(yieldPool.getAddress(), expectedYield);
+		await FYTToken.mint(yieldPool.getAddress(), expectedYield);
 
 		// forward time to after the lock duration
 		await hre.network.provider.send("evm_increaseTime", [duration]);
@@ -154,7 +147,7 @@ describe("YieldPool", async () => {
 		expect(position.amount).to.equal(0);
 
 		// Check the balance of the contract after withdrawal
-		expect(await eduToken.balanceOf(yieldPool.getAddress())).to.equal(0);
+		expect(await FYTToken.balanceOf(yieldPool.getAddress())).to.equal(0);
 	});
 
 	it("reverts when withdrawing before lock duration", async () => {
@@ -166,19 +159,19 @@ describe("YieldPool", async () => {
 
 	it("checks the balance of the contract after deposit", async () => {
 		await yieldPool.deposit(amount, duration);
-		const eduTokenAddress = await yieldPool.getEduToken();
-		const eduToken = await hre.ethers.getContractAt(
+		const FYTTokenAddress = await yieldPool.getFYTToken();
+		const FYTToken = await hre.ethers.getContractAt(
 			"YieldToken",
-			eduTokenAddress
+			FYTTokenAddress
 		);
-		expect(await eduToken.balanceOf(yieldPool.getAddress())).to.equal(amount);
+		expect(await FYTToken.balanceOf(yieldPool.getAddress())).to.equal(amount);
 	});
 
 	it("checks the balance of the contract after withdrawal", async () => {
-		const eduTokenAddress = await yieldPool.getEduToken();
-		const eduToken = await hre.ethers.getContractAt(
+		const FYTTokenAddress = await yieldPool.getFYTToken();
+		const FYTToken = await hre.ethers.getContractAt(
 			"YieldToken",
-			eduTokenAddress
+			FYTTokenAddress
 		);
 		await yieldPool.deposit(amount, duration);
 
@@ -193,7 +186,7 @@ describe("YieldPool", async () => {
 		await hre.network.provider.send("evm_mine");
 
 		// Mint additional tokens to the YieldPool for yield payments
-		await eduToken.mint(yieldPool.getAddress(), expectedYield);
+		await FYTToken.mint(yieldPool.getAddress(), expectedYield);
 
 		await expect(yieldPool.withdraw())
 			.to.emit(yieldPool, "Withdrawn")
@@ -204,6 +197,6 @@ describe("YieldPool", async () => {
 			);
 
 		// Check the balance of the contract after withdrawal
-		expect(await eduToken.balanceOf(yieldPool.getAddress())).to.equal(0);
+		expect(await FYTToken.balanceOf(yieldPool.getAddress())).to.equal(0);
 	});
 });
