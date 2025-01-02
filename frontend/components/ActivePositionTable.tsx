@@ -36,20 +36,13 @@ import {
 } from "@tanstack/react-table";
 import WithDraw from "./WithDraw";
 import { useAppKitAccount } from "@reown/appkit/react";
-export interface ActivePosition {
-	id: string;
-	address: string;
-	amount: number;
-	lockDuration: number;
-	startTime: number;
-	timeLeft: number;
-	expectedYield: number;
-}
+import { ActivePosition } from "@/app/page";
+import { useSearchParams } from "next/navigation";
 
 interface ActivePositionTableProps {
 	positions: ActivePosition[];
-	currentUserAddress?: string;
 	setShowWithDrawModal: Dispatch<SetStateAction<boolean>>;
+	setModalType: Dispatch<SetStateAction<"withdraw" | "unstake">>;
 }
 
 interface DataTableColumnHeaderProps<TData, TValue>
@@ -103,16 +96,24 @@ export function DataTableColumnHeader<TData, TValue>({
 
 export function ActivePositionTable({
 	positions,
-	currentUserAddress,
 	setShowWithDrawModal,
+	setModalType,
 }: ActivePositionTableProps) {
 	const [sorting, setSorting] = useState<SortingState>([]);
-	const { isConnected } = useAppKitAccount();
+	const { isConnected, address } = useAppKitAccount();
+	const searchParams = useSearchParams();
 
 	const latestPosition = positions.filter(
-		(position) => position.address === currentUserAddress
+		(position) => position.positionAddress === address
 	);
 
+	const handleUnstake = (positionId: string) => {
+		setModalType("unstake");
+		const params = new URLSearchParams(searchParams.toString());
+		params.set("positionId", positionId);
+		window.history.pushState({}, "", `?${params.toString()}`);
+		setShowWithDrawModal(true);
+	};
 	//get latest position
 	const userPosition = latestPosition.reduce((latest, current) => {
 		return current.startTime > latest.startTime ? current : latest;
@@ -212,7 +213,7 @@ export function ActivePositionTable({
 
 				return (
 					<DropdownMenu modal={false}>
-						{row.original.address === currentUserAddress ? (
+						{row.original.positionAddress === address ? (
 							<DropdownMenuTrigger asChild>
 								<Button variant="ghost" className="h-8 w-8 p-0">
 									<span className="sr-only">Open menu</span>
@@ -222,12 +223,14 @@ export function ActivePositionTable({
 						) : (
 							"-"
 						)}
-						{row.original.address === currentUserAddress && (
+
+						{row.original.positionAddress === address && (
 							<DropdownMenuContent
 								className="bg-[#1A1B1F]  text-white"
 								align="end"
 							>
 								<Button
+									onClick={() => handleUnstake(row.original.id)}
 									type="button"
 									variant={"default"}
 									className="hover:bg-[#0E76FD] w-full"
@@ -263,7 +266,7 @@ export function ActivePositionTable({
 
 	const sortedRows = table.getSortedRowModel().rows;
 	const currentPositionIndex = sortedRows.findIndex(
-		(row) => row.original.address === currentUserAddress
+		(row) => row.original.positionAddress === address
 	);
 
 	// console.log(currentPositionIndex);
@@ -301,7 +304,7 @@ export function ActivePositionTable({
 											key={row.id}
 											className={cn("", {
 												"bg-[#0E76FD80] hover:bg-[#0E76FD]":
-													row.original.address === currentUserAddress,
+													row.original.positionAddress === address,
 											})}
 											data-state={row.getIsSelected() && "selected"}
 										>

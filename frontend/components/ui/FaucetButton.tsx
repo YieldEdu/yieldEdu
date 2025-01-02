@@ -28,36 +28,33 @@ const FaucetButton = ({ userAddress }: { userAddress?: string }) => {
 		if (!userAddress) return;
 
 		try {
-			if (!mintSimulator?.request) {
-				console.error("Simulation failed or not ready");
-				return;
-			}
-
-			mint(mintSimulator.request, {
-				onSuccess: () => {
-					toast({
-						title: "Mint Successful",
-						description: "Tokens have been minted successfully",
-					});
-					queryClient.invalidateQueries();
-				},
-				onError: (error) => {
-					console.error("Mint error:", error);
-					if (error.message.includes("User rejected the request")) {
+			if (mintSimulator?.request) {
+				mint(mintSimulator.request, {
+					onSuccess: () => {
+						toast({
+							title: "Mint Successful",
+							description: "Tokens have been minted successfully",
+						});
+						queryClient.invalidateQueries();
+					},
+					onError: (error) => {
+						console.error("Mint error:", error);
+						if (error.message.includes("User rejected the request")) {
+							toast({
+								variant: "destructive",
+								title: "Transaction Rejected",
+								description: "You rejected the transaction",
+							});
+							return;
+						}
 						toast({
 							variant: "destructive",
-							title: "Transaction Rejected",
-							description: "You rejected the transaction",
+							title: "Transaction Failed",
+							description: "An error Occurred when Minting",
 						});
-						return;
-					}
-					toast({
-						variant: "destructive",
-						title: "Transaction Failed",
-						description: "An error Occurred when Minting",
-					});
-				},
-			});
+					},
+				});
+			}
 		} catch (error) {
 			console.error("Mint error:", error);
 			console.error("Contract error:", mintError);
@@ -72,7 +69,7 @@ const FaucetButton = ({ userAddress }: { userAddress?: string }) => {
 	// Log any simulation errors
 	useEffect(() => {
 		if (simulateError) {
-			console.error("Simulation error:", simulateError.cause);
+			console.warn("Simulation error:", simulateError.cause);
 		}
 	}, [simulateError]);
 
@@ -81,7 +78,7 @@ const FaucetButton = ({ userAddress }: { userAddress?: string }) => {
 			onClick={handleMint}
 			disabled={!userAddress || isPending || !!simulateError?.cause}
 			variant="outline"
-			className="bg-green-500 hover:bg-green-600 border-none hover:text-white font-semibold active:bg-green-600"
+			className="disabled:bg-green-700 bg-green-500 hover:bg-green-600 border-none hover:text-white font-semibold enabled:active:bg-green-600"
 		>
 			{isPending
 				? "Minting..."

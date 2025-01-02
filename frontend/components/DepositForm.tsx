@@ -39,7 +39,7 @@ const DepositForm = ({
 	const durationInSeconds = Number(duration) * 24 * 60 * 60;
 	const queryClient = useQueryClient();
 
-	const { data: allowance } = useReadContract({
+	const { data: allowance, refetch: refetchAllowance } = useReadContract({
 		...getYieldTokenConfig("allowance", [address, YieldPoolAddress]),
 	});
 
@@ -129,13 +129,12 @@ const DepositForm = ({
 					approve(approveSimulator.request, {
 						onError(error) {
 							console.log(error);
-							if (error.message.includes("User rejected the request")) {
-								toast({
-									variant: "destructive",
-									title: "Transaction Rejected",
-									description: "You rejected the transaction",
-								});
-							}
+							toast({
+								variant: "destructive",
+								title: "Transaction Rejected",
+								description: "You rejected the transaction",
+							});
+							return;
 						},
 						onSuccess: () => {
 							toast({
@@ -152,13 +151,13 @@ const DepositForm = ({
 									]),
 								},
 								{
-									onSuccess(data) {
-										console.log(data);
+									onSuccess() {
 										toast({
 											title: "Deposit Successful",
 											description: "Transaction Successful",
 										});
 										queryClient.invalidateQueries();
+										setAmount("");
 									},
 									onError(error) {
 										console.log(error);
@@ -175,9 +174,9 @@ const DepositForm = ({
 						},
 					});
 				}
+				refetchAllowance();
 			} else {
-				// If already approved, just deposit
-				// console.log("already approved just deposit");
+				// If already approved deposit
 				deposit(
 					{
 						...getYieldPoolConfig("deposit", [
@@ -193,6 +192,7 @@ const DepositForm = ({
 								description: "Transaction Successful",
 							});
 							queryClient.invalidateQueries();
+							setAmount("");
 						},
 						onError(error) {
 							console.log(error);

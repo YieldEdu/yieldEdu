@@ -19,10 +19,12 @@ import { formatEther } from "viem";
 import { useState, useEffect } from "react";
 import FaucetButton from "@/components/ui/FaucetButton";
 import WithdrawModal from "@/components/WithdrawModal";
+import { Button } from "@/components/ui/button";
 
-export interface IActivePosition {
+export interface ActivePosition {
+	//string because of BigInt Values
 	id: string;
-	address: string;
+	positionAddress?: string;
 	amount: number;
 	lockDuration: number;
 	startTime: number;
@@ -30,21 +32,14 @@ export interface IActivePosition {
 	expectedYield: number;
 }
 
-interface ITransformed {
-	0: string[];
-	1: { id: string; amount: string; lockDuration: string; startTime: string }[];
-}
-
 const FixedYieldDashboard = () => {
 	const { isConnected, address } = useAppKitAccount();
 	const [showModal, setShowModal] = useState(false);
+	const [modalType, setModalType] = useState<"withdraw" | "unstake">(
+		"withdraw"
+	);
 	const [showWithdrawModal, setShowWithDrawModal] = useState(false);
-
-	// const account = useAccount();
-	// const { data: position } = useReadContract({
-	// 	...getYieldPoolConfig("getPosition", [address]),
-	// 	account: address as unknown as `0x${string}`,
-	// }) as unknown as UseQueryReturnType & Position;
+	const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
 
 	const results = useBalance({
 		address: address as unknown as `0x${string}`,
@@ -61,7 +56,7 @@ const FixedYieldDashboard = () => {
 		...getYieldPoolConfig("getTotalStakers", []),
 	});
 
-	const calculateYield = (amount: string, duration: number) => {
+	const calculateYield = (amount: number, duration: number) => {
 		const YIELD_RATE = 10;
 		const YEAR = 365 * 24 * 60 * 60; // 365 days in seconds
 
@@ -79,61 +74,63 @@ const FixedYieldDashboard = () => {
 	// Base APY from YieldPool's YIELD_RATE
 	const BASE_APY = 10;
 
-	const [positions, setPositions] = useState<IActivePosition[]>([
-		{
-			id: "",
-			address: "",
-			amount: 0,
-			lockDuration: 0,
-			startTime: 0,
-			timeLeft: 0,
-			expectedYield: 0,
-		},
-	]);
+	const [positions, setPositions] = useState<ActivePosition[] | []>([]);
 
-	const { data: activePositionsData }: { data: ITransformed | undefined } =
+	const { data: activePositionsData }: { data: ActivePosition[] | undefined } =
 		useReadContract({
 			...getYieldPoolConfig("getActivePositions", []),
 		});
 
-	// Update positions state when active positions data changes
 	useEffect(() => {
-		const stakers =
-			activePositionsData &&
-			activePositionsData[0]?.map((address, index) => {
-				const positionData = (activePositionsData as ITransformed)[1][index];
-				const startTimeInSeconds = Number(positionData.startTime);
-				const lockDurationInSeconds = Number(positionData.lockDuration);
+		if (activePositionsData) {
+			const stakers = activePositionsData.map(
+				(positionData: ActivePosition) => {
+					const startTimeInSeconds = Number(positionData.startTime);
+					const lockDurationInSeconds = Number(positionData.lockDuration);
 
-				return {
-					id: positionData.id,
-					address,
-					amount: Number(formatEther(BigInt(positionData.amount))),
-					lockDuration: lockDurationInSeconds, // Store raw seconds
-					startTime: startTimeInSeconds,
-					timeLeft: Math.ceil(lockDurationInSeconds / (24 * 60 * 60)), // Convert to days for display
-					expectedYield: parseFloat(
-						calculateYield(
-							positionData.amount,
-							lockDurationInSeconds // seconds for yield calculation
-						)
-					),
-				};
-			});
+					return {
+						id: positionData.id,
+						positionAddress: positionData.positionAddress,
+						amount: Number(formatEther(BigInt(positionData.amount))),
+						lockDuration: lockDurationInSeconds, // Store raw seconds
+						startTime: startTimeInSeconds,
+						timeLeft: Math.ceil(lockDurationInSeconds / (24 * 60 * 60)), // Convert to days for display
+						expectedYield: parseFloat(
+							calculateYield(
+								positionData.amount,
+								lockDurationInSeconds // seconds for yield calculation
+							)
+						),
+					};
+				}
+			);
 
-		if (stakers) {
-			setPositions(stakers);
+			if (stakers) {
+				setPositions(stakers);
+			}
 		}
-	}, [activePositionsData]);
+	}, [activePositionsData, address]);
 
-	const latestPosition = positions.filter(
-		(position) => position.address === address
+	// Filter user positions first
+	const userPositions = positions.filter(
+		(position) =>
+			position.positionAddress?.toLowerCase() === address?.toLowerCase()
 	);
 
-	//get latest position
-	const userPosition = latestPosition.reduce((latest, current) => {
-		return current.startTime > latest.startTime ? current : latest;
-	}, latestPosition[0]);
+	// Update userPosition to use currentPositionIndex
+	const userPosition = userPositions[currentPositionIndex];
+
+	const handlePrevPosition = () => {
+		setCurrentPositionIndex((prev) =>
+			prev > 0 ? prev - 1 : userPositions.length - 1
+		);
+	};
+
+	const handleNextPosition = () => {
+		setCurrentPositionIndex((prev) =>
+			prev < userPositions.length - 1 ? prev + 1 : 0
+		);
+	};
 
 	return (
 		<>
@@ -144,7 +141,7 @@ const FixedYieldDashboard = () => {
 							<div>
 								<h1 className="text-3xl font-bold">YieldStake Protocol</h1>
 								<p className="text-gray-400">
-									Earn guaranteed yields on your FYT tokens
+									Earn guaranteed yields on your EDU tokens
 								</p>
 							</div>
 							<div className="flex gap-4">
@@ -158,8 +155,10 @@ const FixedYieldDashboard = () => {
 								<CardContent className="p-6">
 									<div className="flex items-center justify-between">
 										<div>
-											<p className="text-sm text-slate-400">TVL</p>
-											<p className="text-4xl font-bold">{formattedTVL} FYT</p>
+											<p className="text-md text-slate-400">TVL</p>
+											<p className="text-4xl font-bold">
+												{parseFloat(formattedTVL).toFixed(2)} FYT
+											</p>
 										</div>
 										<ShieldCheck className="size-10 text-green-500" />{" "}
 									</div>
@@ -169,7 +168,7 @@ const FixedYieldDashboard = () => {
 								<CardContent className="p-6">
 									<div className="flex items-center justify-between">
 										<div>
-											<p className="text-sm text-slate-400">Base APY</p>
+											<p className="text-md text-slate-400">Base APY</p>
 											<p className="text-3xl md:text-4xl font-bold">
 												{BASE_APY}%
 											</p>
@@ -186,13 +185,13 @@ const FixedYieldDashboard = () => {
 								<CardContent className="p-6">
 									<div className="flex items-center justify-between">
 										<div>
-											<p className="text-sm text-slate-400">
-												Native Token Balance (FYT/EDU)
+											<p className="text-md text-slate-400">
+												Token Balance (FYT/EDU)
 											</p>
 											<p className="text-3xl md:text-4xl font-bold">
 												{results?.data?.formatted
-													? parseFloat(results.data.formatted).toFixed(3)
-													: "0.000"}
+													? parseFloat(results.data.formatted).toFixed(2)
+													: "0.00"}
 											</p>
 										</div>
 										<Coins className="size-10 text-green-500" />
@@ -203,7 +202,7 @@ const FixedYieldDashboard = () => {
 								<CardContent className="p-6">
 									<div className="flex items-center justify-between">
 										<div>
-											<p className="text-sm text-slate-400">Total Stakers</p>
+											<p className="text-md text-slate-400">Total Stakers</p>
 											<p className="text-3xl md:text-4xl font-bold">
 												{totalStakers ? Number(totalStakers).toString() : "0"}
 											</p>
@@ -232,7 +231,7 @@ const FixedYieldDashboard = () => {
 											<div className="space-y-6 h-full">
 												<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 													<div className="bg-zinc-800 p-4 rounded-lg">
-														<p className="text-sm text-slate-400">Deposited</p>
+														<p className="text-md text-slate-400">Deposited</p>
 														<p className="text-xl font-bold">
 															{userPosition?.amount
 																? `${userPosition.amount} FYT`
@@ -240,7 +239,7 @@ const FixedYieldDashboard = () => {
 														</p>
 													</div>
 													<div className="bg-zinc-800 p-4 rounded-lg">
-														<p className="text-sm  text-slate-400">
+														<p className="text-md  text-slate-400">
 															Current Yield
 														</p>
 														<p className="text-xl font-bold">
@@ -252,7 +251,7 @@ const FixedYieldDashboard = () => {
 														</p>
 													</div>
 													<div className="bg-zinc-800 p-4 rounded-lg">
-														<p className="text-sm text-slate-400">Time Left</p>
+														<p className="text-md text-slate-400">Time Left</p>
 														<p className="text-xl font-bold">
 															{userPosition?.lockDuration
 																? `${Math.floor(
@@ -270,13 +269,39 @@ const FixedYieldDashboard = () => {
 													</div>
 												</div>
 
+												{userPositions.length > 1 && (
+													<div className="flex justify-between items-center gap-4 mt-4">
+														<Button
+															onClick={handlePrevPosition}
+															type="button"
+															className={cn(
+																"flex px-3 text-md disabled:bg-[#0E76FD80] bg-[#0E76FD] enabled:hover:bg-[#0E76FD80] active:bg-[#0E76FD] text-white border-none w-fit rounded-md"
+															)}
+														>
+															Previous Position
+														</Button>
+														<span className="text-green-400">
+															Position {currentPositionIndex + 1} of{" "}
+															{userPositions.length}
+														</span>
+														<Button
+															onClick={handleNextPosition}
+															type="button"
+															className={cn(
+																"flex px-3 text-md disabled:bg-[#0E76FD80] bg-[#0E76FD] enabled:hover:bg-[#0E76FD80] active:bg-[#0E76FD] text-white border-none w-fit rounded-md"
+															)}
+														>
+															Next Position
+														</Button>
+													</div>
+												)}
+
 												<Alert className="bg-zinc-800 border-none">
 													<AlertDescription className="flex items-center text-white gap-3">
 														<Timer className="w-5 h-5" />
 														{!isConnected ? (
 															"Connect your wallet and make a deposit to see this info"
-														) : userPosition?.address &&
-														  Number(userPosition?.amount) !== 0 ? (
+														) : userPositions.length > 0 ? (
 															<>
 																Your position will be available for withdrawal
 																in{" "}
@@ -296,17 +321,21 @@ const FixedYieldDashboard = () => {
 												</Alert>
 											</div>
 										</TabsContent>
-										<Analytics />
+										<TabsContent value="analytics">
+											<Analytics positions={positions} />
+										</TabsContent>
 									</CardContent>
 								</Tabs>
 							</Card>
 						</div>
 						<ActivePositionTable
+							setModalType={setModalType}
 							setShowWithDrawModal={setShowWithDrawModal}
 							positions={positions}
-							currentUserAddress={address}
 						/>
 						<WithdrawModal
+							modalType={modalType}
+							setModalType={setModalType}
 							positions={positions}
 							setShowWithDrawModal={setShowWithDrawModal}
 							showWithdrawModal={showWithdrawModal}
