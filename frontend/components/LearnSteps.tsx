@@ -6,7 +6,7 @@ import { getRandomQuestions } from "@/data/questions";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { getYieldTokenConfig } from "@/lib/utils";
-import { useReadContract, useSimulateContract, useWriteContract } from "wagmi";
+import { useSimulateContract, useWriteContract } from "wagmi";
 import { parseEther } from "viem";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { toast } from "@/hooks/use-toast";
@@ -59,8 +59,8 @@ const LearnSteps = () => {
 		setScore(0);
 	};
 
-	const { data: claimSimulator } = useSimulateContract({
-		...getYieldTokenConfig("mintForStudent", [address, parseEther("0.5")]),
+	const { data: setStudentSimulator } = useSimulateContract({
+		...getYieldTokenConfig("setStudentStatus", [address, true]),
 		query: {
 			enabled: !!address,
 		},
@@ -68,83 +68,61 @@ const LearnSteps = () => {
 
 	const { writeContract: claim, isPending: isPendingClaim } =
 		useWriteContract();
+
 	const { writeContract: setStudent, isPending: isPendingStudent } =
 		useWriteContract();
 
-	const { data: isStudent } = useReadContract({
-		...getYieldTokenConfig("getIsStudent", [address]),
+	const { data: claimSimulator } = useSimulateContract({
+		...getYieldTokenConfig("mintForStudent", [address, parseEther("0.5")]),
+		query: {
+			enabled: !!address,
+		},
 	});
 
 	const handleClaim = async () => {
 		try {
-			if (isStudent) {
-				if (claimSimulator?.request) {
-					claim(claimSimulator.request, {
-						onError(error) {
-							console.log(error);
-							if (error.message.includes("User rejected the request")) {
-								toast({
-									variant: "destructive",
-									title: "Transaction Rejected",
-									description: "You rejected the transaction",
-								});
-							}
-						},
-						onSuccess() {
-							queryClient.invalidateQueries();
+			if (setStudentSimulator?.request)
+				setStudent(setStudentSimulator.request, {
+					onError(error) {
+						console.log(error);
+						if (error.message.includes("User rejected the request")) {
 							toast({
-								title: "Claim Success",
-								description: "You have received 0.5 FYT tokens",
+								variant: "destructive",
+								title: "Transaction Rejected",
+								description: "You rejected the transaction",
 							});
-							handleRestart();
-						},
-					});
-				}
-			} else {
-				setStudent(
-					{
-						...getYieldTokenConfig("setStudentStatus", [address, true]),
-						address: getYieldTokenConfig("setStudentStatus", [address, true])
-							.address!,
+							return;
+						}
+						toast({
+							variant: "destructive",
+							title: "Transaction Rejected",
+							description: "Something went wrong",
+						});
 					},
-					{
-						onError(error) {
-							console.log(error);
-							if (error.message.includes("User rejected the request")) {
-								toast({
-									variant: "destructive",
-									title: "Transaction Rejected",
-									description: "You rejected the transaction",
-								});
-							}
-						},
-						onSuccess() {
-							if (claimSimulator?.request) {
-								claim(claimSimulator.request, {
-									onSuccess() {
-										queryClient.invalidateQueries();
+					onSuccess() {
+						if (claimSimulator?.request)
+							claim(claimSimulator.request, {
+								onSuccess() {
+									queryClient.invalidateQueries();
+									toast({
+										title: "Claim Success",
+										description: "You have received 0.5 FYT tokens",
+									});
+									handleRestart();
+								},
+								onError(error) {
+									console.log(error);
+									if (error.message.includes("User rejected the request")) {
 										toast({
-											title: "Claim Success",
-											description: "You have received 0.5 FYT tokens",
+											variant: "destructive",
+											title: "Transaction Rejected",
+											description: "You rejected the transaction",
 										});
-										handleRestart();
-									},
-									onError(error) {
-										console.log(error);
-										if (error.message.includes("User rejected the request")) {
-											toast({
-												variant: "destructive",
-												title: "Transaction Rejected",
-												description: "You rejected the transaction",
-											});
-										}
-									},
-								});
-							}
-						},
-					}
-				);
-			}
+									}
+								},
+							});
+					},
+				});
 		} catch (error) {
 			console.log(error);
 		}
@@ -152,6 +130,28 @@ const LearnSteps = () => {
 
 	return (
 		<TabsContent value="learn" className="space-y-4">
+			<Button
+				disabled={isPendingClaim || isPendingStudent || !isConnected}
+				type="button"
+				variant={"default"}
+				onClick={handleClaim}
+				className={cn(
+					"flex w-full disabled:bg-[#0E76FD80] bg-[#0E76FD] enabled:hover:bg-[#0E76FD80] active:bg-[#0E76FD] text-white border-none items-center gap-2"
+				)}
+			>
+				{!isConnected ? (
+					"Connect Your wallet to claim"
+				) : isPendingClaim || isPendingStudent ? (
+					<>
+						<div className="size-6 rounded-full animate-[spin_0.5s_linear_infinite] border-b-transparent border-[3px] border-white" />
+						{isPendingClaim
+							? "Claiming..."
+							: isPendingStudent && "Waiting for Approval..."}
+					</>
+				) : (
+					"	Claim Reward Tokens"
+				)}
+			</Button>
 			{!isComplete ? (
 				<>
 					<div className="mb-6">
