@@ -6,9 +6,6 @@ const nextConfig: NextConfig = {
 		config.externals.push("pino-pretty", "lokijs", "encoding");
 		return config;
 	},
-	outputFileTracingIncludes: {
-		artifacts: ["../artifacts"],
-	},
 };
 
 export default nextConfig;
