@@ -1,8 +1,8 @@
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
-import "hardhat-gas-reporter";
-import "solidity-coverage";
-import "@nomicfoundation/hardhat-verify";
+const { HardhatUserConfig } = require("hardhat/config");
+require("@nomicfoundation/hardhat-toolbox");
+require("hardhat-gas-reporter");
+require("solidity-coverage");
+require("@nomicfoundation/hardhat-verify");
 
 const { vars } = require("hardhat/config");
 const ACCOUNT_PRIVATE_KEY = vars.get("ACCOUNT_PRIVATE_KEY");
@@ -20,7 +20,7 @@ if (!ETHERSCAN_API_KEY) {
 	);
 }
 
-const config: HardhatUserConfig = {
+const config = {
 	gasReporter: {
 		enabled: false,
 		outputFile: "gas-report.txt",
@@ -43,18 +43,24 @@ const config: HardhatUserConfig = {
 	},
 
 	etherscan: {
-		apiKey: ETHERSCAN_API_KEY,
+		apiKey: {
+			"edu-testnet": ETHERSCAN_API_KEY,
+		},
 		customChains: [
 			{
 				chainId: 656476,
 				network: "edu-testnet",
 				urls: {
-					apiURL: "https://opencampus-codex.blockscout.com/api",
-					browserURL: "https://opencampus-codex.blockscout.com",
+					apiURL: "https://edu-chain-testnet.blockscout.com/api",
+					browserURL: "https://edu-chain-testnet.blockscout.com",
 				},
 			},
 		],
 	},
+
+	sourcify: {
+		enabled: false,
+	},
 };
 
-export default config;
+module.exports = config;

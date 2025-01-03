@@ -82,6 +82,11 @@ pnpm run dev
 YieldToken: `0x235a61846Cc52410948E37B1d426Cb82F41f940e`
 YieldPool: `0xCbe4C05520F526FEFd0e0FC133bfA24a033546B8`
 
+## 📝 Verified Contract URL
+
+[YieldToken](https://edu-chain-testnet.blockscout.com/address/0x235a61846Cc52410948E37B1d426Cb82F41f940e#code)
+[YieldPool](https://edu-chain-testnet.blockscout.com/address/0xCbe4C05520F526FEFd0e0FC133bfA24a033546B8#code)
+
 ## 🔍 Features
 
 - **Fixed Yield Generation**
