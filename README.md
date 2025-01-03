@@ -19,7 +19,7 @@ git clone https://github.com/Bruh-Codes/EDU-chain-hackathon.git
 cd EDU-chain-hackathon
 ```
 
-2. **Install dependencies for hardhat**
+1. **Install dependencies for hardhat**
 
 ```bash
 # Install root dependencies
@@ -30,7 +30,7 @@ cd frontend
 pnpm install
 ```
 
-3. **Set up environment variables**
+1. **Set up environment variables**
 
 ```bash
 cd .. # // from frontend
@@ -40,7 +40,7 @@ npx hardhat vars set ACCOUNT_PRIVATE_KEY
 # Enter your wallet's private key when prompted
 ```
 
-4. **Compile Smart Contracts**
+1. **Compile Smart Contracts**
 
 ```bash
 # In the root directory
@@ -50,7 +50,7 @@ npx hardhat compile
 npx hardhat deploy
 ```
 
-5. **Run Tests**
+1. **Run Tests**
 
 ```bash
 npx hardhat test
@@ -65,7 +65,7 @@ REPORT_GAS=true npx hardhat test
 npx hardhat coverage
 ```
 
-6. **Start Frontend Development Server**
+1. **Start Frontend Development Server**
 
 ```bash
 # In the frontend directory
@@ -74,7 +74,7 @@ pnpm install
 pnpm run dev
 ```
 
-7. **Access the Application**
+1. **Access the Application**
    Open `http://localhost:3000` in your browser
 
 ## 📝 Contract Addresses (EDU Testnet)
@@ -130,24 +130,33 @@ YieldPool: `0xCbe4C05520F526FEFd0e0FC133bfA24a033546B8`
 npx hardhat node
 ```
 
-2. **Deploy Contracts Locally**
+1. **Deploy Contracts Locally**
 
 ```bash
 npx hardhat ignition deploy ./ignition/modules/YieldPool.ts --['your network']
 ```
 
-3. **Configure Frontend**
+1. **Configure Frontend**
 
 - Update contract addresses in `frontend/lib/utils.ts`
 - Ensure your wallet is connected to localhost network or your preferred network.
 
-4. **Handling Metamask Errors**
+1. **Handling Metamask Errors**
    Metamask currently has a bug so sometimes transactions will fail in cases like minting and switching addresses. This is because metamask tracks blocks which is not in sync with the local network and will sometimes throw errors like Internal JSON-RPC Error. to fix these errors
+
+1. **Handling Connection Errors**
+   sometimes connections to your metamask will not be detected. This is a reown library problem. to resolve this issue,
+
+- Click on your metamask
+- Click on the green dot on the top-right beside your options menu
+- Disconnect and try again connecting on th site.
 
 - Click on Metamask and go to settings
 - Click on Advanced
 - Click on Clear Activity Tab Data
 - Click on Clear
+
+NOTE: to switch your account address you must do that in you metamask wallet.
 
 ## 🤝 Contributing
 
