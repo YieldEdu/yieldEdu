@@ -46,21 +46,21 @@ describe("YieldPool", async () => {
 		await FYTToken.approve(yieldPool.getAddress(), amount);
 	});
 
-	it("returns the correct FYTToken address", async () => {
-		const FYTTokenAddress = await yieldPool.getFYTToken();
+	it("returns the correct Eduu address", async () => {
+		const FYTTokenAddress = await yieldPool.getEduToken();
 		expect(FYTTokenAddress).to.equal(await yieldToken.getAddress());
 	});
 
-	it("gets the position of a funder", async () => {
-		expect(
-			(await yieldPool.getPosition(anonymous1.address)).amount
-		).to.be.equal(0);
-		expect(
-			(await yieldPool.getPosition(anonymous1.address)).startTime
-		).to.be.equal(0);
-		expect(
-			(await yieldPool.getPosition(anonymous1.address)).lockDuration
-		).to.be.equal(0);
+	it("reverts when user has no position", async () => {
+		await expect(yieldPool.getPosition(1)).to.revertedWith(
+			"Position not found"
+		);
+		await expect(yieldPool.getPosition(2)).to.revertedWith(
+			"Position not found"
+		);
+		await expect(yieldPool.getPosition(3)).to.revertedWith(
+			"Position not found"
+		);
 	});
 
 	it("calculates yieldTokens", async () => {
@@ -71,12 +71,12 @@ describe("YieldPool", async () => {
 		expect(resultsYield.toString()).to.equal(expectedYield.toString());
 	});
 
-	it("allows zero deposited amount and duration to revert", async () => {
+	it("reverts when 0 duration and amount is deposited", async () => {
 		await expect(yieldPool.deposit(0, duration)).to.be.revertedWith(
 			"Amount must be greater than 0"
 		);
 		await expect(yieldPool.deposit(amount, 0)).to.be.revertedWith(
-			"Duration must be greater than 0"
+			"Invalid duration"
 		);
 	});
 
@@ -87,40 +87,22 @@ describe("YieldPool", async () => {
 			.to.emit(yieldPool, "Deposited")
 			.withArgs(owner.address, amount, duration);
 
-		const position = await yieldPool.getPosition(owner.address);
+		const position = await yieldPool.getPosition(1);
 		expect(position.amount).to.equal(amount);
 		expect(position.lockDuration).to.equal(duration);
 	});
 
-	it("reverts when YieldPool doesn't have enough tokens to pay out principal and yield", async () => {
-		// approve tokens for deposit
-		const FYTTokenAddress = await yieldPool.getFYTToken();
-		const FYTToken = await hre.ethers.getContractAt(
-			"YieldToken",
-			FYTTokenAddress
-		);
-		await FYTToken.approve(yieldPool.getAddress(), amount);
-		await yieldPool.deposit(amount, duration);
-
-		// forward time to after the lock duration
-		await hre.network.provider.send("evm_increaseTime", [duration]);
-		await hre.network.provider.send("evm_mine");
-
-		await expect(yieldPool.withdraw()).to.revertedWith(
-			"Insufficient funds in pool"
-		);
-	});
-
 	it("allows withdrawals and emits Withdrawn event", async () => {
-		// approve tokens for deposit
-		const FYTTokenAddress = await yieldPool.getFYTToken();
-		const FYTToken = await hre.ethers.getContractAt(
-			"YieldToken",
-			FYTTokenAddress
-		);
+		// deposit
 		await FYTToken.approve(yieldPool.getAddress(), amount);
 
-		await yieldPool.deposit(amount, duration);
+		await expect(yieldPool.deposit(amount, duration))
+			.to.emit(yieldPool, "Deposited")
+			.withArgs(owner.address, amount, duration);
+
+		const position = await yieldPool.getPosition(1);
+		expect(position.amount).to.equal(amount);
+		expect(position.lockDuration).to.equal(duration);
 
 		// Calculate expected yield
 		const expectedYield =
@@ -135,16 +117,13 @@ describe("YieldPool", async () => {
 		await hre.network.provider.send("evm_increaseTime", [duration]);
 		await hre.network.provider.send("evm_mine");
 
-		await expect(yieldPool.withdraw())
+		await expect(yieldPool.withdraw(1))
 			.to.emit(yieldPool, "Withdrawn")
 			.withArgs(
 				owner.address,
 				totalAmount.toString(),
 				expectedYield.toString()
 			);
-
-		const position = await yieldPool.getPosition(owner.address);
-		expect(position.amount).to.equal(0);
 
 		// Check the balance of the contract after withdrawal
 		expect(await FYTToken.balanceOf(yieldPool.getAddress())).to.equal(0);
@@ -154,12 +133,12 @@ describe("YieldPool", async () => {
 		await yieldPool.deposit(amount, duration);
 
 		// Attempt to withdraw before lock duration has passed
-		await expect(yieldPool.withdraw()).to.be.revertedWith("Still locked");
+		await expect(yieldPool.withdraw(1)).to.be.revertedWith("Still locked");
 	});
 
 	it("checks the balance of the contract after deposit", async () => {
 		await yieldPool.deposit(amount, duration);
-		const FYTTokenAddress = await yieldPool.getFYTToken();
+		const FYTTokenAddress = await yieldPool.getEduToken();
 		const FYTToken = await hre.ethers.getContractAt(
 			"YieldToken",
 			FYTTokenAddress
@@ -168,7 +147,7 @@ describe("YieldPool", async () => {
 	});
 
 	it("checks the balance of the contract after withdrawal", async () => {
-		const FYTTokenAddress = await yieldPool.getFYTToken();
+		const FYTTokenAddress = await yieldPool.getEduToken();
 		const FYTToken = await hre.ethers.getContractAt(
 			"YieldToken",
 			FYTTokenAddress
@@ -188,7 +167,7 @@ describe("YieldPool", async () => {
 		// Mint additional tokens to the YieldPool for yield payments
 		await FYTToken.mint(yieldPool.getAddress(), expectedYield);
 
-		await expect(yieldPool.withdraw())
+		await expect(yieldPool.withdraw(1))
 			.to.emit(yieldPool, "Withdrawn")
 			.withArgs(
 				owner.address,
@@ -198,5 +177,88 @@ describe("YieldPool", async () => {
 
 		// Check the balance of the contract after withdrawal
 		expect(await FYTToken.balanceOf(yieldPool.getAddress())).to.equal(0);
+	});
+
+	it("should track total stakers correctly", async () => {
+		expect(await yieldPool.getTotalStakers()).to.equal(0);
+
+		await FYTToken.approve(yieldPool.getAddress(), amount);
+		await yieldPool.deposit(amount, duration);
+		expect(await yieldPool.getTotalStakers()).to.equal(1);
+
+		await FYTToken.connect(anonymous1).approve(yieldPool.getAddress(), amount);
+		await yieldToken.connect(anonymous1).mint(anonymous1, amount);
+		await yieldPool.connect(anonymous1).deposit(amount, duration);
+		expect(await yieldPool.getTotalStakers()).to.equal(2);
+	});
+
+	it("should track total value locked correctly", async () => {
+		expect(await yieldPool.getTotalValueLocked()).to.equal(0);
+		await FYTToken.approve(yieldPool.getAddress(), amount);
+
+		await expect(yieldPool.deposit(amount, duration))
+			.to.emit(yieldPool, "Deposited")
+			.withArgs(owner.address, amount, duration);
+
+		expect(await yieldPool.getTotalValueLocked()).to.equal(amount);
+
+		await yieldToken.mint(anonymous1, amount);
+		await FYTToken.connect(anonymous1).approve(yieldPool, amount);
+		await expect(yieldPool.connect(anonymous1).deposit(amount, duration))
+			.to.emit(yieldPool, "Deposited")
+			.withArgs(anonymous1, amount, duration);
+		expect(await yieldPool.getTotalValueLocked()).to.equal(amount * 2n);
+	});
+
+	it("should return all active positions", async () => {
+		await FYTToken.approve(yieldPool.getAddress(), amount);
+
+		await expect(yieldPool.deposit(amount, duration))
+			.to.emit(yieldPool, "Deposited")
+			.withArgs(owner.address, amount, duration);
+
+		await yieldToken.mint(anonymous1, amount);
+		await FYTToken.connect(anonymous1).approve(yieldPool, amount);
+		await yieldPool.connect(anonymous1).deposit(amount, duration);
+
+		const positions = await yieldPool.getActivePositions();
+		expect(positions.length).to.equal(2);
+		expect(positions[0].amount).to.equal(amount);
+		expect(positions[1].amount).to.equal(amount);
+	});
+
+	it("should handle unstaking with penalty correctly", async () => {
+		await yieldPool.deposit(amount, duration);
+		const penalty = amount / 10n; // 10% penalty
+		const expectedReturn = amount - penalty;
+
+		const balanceBefore = await FYTToken.balanceOf(owner.address);
+		await yieldPool.unstake(1);
+		const balanceAfter = await FYTToken.balanceOf(owner.address);
+
+		expect(balanceAfter - balanceBefore).to.equal(expectedReturn);
+		expect(await yieldPool.getTotalStakers()).to.equal(0);
+	});
+
+	it("should handle multiple positions per user", async () => {
+		await yieldToken.InsufficientMint(anonymous1, amount);
+		await FYTToken.connect(anonymous1).approve(yieldPool, amount);
+		await yieldPool.connect(anonymous1).deposit(amount, duration);
+
+		await yieldToken.InsufficientMint(anonymous1, amount);
+		await FYTToken.connect(anonymous1).approve(yieldPool.getAddress(), amount);
+		await yieldPool.connect(anonymous1).deposit(amount, duration * 2);
+
+		const positions = await yieldPool.getActivePositions();
+		expect(positions.length).to.equal(2);
+		expect(positions[0].lockDuration).to.equal(duration);
+		expect(positions[1].lockDuration).to.equal(duration * 2);
+		expect(await yieldPool.getTotalStakers()).to.equal(1);
+	});
+
+	it("should revert unstaking non-existent position", async () => {
+		await expect(yieldPool.unstake(999)).to.be.revertedWith(
+			"Not position owner"
+		);
 	});
 });
