@@ -8,17 +8,10 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
-// export const YieldTokenAddress =
-// 	"0x18803150E6bce50B8A53aC33Dd2dE27a47e1e331" as unknown as undefined; //to resolve ts error on page/tsx
-// export const YieldPoolAddress =
-// 	"0xdE6EbF35A075BD95Ac98CFeb31dD47EE1E1849E8" as unknown as undefined;
-
-//localHost
-
 export const YieldTokenAddress =
-	"0xc6e7DF5E7b4f2A278906862b61205850344D4e7d" as unknown as undefined; //to resolve ts error on page/tsx
+	"0x235a61846Cc52410948E37B1d426Cb82F41f940e" as unknown as undefined; //to resolve ts error on page/tsx
 export const YieldPoolAddress =
-	"0x59b670e9fA9D0A427751Af201D676719a970857b" as unknown as undefined;
+	"0xCbe4C05520F526FEFd0e0FC133bfA24a033546B8" as unknown as undefined;
 
 export const getYieldPoolConfig = (functionName: string, args?: any[]) => {
 	return {

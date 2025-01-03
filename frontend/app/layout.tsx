@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Space_Mono } from "next/font/google";
 import "./globals.css";
 import WagmiContextProvider from "@/components/WagmiContextProvider";
-import { headers } from "next/headers"; // added
+import { headers } from "next/headers";
 import { Toaster } from "@/components/ui/toaster";
 
 const spaceMono = Space_Mono({

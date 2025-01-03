@@ -34,10 +34,10 @@ import {
 	getSortedRowModel,
 	Column,
 } from "@tanstack/react-table";
-import WithDraw from "./WithDraw";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { ActivePosition } from "@/app/page";
 import { useSearchParams } from "next/navigation";
+import CountDown from "./CountDown";
 
 interface ActivePositionTableProps {
 	positions: ActivePosition[];
@@ -237,7 +237,7 @@ export function ActivePositionTable({
 								>
 									Unstake
 								</Button>
-								<WithDraw
+								<CountDown
 									positionId={row.original.id}
 									setShowWithDrawModal={setShowWithDrawModal}
 									isConnected={isConnected}

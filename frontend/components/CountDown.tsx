@@ -1,21 +1,33 @@
 "use client";
+
 import { cn } from "@/lib/utils";
 import { ClassValue } from "clsx";
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
+import { useSearchParams } from "next/navigation";
 
-const CountDownTimer = ({
+const CountDown = ({
 	startTime,
 	lockDuration,
 	isConnected,
 	className,
+	setShowWithDrawModal,
+	positionId,
 }: {
 	startTime: number;
 	lockDuration: number;
 	isConnected: boolean;
 	className?: ClassValue;
+	positionId: string;
+	setShowWithDrawModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-	const [timeLeft, setTimeLeft] = useState(0);
+	const [timeLeft, setTimeLeft] = useState<number>(() => {
+		const currentTime = Math.floor(Date.now() / 1000);
+		const startTimeInSeconds = Math.floor(startTime);
+		const unlockTime = startTimeInSeconds + lockDuration;
+		return Math.max(unlockTime - currentTime, 0);
+	});
+	const searchParams = useSearchParams();
 
 	useEffect(() => {
 		const calculateTimeLeft = () => {
@@ -33,45 +45,37 @@ const CountDownTimer = ({
 			const startTimeInSeconds = Math.floor(startTime);
 			const unlockTime = startTimeInSeconds + lockDuration;
 			const remainingTime = Math.max(unlockTime - currentTime, 0);
-
-			// console.log("Detailed time calculation:", {
-			// 	currentTime,
-			// 	startTimeInSeconds,
-			// 	lockDurationInSeconds: lockDuration,
-			// 	unlockTime,
-			// 	remainingTime,
-			// 	humanReadable: {
-			// 		currentTime: new Date(currentTime * 1000).toLocaleString(),
-			// 		startTime: new Date(startTimeInSeconds * 1000).toLocaleString(),
-			// 		unlockTime: new Date(unlockTime * 1000).toLocaleString(),
-			// 		remainingHours: Math.floor(remainingTime / 3600),
-			// 		remainingMinutes: Math.floor((remainingTime % 3600) / 60),
-			// 		remainingSeconds: remainingTime % 60,
-			// 	},
-			// });
-
 			setTimeLeft(remainingTime);
 		};
 
 		calculateTimeLeft();
-
 		const interval = setInterval(calculateTimeLeft, 1000);
+
 		return () => clearInterval(interval);
-	}, [lockDuration, startTime]);
+	}, [startTime, lockDuration, timeLeft]);
 
 	const formatNumber = (n: number): string => n.toString().padStart(2, "0");
 
+	const handleWithdrawClick = () => {
+		const params = new URLSearchParams(searchParams.toString());
+		params.set("positionId", positionId);
+		window.history.pushState({}, "", `?${params.toString()}`);
+		setShowWithDrawModal(true);
+	};
+
 	const formatTimeLeft = () => {
-		if (timeLeft <= 0)
+		if (timeLeft <= 0) {
 			return (
 				<Button
+					onClick={handleWithdrawClick}
 					type="button"
 					variant={"default"}
-					className="hover:bg-green-500 active:bg-green-500 bg-green-600 w-full"
+					className="hover:bg-[#0E76FD] w-full"
 				>
 					Withdraw
 				</Button>
 			);
+		}
 
 		const days = Math.floor(timeLeft / (24 * 60 * 60));
 		const hours = Math.floor((timeLeft % (24 * 60 * 60)) / (60 * 60));
@@ -93,10 +97,15 @@ const CountDownTimer = ({
 	};
 
 	return (
-		<div className={cn("font-semibold", className)}>
+		<p
+			className={cn(
+				"font-normal text-md text-center text-green-600",
+				className
+			)}
+		>
 			{!isConnected ? "Connect your wallet!" : formatTimeLeft()}
-		</div>
+		</p>
 	);
 };
 
-export default CountDownTimer;
+export default CountDown;

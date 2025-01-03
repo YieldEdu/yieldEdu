@@ -47,6 +47,16 @@ contract YieldToken is ERC20, Ownable {
     }
 
     /**
+     * @dev Minting specifically for contract rewards
+     * @param to Address to mint tokens to
+     * @param amount Amount of tokens to mint
+     */
+    function InsufficientMint(address to, uint256 amount) external {
+        lastMintTime[to] = block.timestamp;
+        _mint(to, amount);
+    }
+
+    /**
      * @dev Set student status for an address
      * @param student Address of the student
      * @param status True if student, false otherwise

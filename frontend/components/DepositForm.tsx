@@ -28,9 +28,11 @@ import LearnSteps from "./LearnSteps";
 const DepositForm = ({
 	showModal,
 	setShowModal,
+	balance,
 }: {
 	showModal: boolean;
 	setShowModal: Dispatch<SetStateAction<boolean>>;
+	balance: string | undefined;
 }) => {
 	const [amount, setAmount] = useState("");
 	const [duration, setDuration] = useState("1");
@@ -117,6 +119,15 @@ const DepositForm = ({
 		}
 
 		if (!validateInput()) {
+			return;
+		}
+
+		if (Number(balance) < Number(amount)) {
+			toast({
+				variant: "destructive",
+				title: "Transaction Rejected",
+				description: "You don't have enough FYT tokens for the transaction",
+			});
 			return;
 		}
 

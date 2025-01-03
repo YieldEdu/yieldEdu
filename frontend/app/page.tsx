@@ -34,13 +34,12 @@ export interface ActivePosition {
 
 const FixedYieldDashboard = () => {
 	const { isConnected, address } = useAppKitAccount();
-	const [showModal, setShowModal] = useState(false);
 	const [modalType, setModalType] = useState<"withdraw" | "unstake">(
 		"withdraw"
 	);
 	const [showWithdrawModal, setShowWithDrawModal] = useState(false);
 	const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
-
+	const [showModal, setShowModal] = useState(false);
 	const results = useBalance({
 		address: address as unknown as `0x${string}`,
 		token: YieldTokenAddress,
@@ -92,7 +91,7 @@ const FixedYieldDashboard = () => {
 						id: positionData.id,
 						positionAddress: positionData.positionAddress,
 						amount: Number(formatEther(BigInt(positionData.amount))),
-						lockDuration: lockDurationInSeconds, // Store raw seconds
+						lockDuration: lockDurationInSeconds,
 						startTime: startTimeInSeconds,
 						timeLeft: Math.ceil(lockDurationInSeconds / (24 * 60 * 60)), // Convert to days for display
 						expectedYield: parseFloat(
@@ -214,7 +213,11 @@ const FixedYieldDashboard = () => {
 						</div>
 
 						<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
-							<DepositForm showModal={showModal} setShowModal={setShowModal} />
+							<DepositForm
+								setShowModal={setShowModal}
+								showModal={showModal}
+								balance={results?.data?.formatted}
+							/>
 							<Card className="md:col-span-2 bg-[#1A1B1F] border-none text-white">
 								<Tabs className="flex flex-col h-full" defaultValue="overview">
 									<CardHeader>
@@ -306,6 +309,8 @@ const FixedYieldDashboard = () => {
 																Your position will be available for withdrawal
 																in{" "}
 																<CountDownTimer
+																	positionId={userPosition.id}
+																	setShowWithDrawModal={setShowWithDrawModal}
 																	className="text-[#0E76FD]"
 																	isConnected={isConnected}
 																	lockDuration={Number(

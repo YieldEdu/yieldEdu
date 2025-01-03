@@ -3,7 +3,8 @@
 	"version": "1.0.0",
 	"scripts": {
 		"test": "pnpm hardhat test",
-		"coverage": "pnpm hardhat coverage"
+		"coverage": "pnpm hardhat coverage",
+		"deploy": "npx hardhat ignition deploy ./ignition/modules/YieldPool.ts"
 	},
 	"author": "Kamasah Dickson",
 	"license": "ISC",

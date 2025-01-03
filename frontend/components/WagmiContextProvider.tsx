@@ -1,6 +1,6 @@
 "use client";
 
-import { wagmiAdapter, projectId, eduTestnet, localHost } from "@/lib/wagmi";
+import { wagmiAdapter, projectId, eduTestnet } from "@/lib/wagmi";
 import { createAppKit } from "@reown/appkit/react";
 import { cookieToInitialState, WagmiProvider, type Config } from "wagmi";
 // import { arbitrum } from "@reown/appkit/networks";
@@ -24,8 +24,8 @@ const clientFromReactQuery = new QueryClient({
 const metadata = {
 	name: "YieldStake",
 	description:
-		"A decentralized fixed-yield protocol that earns users guaranteed yields on their EDU tokens.",
-	url: "https://edu-chain-hackathon.vercel.app/", // origin must match your domain & subdomain
+		"A decentralized education and a fixed-yield protocol that earns users guaranteed yields on their EDU tokens.",
+	url: "https://edu-chain-hackathon.vercel.app/",
 	icons: ["https://avatars.githubusercontent.com/u/179229932"],
 };
 
@@ -33,7 +33,7 @@ const metadata = {
 createAppKit({
 	adapters: [wagmiAdapter],
 	projectId,
-	networks: [eduTestnet, localHost],
+	networks: [eduTestnet],
 	defaultNetwork: eduTestnet,
 	metadata,
 	features: {

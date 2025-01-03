@@ -58,12 +58,6 @@ contract YieldPool is ReentrancyGuard {
         return _yieldToken;
     }
 
-    function getPositions(
-        address user
-    ) external view returns (Position[] memory) {
-        return _positions[user];
-    }
-
     function getPosition(
         uint256 positionId
     ) external view returns (Position memory) {
@@ -91,7 +85,7 @@ contract YieldPool is ReentrancyGuard {
         returns (Position[] memory positions)
     {
         uint256 totalPositions = 0;
-        // counting active non-withdrawn positions
+        // count active non-withdrawn positions
         for (uint i = 0; i < _activeStakers.length; i++) {
             Position[] memory userPositions = _positions[_activeStakers[i]];
             for (uint j = 0; j < userPositions.length; j++) {
@@ -166,14 +160,13 @@ contract YieldPool is ReentrancyGuard {
     }
 
     /**
-     * @notice Withdraws tokens from the yield pool.
+     * @notice withdraw tokens from the yield pool.
      */
     function withdraw(uint256 positionId) external nonReentrant {
         require(
             _positionOwners[positionId] == msg.sender,
             "Not position owner"
         );
-
         Position[] storage userPositions = _positions[msg.sender];
         uint256 positionIndex;
         bool found;
@@ -189,6 +182,7 @@ contract YieldPool is ReentrancyGuard {
         require(found, "Position not found");
         Position storage position = userPositions[positionIndex];
         require(!position.withdrawn, "Already withdrawn");
+
         require(
             block.timestamp >= position.startTime + position.lockDuration,
             "Still locked"
@@ -201,21 +195,46 @@ contract YieldPool is ReentrancyGuard {
             totalAmount = position.amount + yieldAmount;
         }
 
-        require(
-            _eduToken.balanceOf(address(this)) >= totalAmount,
-            "Insufficient funds in pool"
-        );
+        // Check if there are enough tokens in the pool
+        uint256 poolBalance = _eduToken.balanceOf(address(this));
+        if (poolBalance < totalAmount) {
+            // Calculate how much we can pay from pool and how much to mint
+            uint256 amountToMint = totalAmount - poolBalance;
 
-        // Update the TVL before transfer
+            // First we transfer whatever is available in the pool
+            if (poolBalance > 0) {
+                require(
+                    _eduToken.transfer(msg.sender, poolBalance),
+                    "Pool transfer failed"
+                );
+            }
+
+            // Then mint the remaining amount as yield tokens
+            _yieldToken.InsufficientMint(msg.sender, amountToMint);
+        } else {
+            // If enough tokens in pool, transfer normally
+            require(
+                _eduToken.transfer(msg.sender, totalAmount),
+                "Transfer failed"
+            );
+        }
+
         unchecked {
             _totalValueLocked -= position.amount;
         }
 
-        position.withdrawn = true;
+        // Remove position by swapping with last element and popping
+        uint256 lastPositionIndex = userPositions.length - 1;
+        if (positionIndex != lastPositionIndex) {
+            userPositions[positionIndex] = userPositions[lastPositionIndex];
+        }
+        userPositions.pop();
+
+        delete _positionOwners[positionId];
         _activePositionsCount[msg.sender]--;
 
-        // Only remove from active stakers if all positions are withdrawn
-        if (_activePositionsCount[msg.sender] == 0) {
+        // Only remove from active stakers if no positions left
+        if (userPositions.length == 0) {
             uint256 lastIndex = _activeStakers.length - 1;
             address lastStaker = _activeStakers[lastIndex];
 
@@ -228,8 +247,6 @@ contract YieldPool is ReentrancyGuard {
             _activeStakers.pop();
             _totalStakers--;
         }
-
-        _eduToken.transfer(msg.sender, totalAmount);
 
         emit Withdrawn(msg.sender, totalAmount, yieldAmount);
     }
@@ -261,7 +278,7 @@ contract YieldPool is ReentrancyGuard {
 
         uint256 amountToReturn = position.amount;
 
-        // Apply 10% penalty if unstaking before lock duration
+        // 10% penalty if unstaking before lock duration
         if (block.timestamp < position.startTime + position.lockDuration) {
             uint256 penalty = position.amount / 10; // 10% penalty
             amountToReturn = position.amount - penalty;
@@ -276,7 +293,7 @@ contract YieldPool is ReentrancyGuard {
             _totalValueLocked -= position.amount;
         }
 
-        // Remove position by swapping with last element and popping
+        // Remove position by swapping with last element and pop
         uint256 lastPositionIndex = userPositions.length - 1;
         if (positionIndex != lastPositionIndex) {
             userPositions[positionIndex] = userPositions[lastPositionIndex];
@@ -286,7 +303,7 @@ contract YieldPool is ReentrancyGuard {
         delete _positionOwners[positionId];
         _activePositionsCount[msg.sender]--;
 
-        // Only remove from active stakers if no positions left
+        // remove from active stakers if no positions is left
         if (userPositions.length == 0) {
             uint256 lastIndex = _activeStakers.length - 1;
             address lastStaker = _activeStakers[lastIndex];
@@ -324,12 +341,5 @@ contract YieldPool is ReentrancyGuard {
                 (position.amount * position.lockDuration * YIELD_RATE) /
                 (YEAR * 100);
         }
-    }
-
-    // get user's active positions count
-    function getUserActivePositionsCount(
-        address user
-    ) external view returns (uint256) {
-        return _activePositionsCount[user];
     }
 }

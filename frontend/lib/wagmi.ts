@@ -31,26 +31,8 @@ export const eduTestnet = defineChain({
 		},
 	},
 });
-export const localHost = defineChain({
-	id: 31337,
-	name: "Localhost",
-	chainNamespace: "eip155",
-	caipNetworkId: "eip155:31337",
-	nativeCurrency: {
-		name: "LocalHost",
-		symbol: "LH",
-		decimals: 18,
-	},
 
-	testnet: true,
-	rpcUrls: {
-		default: {
-			http: ["http://127.0.0.1:8545/"],
-		},
-	},
-});
-
-export const networks = [eduTestnet, localHost];
+export const networks = [eduTestnet];
 
 //Set up the Wagmi Adapter (Config)
 export const wagmiAdapter = new WagmiAdapter({

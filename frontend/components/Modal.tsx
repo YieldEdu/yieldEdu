@@ -18,10 +18,10 @@ const Modal = ({
 		<Dialog modal={true} open={showModal} onOpenChange={setShowModal}>
 			<DialogContent className="m-2">
 				<DialogHeader>
-					<DialogTitle>Insufficient Native Tokens</DialogTitle>
+					<DialogTitle>Insufficient Tokens</DialogTitle>
 					<DialogDescription className="space-y-4 pt-3">
 						<p>
-							You need native tokens (FYT) for interaction.{" "}
+							You need (FYT) tokens for interaction.{" "}
 							<span className="text-green-600">
 								Click on the Get Test Tokens button{" "}
 							</span>{" "}

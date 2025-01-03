@@ -31,6 +31,7 @@ const Analytics = ({ positions }: AnalyticsProps) => {
 		date: new Date(Number(position.startTime) * 1000).toISOString(),
 		amount: position.amount,
 		isUser: position.positionAddress?.toLowerCase() === address?.toLowerCase(),
+		fill: position.positionAddress === address ? "#22c55e" : "#0E76FD",
 	}));
 
 	if (!positions || positions.length === 0) {
@@ -90,12 +91,7 @@ const Analytics = ({ positions }: AnalyticsProps) => {
 								/>
 							}
 						/>
-						<Bar
-							fill={
-								chartData.find((user) => user.isUser) ? "#22c55e" : "#0E76FD"
-							}
-							dataKey={activeChart}
-						/>
+						<Bar dataKey={activeChart} />
 					</BarChart>
 				</ChartContainer>
 			</CardContent>
