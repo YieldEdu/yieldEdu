@@ -130,28 +130,6 @@ const LearnSteps = () => {
 
 	return (
 		<TabsContent value="learn" className="space-y-4">
-			<Button
-				disabled={isPendingClaim || isPendingStudent || !isConnected}
-				type="button"
-				variant={"default"}
-				onClick={handleClaim}
-				className={cn(
-					"flex w-full disabled:bg-[#0E76FD80] bg-[#0E76FD] enabled:hover:bg-[#0E76FD80] active:bg-[#0E76FD] text-white border-none items-center gap-2"
-				)}
-			>
-				{!isConnected ? (
-					"Connect Your wallet to claim"
-				) : isPendingClaim || isPendingStudent ? (
-					<>
-						<div className="size-6 rounded-full animate-[spin_0.5s_linear_infinite] border-b-transparent border-[3px] border-white" />
-						{isPendingClaim
-							? "Claiming..."
-							: isPendingStudent && "Waiting for Approval..."}
-					</>
-				) : (
-					"	Claim Reward Tokens"
-				)}
-			</Button>
 			{!isComplete ? (
 				<>
 					<div className="mb-6">
