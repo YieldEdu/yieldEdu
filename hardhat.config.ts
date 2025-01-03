@@ -1,6 +1,5 @@
 const { HardhatUserConfig } = require("hardhat/config");
 require("@nomicfoundation/hardhat-toolbox");
-require("hardhat-gas-reporter");
 require("solidity-coverage");
 require("@nomicfoundation/hardhat-verify");
 

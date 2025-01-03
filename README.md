@@ -61,7 +61,7 @@ npx hardhat test
 
 REPORT_GAS=true npx hardhat test
 
-# Run coverage
+# Run coverage to see test coverages
 npx hardhat coverage
 ```
 
