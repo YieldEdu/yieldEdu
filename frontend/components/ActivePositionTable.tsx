@@ -37,7 +37,7 @@ import {
 import { useAppKitAccount } from "@reown/appkit/react";
 import { ActivePosition } from "@/app/page";
 import { useSearchParams } from "next/navigation";
-import CountDown from "./CountDown";
+import CountDownTimer from "./CountDownTimer";
 
 interface ActivePositionTableProps {
 	positions: ActivePosition[];
@@ -103,10 +103,6 @@ export function ActivePositionTable({
 	const { isConnected, address } = useAppKitAccount();
 	const searchParams = useSearchParams();
 
-	const latestPosition = positions.filter(
-		(position) => position.positionAddress === address
-	);
-
 	const handleUnstake = (positionId: string) => {
 		setModalType("unstake");
 		const params = new URLSearchParams(searchParams.toString());
@@ -114,10 +110,6 @@ export function ActivePositionTable({
 		window.history.pushState({}, "", `?${params.toString()}`);
 		setShowWithDrawModal(true);
 	};
-	//get latest position
-	const userPosition = latestPosition.reduce((latest, current) => {
-		return current.startTime > latest.startTime ? current : latest;
-	}, latestPosition[0]);
 
 	const columns: ColumnDef<
 		ActivePosition,
@@ -237,12 +229,13 @@ export function ActivePositionTable({
 								>
 									Unstake
 								</Button>
-								<CountDown
+								<CountDownTimer
 									positionId={row.original.id}
 									setShowWithDrawModal={setShowWithDrawModal}
+									className="text-[#0E76FD]"
 									isConnected={isConnected}
-									lockDuration={Number(userPosition.lockDuration)}
-									startTime={userPosition.startTime}
+									lockDuration={Number(row.original.lockDuration)}
+									startTime={Number(row.original.startTime)}
 								/>
 							</DropdownMenuContent>
 						)}

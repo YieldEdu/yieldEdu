@@ -14,7 +14,7 @@ import ConnectButton from "@/components/ui/ConnectButton";
 import { useBalance, useReadContract } from "wagmi";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { cn, getYieldPoolConfig, YieldTokenAddress } from "@/lib/utils";
-import CountDownTimer from "@/components/CountDown";
+import CountDownTimer from "@/components/CountDownTimer";
 import { formatEther } from "viem";
 import { useState, useEffect } from "react";
 import FaucetButton from "@/components/ui/FaucetButton";
