@@ -2,6 +2,8 @@
 
 A decentralized fixed-yield protocol built on EDU Chain that enables users to earn guaranteed yields through staking and participating in educational activities. Stack your knowledge with your tokens - learn, earn, and earn FYT tokens on your EDU holdings through staking rewards and educational achievements.
 
+![EDU](https://github.com/user-attachments/assets/6e7cd216-f018-4f28-8485-1ab3669e9927)
+
 ## 🔧 Prerequisites
 
 - Node.js v18+
