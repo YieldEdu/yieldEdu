@@ -21,31 +21,90 @@ contract YieldTokenV2 is
     // Track last mint time for each address
     mapping(address => uint256) public lastMintTime;
     mapping(address => bool) public isStudent;
+    mapping(address => bool) public isMinter;
+    address[] minters;
     // Add student status tracking
     uint256 public constant MINT_COOLDOWN = 1 days;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
+    event MinterSet(address account, bool status);
+    // Event for tracking mints
+    event TokensMinted(
+        address indexed to,
+        uint256 amount,
+        address indexed minter
+    );
+
+    // Custom error for unauthorized minting
+    error UnauthorizedMinter(address caller);
+    error ZeroAddressMint();
+
     constructor() {
         _disableInitializers();
     }
 
     function initialize(
         string memory _name,
-        string memory _symbol
+        string memory _symbol,
+        address _adminOwner
     ) public initializer {
         __ERC20_init(_name, _symbol);
-        __Ownable_init(msg.sender);
+        __Ownable_init(_adminOwner);
         __ReentrancyGuard_init();
         __UUPSUpgradeable_init();
     }
 
+    function setMinter(address account, bool status) external onlyOwner {
+        isMinter[account] = status;
+        minters.push(account);
+        emit MinterSet(account, status);
+    }
+
+    function removeMinter(address account) public onlyOwner {
+        require(account != address(0), "Invalid address");
+        require(isMinter[account], "Address is not a minter");
+
+        // delete instead of setting to false
+        delete isMinter[account];
+
+        // Remove from array
+        for (uint256 i = 0; i < minters.length; i++) {
+            if (minters[i] == account) {
+                minters[i] = minters[minters.length - 1];
+                minters.pop();
+                break;
+            }
+        }
+
+        emit MinterSet(account, false);
+    }
+
+    function getMinters() public view onlyOwner returns (address[] memory) {
+        return minters;
+    }
+
     /**
-     * @dev Regular minting with cooldown period
-     * @param to Address to mint tokens to
+     * @notice Mints new tokens to a specified address
+     * @dev Only owner or approved minters can call this function
+     * @param to Address to receive the minted tokens
      * @param amount Amount of tokens to mint
      */
-    function mint(address to, uint256 amount) public onlyOwner {
+    function mint(address to, uint256 amount) public {
+        // Check for zero address
+        if (to == address(0)) revert ZeroAddressMint();
+
+        // Check if caller is authorized to mint
+        if (msg.sender != owner() && !isMinter[msg.sender]) {
+            revert UnauthorizedMinter(msg.sender);
+        }
+
         _mint(to, amount);
+        emit TokensMinted(to, amount, msg.sender);
+    }
+
+    function mintToPool(address _yieldPoolAddress) public onlyOwner {
+        _mint(_yieldPoolAddress, 10_000_000 * 10 ** 18);
+        emit TokensMinted(_yieldPoolAddress, 10_000_000 * 10 ** 18, msg.sender);
     }
 
     /**

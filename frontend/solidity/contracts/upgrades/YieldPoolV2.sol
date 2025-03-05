@@ -18,24 +18,24 @@ contract YieldPoolV2 is
     using SafeERC20 for IERC20;
 
     // State variables that can be configured in initializer
-    uint256 public yieldRate;
-    uint256 public constant YEAR = 365 days;
-    uint256 public minDuration;
-    uint256 public maxDuration;
+    uint256 private yieldRate;
+    uint256 private constant YEAR = 365 days;
+    uint256 private minDuration;
+    uint256 private maxDuration;
 
     // State variables
-    YieldTokenV2 public yieldTokenV2;
-    uint256 public totalStakers;
-    uint256 public totalValueLocked;
+    YieldTokenV2 private yieldTokenV2;
+    uint256 private totalStakers;
+    uint256 private totalValueLocked;
     uint256 private nextPositionId;
 
-    address[] public allowedTokens;
-    address[] public activeStakers;
+    address[] allowedTokens;
+    address[] private activeStakers;
 
-    mapping(address => bool) public allowedTokensMap;
-    mapping(address => uint256) public activePositionsCount;
-    mapping(address => uint256) public stakerIndex;
-    mapping(address => mapping(address => uint256)) public userTokenBalance;
+    mapping(address => bool) private allowedTokensMap;
+    mapping(address => uint256) private activePositionsCount;
+    mapping(address => uint256) private stakerIndex;
+    mapping(address => mapping(address => uint256)) private userTokenBalance;
 
     struct Position {
         address positionAddress;
@@ -47,8 +47,8 @@ contract YieldPoolV2 is
         bool withdrawn;
     }
 
-    mapping(address => Position[]) public positions;
-    mapping(uint256 => address) public positionOwners;
+    mapping(address => Position[]) private positions;
+    mapping(uint256 => address) private positionOwners;
 
     // Events
     event Deposited(
@@ -100,9 +100,6 @@ contract YieldPoolV2 is
         allowedTokens.push(_yieldTokenV2Address);
         allowedTokensMap[_yieldTokenV2Address] = true;
         emit TokenAllowedStatusChanged(_yieldTokenV2Address, true);
-
-        // Initial mint of yield tokens to the pool
-        yieldTokenV2.mint(address(this), 10_000_000 * 10 ** 18); // 10 million tokens
     }
 
     /**
@@ -129,6 +126,30 @@ contract YieldPoolV2 is
 
     function getYieldToken() external view returns (YieldTokenV2) {
         return yieldTokenV2;
+    }
+
+    /**
+     * @return yieldRate the percentage yield users are going to earn.
+     */
+
+    function getYieldRate() public view returns (uint256) {
+        return yieldRate;
+    }
+
+    /**
+     * @return minDuration the min duration users can stake
+     */
+
+    function getMinStakeDuration() public view returns (uint256) {
+        return minDuration;
+    }
+
+    /**
+     * @return getMaxStakeDuration the max duration users can stake
+     */
+
+    function getMaxStakeDuration() public view returns (uint256) {
+        return maxDuration;
     }
 
     function getUserTokenBalances()
@@ -241,7 +262,28 @@ contract YieldPoolV2 is
      * @return allowedTokens The token addresses in the allowedTokens list.
      */
     function getAllowedTokens() public view returns (address[] memory) {
-        return allowedTokens;
+        uint256 count = 0;
+
+        // First count how many tokens are allowed
+        for (uint256 i = 0; i < allowedTokens.length; i++) {
+            if (allowedTokensMap[allowedTokens[i]]) {
+                count++;
+            }
+        }
+
+        // Create array with exact size needed
+        address[] memory activeTokens = new address[](count);
+        uint256 index = 0;
+
+        // Fill array with allowed tokens
+        for (uint256 i = 0; i < allowedTokens.length; i++) {
+            if (allowedTokensMap[allowedTokens[i]]) {
+                activeTokens[index] = allowedTokens[i];
+                index++;
+            }
+        }
+
+        return activeTokens;
     }
 
     /**
@@ -377,8 +419,11 @@ contract YieldPoolV2 is
      */
 
     function withdraw(uint256 positionId) external nonReentrant {
+        // First check if position exists and get owner
+        address positionOwner = positionOwners[positionId];
+        require(positionOwner != address(0), "Position does not exist");
         require(
-            positionOwners[positionId] == msg.sender,
+            positionOwner == msg.sender,
             "You are not the owner of this position"
         );
 
@@ -407,7 +452,6 @@ contract YieldPoolV2 is
             position.amount,
             position.lockDuration
         );
-        uint256 totalAmount = position.amount + yieldAmount;
 
         // Check if enough tokens are available in the contract
         uint256 tokenBalance = IERC20(token).balanceOf(address(this));
@@ -422,11 +466,12 @@ contract YieldPoolV2 is
         userTokenBalance[msg.sender][token] -= position.amount;
         position.withdrawn = true;
 
+        // Transfer yield
+        IERC20(token).safeTransfer(msg.sender, position.amount);
         // Transfer tokens last
-        IERC20(token).safeTransfer(msg.sender, totalAmount);
+        IERC20(token).safeTransfer(msg.sender, yieldAmount);
 
         // Clean up position data
-        delete positionOwners[positionId];
         activePositionsCount[msg.sender]--;
 
         // Only remove from active stakers if no active positions left
@@ -444,7 +489,10 @@ contract YieldPoolV2 is
             totalStakers--;
         }
 
-        emit Withdrawn(msg.sender, token, totalAmount, yieldAmount);
+        // Move this to the end of the function, after transfers
+        delete positionOwners[positionId];
+
+        emit Withdrawn(msg.sender, token, position.amount, yieldAmount);
     }
 
     /**
@@ -518,59 +566,14 @@ contract YieldPoolV2 is
         emit Withdrawn(msg.sender, token, amountToReturn, 0);
     }
 
-    function calculateYieldTokens(
-        uint256 amount,
-        uint256 duration
-    ) public view returns (uint256) {
-        // unchecked for gas optimization where overflow is impossible
-        unchecked {
-            return (amount * duration * yieldRate) / (YEAR * 100);
-        }
-    }
-
     function calculateExpectedYield(
         uint256 _amount,
         uint256 _lockDuration
     ) public view returns (uint256) {
+        // unchecked for gas optimization where overflow is impossible
         unchecked {
             return (_amount * _lockDuration * yieldRate) / (YEAR * 100);
         }
-    }
-
-    // Migration function to migrate positions from older version
-    function migratePosition(
-        address user,
-        address token,
-        uint256 amount,
-        uint256 startTime,
-        uint256 lockDuration
-    ) external onlyOwner {
-        require(isTokenAllowed(token), "Token not allowed");
-
-        // Create position
-        uint256 positionId = nextPositionId++;
-        Position memory newPosition = Position({
-            positionAddress: user,
-            token: token,
-            id: positionId,
-            amount: amount,
-            startTime: startTime,
-            lockDuration: lockDuration,
-            withdrawn: false
-        });
-
-        // Update state
-        if (positions[user].length == 0) {
-            stakerIndex[user] = activeStakers.length;
-            activeStakers.push(user);
-            totalStakers++;
-        }
-
-        positions[user].push(newPosition);
-        positionOwners[positionId] = user;
-        activePositionsCount[user]++;
-        totalValueLocked += amount;
-        userTokenBalance[user][token] += amount;
     }
 
     function _authorizeUpgrade(
