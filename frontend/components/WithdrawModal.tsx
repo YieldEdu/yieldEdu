@@ -1,11 +1,11 @@
 "use client";
 import { Dialog } from "@/components/ui/dialog";
 import { Dispatch, SetStateAction } from "react";
-import { ActivePosition } from "@/app/page";
 import { useSearchParams } from "next/navigation";
 
 import WithDrawScreen from "./WithDrawScreen";
 import UnstakeScreen from "./UnstakeScreen";
+import { ActivePosition } from "./PositionOverview";
 
 const WithdrawModal = ({
 	showWithdrawModal,

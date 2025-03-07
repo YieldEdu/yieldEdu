@@ -1,5 +1,11 @@
-"use client";
 import React, { Dispatch, SetStateAction, useState } from "react";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import {
 	Table,
 	TableBody,
@@ -7,14 +13,15 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/table";
+} from "./ui/table";
+// import { Badge } from "./ui/badge";
+
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import {
@@ -35,9 +42,10 @@ import {
 	Column,
 } from "@tanstack/react-table";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { ActivePosition } from "@/app/page";
 import { useSearchParams } from "next/navigation";
 import CountDownTimer from "./CountDownTimer";
+import { ActivePosition } from "./PositionOverview";
+import { Badge } from "./ui/badge";
 
 interface ActivePositionTableProps {
 	positions: ActivePosition[];
@@ -57,7 +65,7 @@ export function DataTableColumnHeader<TData, TValue>({
 	className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
 	if (!column.getCanSort()) {
-		return <div className={cn(className)}>{title}</div>;
+		return <div className={cn(className, "hover:bg-transparent")}>{title}</div>;
 	}
 
 	return (
@@ -67,7 +75,7 @@ export function DataTableColumnHeader<TData, TValue>({
 					<Button
 						variant="ghost"
 						size="sm"
-						className="-ml-3 h-8 data-[state=open]:bg-accent"
+						className="-ml-3 h-8 data-[state=open]:bg-lime-400/20 hover:bg-transparent"
 					>
 						<span>{title}</span>
 						{column.getIsSorted() === "desc" ? (
@@ -79,12 +87,18 @@ export function DataTableColumnHeader<TData, TValue>({
 						)}
 					</Button>
 				</DropdownMenuTrigger>
-				<DropdownMenuContent align="start">
-					<DropdownMenuItem onClick={() => column.toggleSorting(false)}>
+				<DropdownMenuContent align="start" className="dark:bg-slate-900">
+					<DropdownMenuItem
+						onClick={() => column.toggleSorting(false)}
+						className="cursor-pointer"
+					>
 						<ArrowUp className="h-3.5  w-3.5 text-muted-foreground/70" />
 						Asc
 					</DropdownMenuItem>
-					<DropdownMenuItem onClick={() => column.toggleSorting(true)}>
+					<DropdownMenuItem
+						onClick={() => column.toggleSorting(true)}
+						className="cursor-pointer"
+					>
 						<ArrowDown className="h-3.5 w-3.5 text-muted-foreground/70" />
 						Desc
 					</DropdownMenuItem>
@@ -94,11 +108,11 @@ export function DataTableColumnHeader<TData, TValue>({
 	);
 }
 
-export function ActivePositionTable({
+const ActivePositions = ({
 	positions,
 	setShowWithDrawModal,
 	setModalType,
-}: ActivePositionTableProps) {
+}: ActivePositionTableProps) => {
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const { isConnected, address } = useAppKitAccount();
 	const searchParams = useSearchParams();
@@ -118,6 +132,7 @@ export function ActivePositionTable({
 	>[] = [
 		{
 			accessorKey: "amount",
+			id: "amount",
 			header: ({ column }) => (
 				<DataTableColumnHeader column={column} title="Amount" />
 			),
@@ -130,6 +145,7 @@ export function ActivePositionTable({
 
 		{
 			accessorKey: "lockDuration",
+			id: "lockDuration",
 			header: ({ column }) => (
 				<DataTableColumnHeader column={column} title="LockDuration" />
 			),
@@ -145,8 +161,9 @@ export function ActivePositionTable({
 		},
 		{
 			accessorKey: "startTime",
+			id: "startTime",
 			header: ({ column }) => (
-				<DataTableColumnHeader column={column} title="StartTime" />
+				<DataTableColumnHeader column={column} title="Start Date" />
 			),
 			cell: ({ row }) => {
 				const startTimeUnix = row.getValue("startTime") as number;
@@ -164,8 +181,9 @@ export function ActivePositionTable({
 		},
 		{
 			accessorKey: "timeLeft",
+			id: "timeLeft",
 			header: ({ column }) => (
-				<DataTableColumnHeader column={column} title="Time Left" />
+				<DataTableColumnHeader column={column} title="End Date" />
 			),
 			cell: ({ row }) => {
 				const startTime = row.getValue("startTime") as number;
@@ -187,12 +205,38 @@ export function ActivePositionTable({
 		},
 		{
 			accessorKey: "expectedYield",
+			id: "expectedYield",
 			header: ({ column }) => (
 				<DataTableColumnHeader column={column} title="ExpectedYield" />
 			),
 			cell: ({ row }) => {
 				const expectedYield = row.getValue("expectedYield") as number;
-				return <div className="font-medium">{expectedYield.toFixed(8)}</div>;
+				return (
+					<div className="font-medium dark:text-yellow-400 text-lime-600">
+						{expectedYield.toFixed(8)}
+					</div>
+				);
+			},
+		},
+		{
+			accessorKey: "status",
+			id: "status",
+			header: ({ column }) => (
+				<DataTableColumnHeader column={column} title="Status" />
+			),
+			cell: ({ row }) => {
+				const status = row.getValue("status") as string;
+				return (
+					<Badge
+						className={
+							status === "Active"
+								? "bg-lime-100 dark:bg-lime-400/20 text-lime-600 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+								: "bg-yellow-100 dark:bg-yellow-400/20 text-yellow-600 dark:text-yellow-400 border-yellow-200 dark:border-yellow-400/30"
+						}
+					>
+						{status}
+					</Badge>
+				);
 			},
 		},
 		{
@@ -207,9 +251,12 @@ export function ActivePositionTable({
 					<DropdownMenu modal={false}>
 						{row.original.positionAddress === address ? (
 							<DropdownMenuTrigger asChild>
-								<Button variant="ghost" className="h-8 w-8 p-0">
+								<Button
+									variant="ghost"
+									className="h-8 w-8 p-0 group dark:hover:bg-slate-900 hover:bg-lime-500"
+								>
 									<span className="sr-only">Open menu</span>
-									<MoreHorizontal className="h-4 w-4" />
+									<MoreHorizontal className="h-4 w-4 group-hover:text-white" />
 								</Button>
 							</DropdownMenuTrigger>
 						) : (
@@ -218,21 +265,21 @@ export function ActivePositionTable({
 
 						{row.original.positionAddress === address && (
 							<DropdownMenuContent
-								className="bg-[#1A1B1F]  text-white"
+								className="border-slate-200  dark:border-slate-700 !bg-white dark:!bg-slate-900 flex flex-col gap-2 p-2 text-white"
 								align="end"
 							>
 								<Button
 									onClick={() => handleUnstake(row.original.id)}
 									type="button"
 									variant={"default"}
-									className="hover:bg-[#0E76FD] w-full"
+									className="bg-slate-800 text-white w-full dark:hover:bg-lime-400/30"
 								>
 									Unstake
 								</Button>
 								<CountDownTimer
 									positionId={row.original.id}
 									setShowWithDrawModal={setShowWithDrawModal}
-									className="text-[#0E76FD]"
+									className="text-lime-400"
 									isConnected={isConnected}
 									lockDuration={Number(row.original.lockDuration)}
 									startTime={Number(row.original.startTime)}
@@ -247,6 +294,7 @@ export function ActivePositionTable({
 
 	const table = useReactTable({
 		data: positions,
+		//
 		columns,
 		getPaginationRowModel: getPaginationRowModel(),
 		getCoreRowModel: getCoreRowModel(),
@@ -258,124 +306,79 @@ export function ActivePositionTable({
 	});
 
 	const sortedRows = table.getSortedRowModel().rows;
-	const currentPositionIndex = sortedRows.findIndex(
-		(row) => row.original.positionAddress === address
-	);
 
-	// console.log(currentPositionIndex);
 	return (
-		<Card className="mt-6 bg-transparent border-none text-white">
-			<CardContent className="px-0">
-				<CardHeader>
-					<CardTitle>All Active Positions</CardTitle>
-				</CardHeader>
-				<div className="rounded-md border border-white/20 w-full">
-					<Table>
-						<TableHeader>
-							{table.getHeaderGroups().map((headerGroup) => (
-								<TableRow className="hover:bg-transparent" key={headerGroup.id}>
-									{headerGroup.headers.map((header) => {
-										return (
-											<TableHead key={header.id}>
-												{header.isPlaceholder
-													? null
-													: flexRender(
-															header.column.columnDef.header,
-															header.getContext()
-													  )}
-											</TableHead>
-										);
-									})}
-								</TableRow>
-							))}
-						</TableHeader>
-						<TableBody>
-							{sortedRows?.length ? (
-								<>
-									{sortedRows.map((row) => (
-										<TableRow
-											key={row.id}
-											className={cn("", {
-												"bg-[#0E76FD80] hover:bg-[#0E76FD]":
-													row.original.positionAddress === address,
-											})}
-											data-state={row.getIsSelected() && "selected"}
-										>
-											{row.getVisibleCells().map((cell) => {
-												return (
+		<Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm">
+			<CardHeader>
+				<CardTitle className="text-slate-900 dark:text-white">
+					Active Positions
+				</CardTitle>
+				<CardDescription className="text-slate-500 dark:text-slate-400">
+					Your current staking positions and rewards
+				</CardDescription>
+			</CardHeader>
+			<CardContent>
+				<Table>
+					<TableHeader>
+						{table.getHeaderGroups().map((headerGroup) => (
+							<TableRow className="hover:bg-transparent" key={headerGroup.id}>
+								{headerGroup.headers.map((header) => {
+									return (
+										<TableHead key={header.id}>
+											{header.isPlaceholder
+												? null
+												: flexRender(
+														header.column.columnDef.header,
+														header.getContext()
+												  )}
+										</TableHead>
+									);
+								})}
+							</TableRow>
+						))}
+					</TableHeader>
+					<TableBody>
+						{sortedRows?.length ? (
+							<>
+								{sortedRows.map((row) => (
+									<TableRow
+										key={row.id}
+										className={cn("", {
+											"bg-lime-500/20":
+												row.original.positionAddress === address,
+										})}
+										data-state={row.getIsSelected() && "selected"}
+									>
+										{row.getVisibleCells().map((cell) => {
+											return (
+												<>
 													<TableCell key={cell.id}>
 														{flexRender(
 															cell.column.columnDef.cell,
 															cell.getContext()
 														)}
 													</TableCell>
-												);
-											})}
-										</TableRow>
-									))}
-									{currentPositionIndex >= 10 && (
-										<TableRow
-											key={sortedRows[currentPositionIndex].id}
-											className="bg-[#0E76FD] hover:bg-[#0E76FD80]"
-											data-state={
-												sortedRows[currentPositionIndex].getIsSelected() &&
-												"selected"
-											}
-										>
-											{sortedRows[currentPositionIndex]
-												.getVisibleCells()
-												.map((cell) => {
-													return (
-														<TableCell key={cell.id}>
-															{flexRender(
-																cell.column.columnDef.cell,
-																cell.getContext()
-															)}
-														</TableCell>
-													);
-												})}
-										</TableRow>
-									)}
-								</>
-							) : (
-								<TableRow>
-									<TableCell
-										colSpan={columns.length}
-										className="h-24 text-center"
-									>
-										No results.
-									</TableCell>
-								</TableRow>
-							)}
-						</TableBody>
-					</Table>
-				</div>
-
-				<div className="flex px-3 items-center justify-end space-x-2 py-4">
-					<Button
-						variant="default"
-						className={cn("text-white", {
-							"bg-[#0E76FD]": table.getCanPreviousPage(),
-						})}
-						size="sm"
-						onClick={() => table.previousPage()}
-						disabled={!table.getCanPreviousPage()}
-					>
-						Previous
-					</Button>
-					<Button
-						className={cn("text-white", {
-							"bg-[#0E76FD]": table.getCanNextPage(),
-						})}
-						variant="default"
-						size="sm"
-						onClick={() => table.nextPage()}
-						disabled={!table.getCanNextPage()}
-					>
-						Next
-					</Button>
-				</div>
+												</>
+											);
+										})}
+									</TableRow>
+								))}
+							</>
+						) : (
+							<TableRow>
+								<TableCell
+									colSpan={columns.length}
+									className="h-24 text-center"
+								>
+									No results.
+								</TableCell>
+							</TableRow>
+						)}
+					</TableBody>
+				</Table>
 			</CardContent>
 		</Card>
 	);
-}
+};
+
+export default ActivePositions;

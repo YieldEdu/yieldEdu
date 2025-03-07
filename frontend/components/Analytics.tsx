@@ -9,8 +9,8 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
-import { ActivePosition } from "@/app/page";
 import { useAppKitAccount } from "@reown/appkit/react";
+import { ActivePosition } from "./PositionOverview";
 
 interface AnalyticsProps {
 	positions: ActivePosition[];
@@ -36,7 +36,7 @@ const Analytics = ({ positions }: AnalyticsProps) => {
 
 	if (!positions || positions.length === 0) {
 		return (
-			<Card className="bg-zinc-800 border-none">
+			<Card className="bg-slate-100 dark:bg-slate-900/50 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500">
 				<CardContent className="px-2 sm:p-6 flex items-center justify-center h-[200px]">
 					<p className="text-slate-400">No data available</p>
 				</CardContent>

@@ -39,11 +39,14 @@ createAppKit({
 	features: {
 		analytics: true, // Optional - defaults to Cloud configuration
 		socials: false,
+		swaps: false,
+		onramp: false,
+		receive: true,
 	},
 	themeMode: "dark",
 	allWallets: "SHOW",
 	themeVariables: {
-		"--w3m-accent": "#0E76FD",
+		"--w3m-accent": "#00ff00",
 	},
 });
 
@@ -58,6 +61,7 @@ const WagmiContextProvider = ({
 		wagmiAdapter.wagmiConfig as Config,
 		cookies
 	);
+
 	return (
 		<>
 			<WagmiProvider

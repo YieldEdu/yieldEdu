@@ -5,6 +5,7 @@ import { ClassValue } from "clsx";
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { useSearchParams } from "next/navigation";
+import { Timer } from "lucide-react";
 
 const CountDownTimer = ({
 	startTime,
@@ -66,14 +67,20 @@ const CountDownTimer = ({
 	const formatTimeLeft = () => {
 		if (timeLeft <= 0) {
 			return (
-				<Button
-					onClick={handleWithdrawClick}
-					type="button"
-					variant={"default"}
-					className="hover:bg-[#0E76FD] w-full"
-				>
-					Withdraw
-				</Button>
+				<div className="flex items-center  text-lime-600 gap-3">
+					<Timer className="w-5 h-5" />
+					<p className="text-lime-600 font-medium text-lg">
+						Your position is available for withdrawal
+					</p>
+					<Button
+						onClick={handleWithdrawClick}
+						type="button"
+						variant={"default"}
+						className="w-fit bg-gradient-to-r from-lime-500 to-yellow-500 text-slate-800 font-semibold hover:opacity-90"
+					>
+						Withdraw
+					</Button>
+				</div>
 			);
 		}
 
@@ -93,7 +100,7 @@ const CountDownTimer = ({
 		if (minutes > 0) {
 			return `${minutes}m ${formatNumber(seconds)}s`;
 		}
-		return `${seconds}s`;
+		return `Your position will be available for withdrawal in ${seconds}s`;
 	};
 
 	return (
