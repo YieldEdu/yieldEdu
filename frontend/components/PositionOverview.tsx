@@ -11,6 +11,8 @@ import Analytics from "@/components/Analytics";
 import { formatEther } from "viem";
 import { getYieldPoolConfig } from "@/lib/utils";
 import { Button } from "./ui/button";
+import { getTransactions } from "@/utils/supabase/helpers";
+import { useQuery } from "@tanstack/react-query";
 
 export interface ActivePosition {
 	//string because of BigInt Values
@@ -23,17 +25,19 @@ export interface ActivePosition {
 	expectedYield: number;
 	status: "Active" | "Locked";
 	transactionHash?: string;
+	created_at?: string;
 }
 
 const PositionOverview = ({
 	positions,
 	setPositions,
+	setShowWithDrawModal,
 }: {
 	positions: [] | ActivePosition[];
 	setPositions: Dispatch<SetStateAction<[] | ActivePosition[]>>;
+	setShowWithDrawModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
 	const { isConnected, address } = useAppKitAccount();
-	const [, setShowWithDrawModal] = useState(false);
 	const [currentPositionIndex, setCurrentPositionIndex] = useState(0);
 
 	// Filter user positions first
@@ -77,19 +81,62 @@ const PositionOverview = ({
 			...getYieldPoolConfig("getActivePositions", []),
 		});
 
+	const { data: transactionsData } = useQuery({
+		queryKey: ["transactions"],
+		queryFn: async () => {
+			const { data, error } = await getTransactions();
+			if (error) {
+				console.error("Error fetching transactions:", error);
+				return [];
+			}
+
+			return data || [];
+		},
+	});
+
 	useEffect(() => {
 		if (activePositionsData) {
 			const stakers = activePositionsData.map(
 				(positionData: ActivePosition): ActivePosition => {
 					const startTimeInSeconds = Number(positionData.startTime);
 					const lockDurationInSeconds = Number(positionData.lockDuration);
-
-					// Convert BigInt values to numbers before calculation
 					const currentTime = Math.floor(Date.now() / 1000);
 					const timeLeft = Math.max(
 						startTimeInSeconds + lockDurationInSeconds - currentTime,
 						0
 					);
+
+					// Find matching transaction for this position
+					const matchingTransaction = transactionsData?.find((transaction) => {
+						// Convert blockchain timestamp to seconds
+						const positionStartTime = Number(positionData.startTime);
+						// Convert transaction created_at to seconds
+						const transactionTime = Math.floor(
+							new Date(transaction.created_at).getTime() / 1000
+						);
+
+						// More strict matching criteria
+						const isMatch =
+							// Check address match
+							transaction.owner.toLowerCase() ===
+								positionData.positionAddress?.toLowerCase() &&
+							// Check amount match
+							Number(positionData.amount) === Number(transaction.amount) &&
+							// Check lock duration match
+							(!transaction.lock_duration ||
+								Number(transaction.lock_duration) ===
+									Number(positionData.lockDuration)) &&
+							// Reduce time window to 30 seconds and ensure transaction is not already used
+							Math.abs(positionStartTime - transactionTime) < 30 &&
+							!transaction.used;
+
+						// Mark transaction as used if it matches
+						if (isMatch) {
+							transaction.used = true;
+						}
+
+						return isMatch;
+					});
 
 					return {
 						id: positionData.id,
@@ -99,12 +146,10 @@ const PositionOverview = ({
 						startTime: startTimeInSeconds,
 						timeLeft: Math.ceil(timeLeft / (24 * 60 * 60)), // Convert to days for display
 						expectedYield: parseFloat(
-							calculateYield(
-								positionData.amount,
-								lockDurationInSeconds // seconds for yield calculation
-							)
+							calculateYield(positionData.amount, lockDurationInSeconds)
 						),
 						status: timeLeft > 0 ? "Locked" : "Active",
+						transactionHash: matchingTransaction?.transaction_hash,
 					};
 				}
 			);
@@ -113,7 +158,7 @@ const PositionOverview = ({
 				setPositions(stakers);
 			}
 		}
-	}, [activePositionsData, address, setPositions]);
+	}, [activePositionsData, setPositions, transactionsData]);
 
 	return (
 		<Card className="bg-white md:col-span-2 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm">
@@ -130,7 +175,7 @@ const PositionOverview = ({
 				<CardContent>
 					<TabsContent value="overview">
 						<div className="space-y-6 h-full">
-							<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+							<div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-4">
 								<div className="bg-slate-100 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500">
 									<p className="text-md text-slate-400">Deposited</p>
 									<p className="text-xl font-bold">
@@ -148,15 +193,27 @@ const PositionOverview = ({
 									</p>
 								</div>
 								<div className="bg-slate-100 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500">
-									<p className="text-md text-slate-400">Time Left</p>
+									<p className="text-md text-slate-400">Lock Duration</p>
 									<p className="text-xl font-bold">
-										{userPosition?.lockDuration
+										{userPosition?.lockDuration !== undefined
 											? `${Math.floor(
 													Number(userPosition.lockDuration) / (60 * 60 * 24)
 											  )} ${
-													Number(userPosition.lockDuration) / (60 * 60 * 24) > 1
-														? "days"
-														: "day"
+													Math.floor(
+														Number(userPosition.lockDuration) / (60 * 60 * 24)
+													) === 1
+														? "day"
+														: "days"
+											  }`
+											: "N/A"}
+									</p>
+								</div>
+								<div className="bg-slate-100 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500">
+									<p className="text-md text-slate-400">Time Left</p>
+									<p className="text-xl font-bold">
+										{userPosition?.timeLeft !== undefined
+											? `${userPosition.timeLeft} ${
+													userPosition.timeLeft === 1 ? "day" : "days"
 											  }`
 											: "N/A"}
 									</p>
@@ -174,7 +231,7 @@ const PositionOverview = ({
 									>
 										Previous Position
 									</Button>
-									<span className="text-green-400">
+									<span className="text-lime-600 font-semibold dark:text-green-400">
 										Position {currentPositionIndex + 1} of{" "}
 										{userPositions.length}
 									</span>
@@ -193,20 +250,20 @@ const PositionOverview = ({
 							<Alert className="bg-lime-500/20 border border-lime-500/20">
 								<AlertDescription>
 									{!isConnected ? (
-										"Connect your wallet and make a deposit to see this info"
+										"Connect your wallet to see this info"
 									) : userPositions.length > 0 ? (
 										<>
 											<CountDownTimer
+												transaction_hash={userPosition?.transactionHash}
 												positionId={userPosition.id}
 												setShowWithDrawModal={setShowWithDrawModal}
-												className="text-[#0E76FD]"
 												isConnected={isConnected}
 												lockDuration={Number(userPosition?.lockDuration)}
 												startTime={Number(userPosition?.startTime)}
 											/>
 										</>
 									) : (
-										"Stake to see this info"
+										"You have no active positions. Stake to see this info"
 									)}
 								</AlertDescription>
 							</Alert>

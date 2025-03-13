@@ -22,7 +22,7 @@ const clientFromReactQuery = new QueryClient({
 });
 
 const metadata = {
-	name: "YieldStake",
+	name: "YieldEdu",
 	description:
 		"A decentralized education and a fixed-yield protocol that earns users guaranteed yields on their EDU tokens.",
 	url: "https://edu-chain-hackathon.vercel.app/",

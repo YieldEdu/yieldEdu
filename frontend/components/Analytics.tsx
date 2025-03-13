@@ -45,11 +45,11 @@ const Analytics = ({ positions }: AnalyticsProps) => {
 	}
 
 	return (
-		<Card className="bg-zinc-800 border-none">
+		<Card className="bg-slate-200 dark:bg-slate-800/50 border-none">
 			<CardContent className="px-2 sm:p-6">
 				<ChartContainer
 					config={chartConfig}
-					className="aspect-auto h-[200px] w-full"
+					className="aspect-auto h-[300px] w-full"
 				>
 					<BarChart
 						accessibilityLayer
@@ -77,7 +77,7 @@ const Analytics = ({ positions }: AnalyticsProps) => {
 						<ChartTooltip
 							content={
 								<ChartTooltipContent
-									className="w-[150px] bg-zinc-900 border-zinc-800 text-white"
+									className="w-[150px] bg-slate-200 dark:bg-slate-800/95 border-zinc-800 dark:text-white text-slate-900"
 									nameKey="amount"
 									labelFormatter={(value) => {
 										const date = new Date(value).toLocaleDateString("en-US", {
@@ -86,10 +86,11 @@ const Analytics = ({ positions }: AnalyticsProps) => {
 											year: "numeric",
 										});
 										const dataPoint = chartData.find((d) => d.date === value);
-										return `${date}${dataPoint?.isUser ? " (You)" : ""}`;
+										return `Date: ${date}${dataPoint?.isUser ? " (You)" : ""}`;
 									}}
 								/>
 							}
+							formatter={(value) => "Value: " + Number(value)}
 						/>
 						<Bar dataKey={activeChart} />
 					</BarChart>

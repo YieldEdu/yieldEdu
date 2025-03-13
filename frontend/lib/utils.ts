@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import yieldPoolConfig from "@/solidity/artifacts/contracts/YieldPool.sol/YieldPool.json";
 import yieldTokenConfig from "@/solidity/artifacts/contracts/YieldToken.sol/YieldToken.json";
+import yieldPoolConfig from "@/solidity/artifacts/contracts/YieldPool.sol/YieldPool.json";
 import { Abi } from "viem";
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));

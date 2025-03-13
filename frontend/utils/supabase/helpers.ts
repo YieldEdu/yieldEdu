@@ -1,14 +1,15 @@
 import { supabase } from "./server";
 
 export const storeTransaction = async (transaction: {
-	transactionHash: string;
-	user_id: string;
+	transaction_hash: string;
+	owner: string;
+	amount: number;
 }) => {
 	// First check if transaction already exists
 	const { data: existingTx } = await supabase
 		.from("transactions")
 		.select()
-		.eq("transactionHash", transaction.transactionHash)
+		.eq("transactionHash", transaction.transaction_hash)
 		.single();
 
 	// If transaction already exists, return early
@@ -19,12 +20,27 @@ export const storeTransaction = async (transaction: {
 	// If transaction doesn't exist, insert it
 	const { data, error } = await supabase
 		.from("transactions")
-		.insert(transaction)
+		.insert({
+			...transaction,
+		})
 		.single();
 
 	return { data, error };
 };
 
-export const getStransactions = async () => {
+export const getTransactions = async () => {
 	return supabase.from("transactions").select();
+};
+
+export const removeTransaction = async (
+	transaction_hash: string,
+	owner: string
+) => {
+	const { error } = await supabase
+		.from("transactions")
+		.delete()
+		.eq("transaction_hash", transaction_hash)
+		.eq("owner", owner);
+
+	return { error };
 };

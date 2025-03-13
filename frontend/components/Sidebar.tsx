@@ -22,33 +22,34 @@ import {
 } from "@/components/ui/tooltip";
 
 import Image from "next/image";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import YieldEDUIcon from "@/public/icon.png";
 import { GlobalContext } from "@/context/globalContext";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Sidebar = () => {
-	const [activeTab, setActiveTab] = useState("dashboard");
+	const pathname = usePathname();
+
 	const { setSidebarOpen, sidebarOpen } = useContext(GlobalContext);
+
 	useEffect(() => {
-		const handleResize = () => {
-			if (window.innerWidth >= 1024) {
-				// 1024px is the 'lg' breakpoint in Tailwind
-				setSidebarOpen(true);
-			} else {
-				setSidebarOpen(false);
-			}
-		};
+		if (window.innerWidth >= 1024) {
+			setSidebarOpen(
+				JSON.parse(localStorage.getItem("sidebarOpen")!) || sidebarOpen
+			);
+		}
+	}, [setSidebarOpen, sidebarOpen]);
 
-		// Initial check
-		handleResize();
-
-		window.addEventListener("resize", handleResize);
-
-		return () => {
-			window.removeEventListener("resize", handleResize);
-		};
-	}, [setSidebarOpen]);
+	const handleSidebarToggle = () => {
+		setSidebarOpen(!sidebarOpen);
+		if (sidebarOpen) {
+			localStorage.setItem("sidebarOpen", JSON.stringify(false));
+		} else {
+			localStorage.setItem("sidebarOpen", JSON.stringify(true));
+		}
+	};
 
 	return (
 		<>
@@ -56,7 +57,7 @@ const Sidebar = () => {
 				{/* Sidebar - Desktop */}
 				<aside
 					className={cn(
-						"fixed inset-y-0 left-0 z-50 bg-white dark:bg-slate-900/90 border-r border-slate-200 dark:border-slate-800/60 transform transition-all duration-200 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:flex backdrop-blur-md",
+						"fixed inset-y-0 left-0 z-50 bg-white dark:bg-slate-900/90 border-r border-slate-200 dark:border-slate-800/60 transform transition-all duration-100 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:flex backdrop-blur-md",
 						{
 							"w-24": !sidebarOpen,
 							"w-3/4 sm:w-1/2 md:w-1/3 lg:w-full": sidebarOpen,
@@ -72,13 +73,13 @@ const Sidebar = () => {
 							<div className="flex items-center justify-between gap-3 w-full">
 								<Image
 									src={YieldEDUIcon}
-									alt="YieldStake Logo"
+									alt="YieldEdu Logo"
 									className="size-14 aspect-square"
 								/>
 								{sidebarOpen && (
 									<div>
 										<h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-lime-500 to-yellow-500">
-											YieldStake
+											YieldEdu
 										</h1>
 										<p className="text-xs text-slate-500 dark:text-slate-400">
 											Learn & Earn Protocol
@@ -87,9 +88,9 @@ const Sidebar = () => {
 								)}
 
 								<TooltipProvider>
-									<Tooltip>
+									<Tooltip disableHoverableContent={false}>
 										<TooltipTrigger
-											onClick={() => setSidebarOpen(!sidebarOpen)}
+											onClick={handleSidebarToggle}
 											className={cn(
 												"text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-300",
 												{
@@ -119,29 +120,29 @@ const Sidebar = () => {
 										<SidebarLink
 											icon={<LineChart className="w-5 h-5" />}
 											label="Dashboard"
-											active={activeTab === "dashboard"}
-											onClick={() => setActiveTab("dashboard")}
+											active={pathname === "/dashboard"}
+											link={"/dashboard"}
 										/>
 
 										<SidebarLink
 											icon={<Book className="w-5 h-5" />}
 											label="Learn"
-											active={activeTab === "learn"}
-											onClick={() => setActiveTab("learn")}
+											active={pathname === "/dashboard/learn"}
+											link={"/dashboard/learn"}
 										/>
 
 										<SidebarLink
 											icon={<Lock className="w-5 h-5" />}
 											label="Stake"
-											active={activeTab === "stake"}
-											onClick={() => setActiveTab("stake")}
+											active={pathname === "/dashboard/stake"}
+											link={"/dashboard/stake"}
 										/>
 
 										<SidebarLink
 											icon={<Trophy className="w-5 h-5" />}
 											label="Rewards"
-											active={activeTab === "rewards"}
-											onClick={() => setActiveTab("rewards")}
+											active={pathname === "/dashboard/rewards"}
+											link={"/dashboard/rewards"}
 										/>
 									</TooltipProvider>
 								</nav>
@@ -160,15 +161,15 @@ const Sidebar = () => {
 										<SidebarLink
 											icon={<BarChart2 className="w-5 h-5" />}
 											label="Protocol Stats"
-											active={activeTab === "stats"}
-											onClick={() => setActiveTab("stats")}
+											active={pathname === "/dashboard/protocol-stats"}
+											link={"/dashboard/protocol-stats"}
 										/>
 
 										<SidebarLink
 											icon={<Users className="w-5 h-5" />}
 											label="Community"
-											active={activeTab === "community"}
-											onClick={() => setActiveTab("community")}
+											active={pathname === "/dashboard/community"}
+											link={"/dashboard/community"}
 										/>
 									</TooltipProvider>
 								</nav>
@@ -186,22 +187,22 @@ const Sidebar = () => {
 										<SidebarLink
 											icon={<Wallet className="w-5 h-5" />}
 											label="Portfolio"
-											active={activeTab === "portfolio"}
-											onClick={() => setActiveTab("portfolio")}
+											active={pathname === "/dashboard/portfolio"}
+											link={"/dashboard/portfolio"}
 										/>
 
 										<SidebarLink
 											icon={<CreditCard className="w-5 h-5" />}
 											label="Transactions"
-											active={activeTab === "transactions"}
-											onClick={() => setActiveTab("transactions")}
+											active={pathname === "/dashboard/transactions"}
+											link={"/dashboard/transactions"}
 										/>
 
 										<SidebarLink
 											icon={<Settings className="w-5 h-5" />}
 											label="Settings"
-											active={activeTab === "settings"}
-											onClick={() => setActiveTab("settings")}
+											active={pathname === "/dashboard/settings"}
+											link={"/dashboard/settings"}
 										/>
 									</TooltipProvider>
 								</nav>
@@ -244,46 +245,48 @@ function SidebarLink({
 	icon,
 	label,
 	active,
-	onClick,
+	link,
 }: {
-	onClick: () => void;
 	active: boolean;
 	label: string;
 	icon: React.JSX.Element;
+	link: string;
 }) {
 	const { sidebarOpen } = useContext(GlobalContext);
 
 	return (
-		<Tooltip>
-			<TooltipTrigger
-				onClick={onClick}
-				className={cn(
-					"flex items-center gap-3 w-full px-3 py-2 rounded-lg transition-colors",
-					{
-						"bg-lime-100 dark:bg-lime-500/10 text-lime-700 dark:text-lime-400":
-							active,
-						"text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60":
-							!active,
-						"gap-0 justify-center w-fit mx-auto": !sidebarOpen,
-					}
-				)}
-			>
-				<span
-					className={cn({
-						"text-lime-600 dark:text-lime-400": active,
-						"text-slate-500 dark:text-slate-400": !active,
-					})}
+		<Tooltip disableHoverableContent={false}>
+			<TooltipTrigger className={cn("flex items-center  w-full")}>
+				<Link
+					href={link}
+					className={cn(
+						"flex items-center gap-3 w-full px-3 overflow-x-clip py-2 rounded-lg transition-colors",
+						{
+							"bg-lime-100 dark:bg-lime-500/10 text-lime-700 dark:text-lime-400":
+								active,
+							"text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60":
+								!active,
+							"gap-0 justify-center w-fit mx-auto": !sidebarOpen,
+						}
+					)}
 				>
-					{icon}
-				</span>
+					<span
+						className={cn({
+							"text-lime-600 dark:text-lime-400": active,
+							"text-slate-500 dark:text-slate-400": !active,
+						})}
+					>
+						{icon}
+					</span>
 
-				{sidebarOpen ? (
-					<span className="font-medium">{label}</span>
-				) : (
-					<TooltipContent>
+					{sidebarOpen ? (
 						<span className="font-medium">{label}</span>
-					</TooltipContent>
-				)}
+					) : (
+						<TooltipContent>
+							<span className="font-medium">{label}</span>
+						</TooltipContent>
+					)}
+				</Link>
 			</TooltipTrigger>
 		</Tooltip>
 	);

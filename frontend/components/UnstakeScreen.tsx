@@ -12,17 +12,22 @@ import {
 	DialogTitle,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
+import { removeTransaction } from "@/utils/supabase/helpers";
 
 const UnstakeScreen = ({
 	amount,
 	expectedYield,
-	positionId,
+	position_id,
 	setShowWithDrawModal,
+	transaction_hash,
+	owner,
 }: {
 	amount?: number;
 	expectedYield?: number;
-	positionId: string | null;
+	position_id: string | null;
 	setShowWithDrawModal: Dispatch<SetStateAction<boolean>>;
+	transaction_hash?: string;
+	owner?: string;
 }) => {
 	const queryClient = useQueryClient();
 
@@ -39,16 +44,29 @@ const UnstakeScreen = ({
 	const handleUnstake = async () => {
 		try {
 			Unstake(
-				{ ...getYieldPoolConfig("unstake", [positionId]) },
+				{ ...getYieldPoolConfig("unstake", [position_id]) },
 				{
-					onSuccess() {
+					async onSuccess() {
+						await queryClient.invalidateQueries();
+						// Explicitly invalidate the transactions query
+						await queryClient.invalidateQueries({
+							queryKey: ["transactions"],
+						});
+
+						const { error } = await removeTransaction(
+							transaction_hash!,
+							owner!
+						);
+						if (error) {
+							console.log(error);
+						}
+
 						toast({
 							title: "Transaction Successful",
 							description: "Unstake was a success",
 						});
-						queryClient.invalidateQueries();
+						window.history.pushState({}, "", `/dashboard`);
 						setShowWithDrawModal(false);
-						window.history.pushState({}, "", `/`);
 					},
 					onError(error) {
 						console.log(error);
@@ -68,7 +86,7 @@ const UnstakeScreen = ({
 		}
 	};
 	return (
-		<DialogContent className="m-2 bg-slate-100 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700/50">
+		<DialogContent className="m-2 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700/50">
 			<DialogHeader>
 				<DialogTitle className="text-foreground">Unstake</DialogTitle>
 				<DialogDescription className="space-y-4 pt-3 text-red-400">

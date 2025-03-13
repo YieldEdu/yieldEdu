@@ -42,15 +42,15 @@ import {
 	Column,
 } from "@tanstack/react-table";
 import { useAppKitAccount } from "@reown/appkit/react";
-import { useSearchParams } from "next/navigation";
-import CountDownTimer from "./CountDownTimer";
+import { useRouter, useSearchParams } from "next/navigation";
+import CountDownTimer, { ExploreTransactionButton } from "./CountDownTimer";
 import { ActivePosition } from "./PositionOverview";
 import { Badge } from "./ui/badge";
 
 interface ActivePositionTableProps {
 	positions: ActivePosition[];
 	setShowWithDrawModal: Dispatch<SetStateAction<boolean>>;
-	setModalType: Dispatch<SetStateAction<"withdraw" | "unstake">>;
+	setModalType: Dispatch<SetStateAction<"withdraw" | "unstake" | null>>;
 }
 
 interface DataTableColumnHeaderProps<TData, TValue>
@@ -113,9 +113,15 @@ const ActivePositions = ({
 	setShowWithDrawModal,
 	setModalType,
 }: ActivePositionTableProps) => {
-	const [sorting, setSorting] = useState<SortingState>([]);
+	const [sorting, setSorting] = useState<SortingState>([
+		{
+			id: "startTime",
+			desc: true,
+		},
+	]);
 	const { isConnected, address } = useAppKitAccount();
 	const searchParams = useSearchParams();
+	const router = useRouter();
 
 	const handleUnstake = (positionId: string) => {
 		setModalType("unstake");
@@ -268,6 +274,12 @@ const ActivePositions = ({
 								className="border-slate-200  dark:border-slate-700 !bg-white dark:!bg-slate-900 flex flex-col gap-2 p-2 text-white"
 								align="end"
 							>
+								{row.original.transactionHash && (
+									<ExploreTransactionButton
+										transaction_hash={row.original.transactionHash}
+										className="bg-slate-800 text-white w-full dark:hover:bg-lime-400/30 rounded-sm p-2 justify-center ml-0 shadow hover:bg-primary/90"
+									/>
+								)}
 								<Button
 									onClick={() => handleUnstake(row.original.id)}
 									type="button"
@@ -278,8 +290,8 @@ const ActivePositions = ({
 								</Button>
 								<CountDownTimer
 									positionId={row.original.id}
+									transaction_hash={row.original.transactionHash}
 									setShowWithDrawModal={setShowWithDrawModal}
-									className="text-lime-400"
 									isConnected={isConnected}
 									lockDuration={Number(row.original.lockDuration)}
 									startTime={Number(row.original.startTime)}
@@ -294,7 +306,6 @@ const ActivePositions = ({
 
 	const table = useReactTable({
 		data: positions,
-		//
 		columns,
 		getPaginationRowModel: getPaginationRowModel(),
 		getCoreRowModel: getCoreRowModel(),
@@ -342,6 +353,11 @@ const ActivePositions = ({
 							<>
 								{sortedRows.map((row) => (
 									<TableRow
+										onDoubleClick={() =>
+											router.push(
+												`${process.env.NEXT_PUBLIC_EDU_BLOCKSCOUT_URL}/${row.original.transactionHash}`
+											)
+										}
 										key={row.id}
 										className={cn("", {
 											"bg-lime-500/20":

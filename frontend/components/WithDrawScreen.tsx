@@ -12,17 +12,22 @@ import {
 	DialogTitle,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
+import { removeTransaction } from "@/utils/supabase/helpers";
 
 const WithDrawScreen = ({
 	amount,
 	expectedYield,
-	positionId,
+	position_id,
 	setShowWithDrawModal,
+	transaction_hash,
+	owner,
 }: {
 	amount?: number;
 	expectedYield?: number;
-	positionId: string | null;
+	position_id: string | null;
+	transaction_hash?: string;
 	setShowWithDrawModal: Dispatch<SetStateAction<boolean>>;
+	owner?: string;
 }) => {
 	const queryClient = useQueryClient();
 
@@ -32,16 +37,23 @@ const WithDrawScreen = ({
 	const handleWithdraw = async () => {
 		try {
 			withDraw(
-				{ ...getYieldPoolConfig("withdraw", [positionId]) },
+				{ ...getYieldPoolConfig("withdraw", [position_id]) },
 				{
-					onSuccess() {
+					async onSuccess() {
 						toast({
 							title: "Transaction Successful",
 							description: "Withdrawal was a success",
 						});
-						queryClient.invalidateQueries();
-						setShowWithDrawModal(false);
+						await queryClient.invalidateQueries();
+						const { error } = await removeTransaction(
+							transaction_hash!,
+							owner!
+						);
+						if (error) {
+							console.log(error);
+						}
 						window.history.pushState({}, "", `/`);
+						setShowWithDrawModal(false);
 					},
 					onError(error) {
 						console.log(error);
@@ -76,7 +88,7 @@ const WithDrawScreen = ({
 	return (
 		// <Card >
 
-		<DialogContent className="m-2 bg-slate-100 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700/50">
+		<DialogContent className="m-2 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700/50">
 			<DialogHeader>
 				<DialogTitle className="text-foreground">Withdraw</DialogTitle>
 				<DialogDescription className="space-y-4 pt-3">

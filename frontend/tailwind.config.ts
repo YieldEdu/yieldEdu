@@ -50,6 +50,29 @@ export default {
 				md: "calc(var(--radius) - 2px)",
 				sm: "calc(var(--radius) - 4px)",
 			},
+			animation: {
+				gradient: "gradient 15s ease infinite",
+				float: "float 1s ease-in-out infinite",
+			},
+			keyframes: {
+				gradient: {
+					"0%": { backgroundPosition: "0% 50%" },
+					"50%": { backgroundPosition: "100% 50%" },
+					"100%": { backgroundPosition: "0% 50%" },
+				},
+				float: {
+					"0%": { transform: "translate(0, 0)" },
+					"50%": { transform: "translate(20px, 20px)" },
+					"100%": { transform: "translate(0, 0)" },
+				},
+			},
+			backgroundImage: {
+				"gradient-animated":
+					"linear-gradient(-45deg, #022c22, #064e3bd3, #065f4688, #0478573b)",
+			},
+			backgroundSize: {
+				"400": "400% 400%",
+			},
 		},
 	},
 	plugins: [tailwindAnimate],

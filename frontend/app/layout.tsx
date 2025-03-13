@@ -6,8 +6,6 @@ import { headers } from "next/headers";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import YieldEDUIcon from "@/public/icon.png";
-import Sidebar from "@/components/Sidebar";
-import Header from "@/components/Header";
 import GlobalContextProvider from "@/context/globalContext";
 
 const spaceMono = Space_Mono({
@@ -43,13 +41,7 @@ export default async function RootLayout({
 					disableTransitionOnChange
 				>
 					<WagmiContextProvider cookies={cookies}>
-						<GlobalContextProvider>
-							<Header />
-							<div className="flex w-full h-full">
-								<Sidebar />
-								{children}
-							</div>
-						</GlobalContextProvider>
+						<GlobalContextProvider>{children}</GlobalContextProvider>
 					</WagmiContextProvider>
 					<Toaster />
 				</ThemeProvider>

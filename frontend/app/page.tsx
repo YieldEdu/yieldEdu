@@ -1,201 +1,565 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import {
+	ArrowRight,
+	BookOpen,
+	GraduationCap,
+	LineChart,
+	Shield,
+	Sparkles,
+	Trophy,
+	Users,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ShieldCheck, Percent, Vault, Coins } from "lucide-react";
-// import DepositForm from "@/components/DepositForm";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { useTheme } from "next-themes";
+import Image from "next/image";
+import dashboardImage from "@/public/dashboard.png";
+import { Particles } from "@/components/Particles";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import YieldEDUIcon from "@/public/icon.png";
+import { cn } from "@/lib/utils";
 
-import { useBalance, useReadContract } from "wagmi";
-import { useAppKitAccount } from "@reown/appkit/react";
-import { getYieldPoolConfig, YieldTokenAddress } from "@/lib/utils";
-import { formatEther } from "viem";
-import { useState } from "react";
-// import FaucetButton from "@/components/ui/FaucetButton";
-import WithdrawModal from "@/components/WithdrawModal";
-import AchievementBanner from "@/components/AchievementBanner";
-import StakingCard from "@/components/StakingCard";
-import PositionOverview, {
-	ActivePosition,
-} from "@/components/PositionOverview";
-import Performance from "@/components/Performance";
-import ActivePositions from "@/components/ActivePositions";
+export default function Page() {
+	const { theme } = useTheme();
+	const [color, setColor] = useState("#ffffff");
+	const [userType, setUserType] = useState<"student" | "educator" | null>(null);
 
-const FixedYieldDashboard = () => {
-	const { address } = useAppKitAccount();
-	const [positions, setPositions] = useState<ActivePosition[] | []>([]);
-
-	const [modalType, setModalType] = useState<"withdraw" | "unstake">("unstake");
-	const [showWithdrawModal, setShowWithDrawModal] = useState(false);
-	// const [showModal, setShowModal] = useState(false);
-	const results = useBalance({
-		address: address as unknown as `0x${string}`,
-		token: YieldTokenAddress,
-	});
-
-	const { data: tvl } = useReadContract({
-		...getYieldPoolConfig("getTotalValueLocked", []),
-	});
-
-	const formattedTVL = tvl ? formatEther(BigInt(tvl.toString())) : "0.00";
-
-	const { data: totalStakers } = useReadContract({
-		...getYieldPoolConfig("getTotalStakers", []),
-	});
-
-	// Base APY from YieldPool's YIELD_RATE
-	const BASE_APY = 10;
+	useEffect(() => {
+		setColor(theme === "dark" ? "#a3e635" : "#000000");
+	}, [theme]);
 
 	return (
-		<>
+		<div className="min-h-screen bg-slate-50 dark:bg-[#0A0B1E] text-slate-900 dark:text-slate-100 transition-colors duration-200">
 			{/* Animated background - only visible in dark mode */}
-			{/* <div className="fixed inset-0 overflow-hidden pointer-events-none dark:block hidden">
-				<div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,#1a365d80,#0A0B1E)]"></div>
+			<div className="fixed inset-0 overflow-hidden pointer-events-none dark:block hidden">
+				<div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,#1a365d,#0A0B1E)]"></div>
 				<div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-20"></div>
 				<div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-20"></div>
-			</div> */}
+			</div>
+			<Particles
+				className="absolute h-screen inset-0 z-10"
+				quantity={80}
+				size={2}
+				ease={80}
+				color={color}
+				refresh
+			/>
 
-			{/* Light mode background */}
-			{/* <div className="fixed inset-0 overflow-hidden pointer-events-none dark:hidden">
-				<div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-slate-100"></div>
-				<div className="absolute top-0 left-0 w-full h-full bg-[url('/image/webp')] opacity-5"></div>
-			</div> */}
+			<Header />
 
-			{/* <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-							
-							<div className="flex gap-4">
-								<FaucetButton userAddress={address} />
+			<main className="relative z-10">
+				{/* Hero Section */}
+				<section className="py-20 md:py-32">
+					<div className="container mx-auto px-4">
+						<div className="grid grid-col-1 xl:grid-cols-2 items-center gap-12">
+							<div className="p-5">
+								<motion.div
+									initial={{ opacity: 0, y: 20 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ duration: 0.5 }}
+								>
+									<Badge className="mb-4 bg-lime-100 dark:bg-lime-900/30 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-700/30 px-3 py-1">
+										Web3 Education Reimagined
+									</Badge>
+									<h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight text-slate-900 dark:text-white">
+										Learn, Stake &{" "}
+										<span className="bg-clip-text text-transparent bg-gradient-to-r from-lime-500 to-yellow-500">
+											Earn
+										</span>{" "}
+										in the World of DeFi
+									</h1>
+									<p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-8 max-w-2xl">
+										YieldEdu combines education with real-world DeFi staking,
+										allowing you to earn while you learn. Connect with OCID to
+										start your journey.
+									</p>
+
+									<div className="space-y-6">
+										<Tabs
+											defaultValue="student"
+											className="w-full max-w-md"
+											onValueChange={(value) =>
+												setUserType(value as "student" | "educator")
+											}
+										>
+											<TabsList className="grid w-full grid-cols-2 dark:bg-slate-800 bg-slate-950">
+												<TabsTrigger
+													disabled
+													value="educator"
+													className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-yellow-500 data-[state=active]:text-white dark:data-[state=active]:text-slate-900"
+												>
+													<BookOpen className="w-4 h-4 mr-2" />
+													Educator
+												</TabsTrigger>
+												<TabsTrigger
+													disabled
+													value="student"
+													className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-lime-500 data-[state=active]:to-lime-500 data-[state=active]:text-white dark:data-[state=active]:text-slate-900"
+												>
+													<GraduationCap className="w-4 h-4 mr-2" />
+													Student
+												</TabsTrigger>
+											</TabsList>
+										</Tabs>
+
+										<div className="flex flex-col sm:flex-row gap-4">
+											{userType === "student" ? (
+												<Button
+													disabled
+													size="lg"
+													className={cn(
+														"text-white dark:text-slate-900 font-semibold hover:opacity-90 px-8",
+														{
+															"bg-gradient-to-r from-lime-500 to-lime-600":
+																userType === "student",
+														}
+													)}
+												>
+													Connect with OCID
+													<ArrowRight className="ml-2 h-5 w-5" />
+												</Button>
+											) : (
+												<Button
+													disabled
+													size="lg"
+													className={cn(
+														"text-white dark:text-slate-900 font-semibold hover:opacity-90 px-8",
+														{
+															"bg-gradient-to-r from-yellow-500 to-yellow-600":
+																userType === "educator",
+														}
+													)}
+												>
+													Connect Wallet as Educator
+												</Button>
+											)}
+											<Button
+												disabled
+												variant="outline"
+												size="lg"
+												className="border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+											>
+												Learn More
+											</Button>
+										</div>
+
+										<p className="text-sm text-slate-500 dark:text-slate-400">
+											Secure authentication via OpenID Connect (OCID)
+										</p>
+									</div>
+								</motion.div>
 							</div>
-						</div> */}
-			{/* className="" */}
-			<main className="w-full flex flex-col flex-[10]">
-				<div className="text-white py-5 px-5 h-screen overflow-y-auto">
-					<div className="container md:max-w-8xl mx-auto space-y-6 mt-24">
-						<AchievementBanner />
-						<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-							<Card className="relative overflow-hidden dark:bg-gradient-to-r from-slate-800/50 to-slate-800/30 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm">
-								<div className="absolute inset-0 bg-gradient-to-r from-lime-400/10 to-yellow-400/10 dark:opacity-10"></div>
-								<CardContent className="p-6">
-									<div className="flex items-center justify-between">
-										<div className="p-3 bg-lime-500/20 rounded-xl">
-											<ShieldCheck className="size-8 text-lime-400" />{" "}
-										</div>
-										<div>
-											<p className="text-md text-slate-400">TVL</p>
-											<p className="text-4xl font-bold text-lime-400">
-												{parseFloat(formattedTVL).toFixed(2)} FYT
-											</p>
-										</div>
-									</div>
-								</CardContent>
-							</Card>
-							<Card className="relative overflow-hidden dark:bg-gradient-to-r from-slate-800/50 to-slate-800/30 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm">
-								<div className="absolute inset-0 bg-gradient-to-r from-lime-400/10 to-yellow-400/10 dark:opacity-10"></div>
-								<CardContent className="p-6">
-									<div className="flex items-center justify-between">
-										<div className="p-3 bg-lime-500/20 rounded-xl">
-											<Percent className="size-8 text-lime-400" />
-										</div>
-										<div>
-											<p className="text-md text-slate-400">Base APY</p>
-											<p className="text-4xl font-bold text-lime-400">
-												{BASE_APY}%
-											</p>
-										</div>
-									</div>
-								</CardContent>
-							</Card>
-							<Card className="relative overflow-hidden dark:bg-gradient-to-r from-slate-800/50 to-slate-800/30 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm">
-								<div className="absolute inset-0 bg-gradient-to-r from-lime-400/10 to-yellow-400/10 dark:opacity-10"></div>
 
-								<CardContent className="p-6">
-									<div className="flex items-center justify-between">
-										<div className="p-3 bg-lime-500/20 rounded-xl">
-											<Vault className="size-8 text-lime-400" />
+							<div className="p-5">
+								<motion.div
+									initial={{ opacity: 0, scale: 0.95 }}
+									animate={{ opacity: 1, scale: 1 }}
+									transition={{ duration: 0.5, delay: 0.2 }}
+									className="relative"
+								>
+									<div className="absolute -inset-0.5 bg-gradient-to-r from-lime-500 to-yellow-500 rounded-2xl blur opacity-30 dark:opacity-50"></div>
+									<div className="relative bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700/50 shadow-xl">
+										<Image
+											src={dashboardImage}
+											alt="YieldEDU"
+											className="w-full h-auto"
+										/>
+										<div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-8">
+											<div className="pb-7">
+												<h3 className="text-white text-xl font-semibold">
+													Interactive Learning
+												</h3>
+												<p className="text-slate-200 text-sm">
+													Track your progress, earn guaranteed rewards, and
+													boost your APY
+												</p>
+											</div>
 										</div>
+									</div>
 
+									{/* Floating cards */}
+									<div className="absolute -top-6 -right-6 bg-white dark:bg-slate-800 rounded-lg p-3 shadow-lg border border-slate-200 dark:border-slate-700/50 flex items-center gap-3">
+										<div className="w-10 h-10 rounded-full bg-lime-100 dark:bg-lime-900/30 flex items-center justify-center">
+											<Trophy className="w-5 h-5 text-lime-600 dark:text-lime-400" />
+										</div>
 										<div>
-											<p className="text-md text-slate-400">Total Stakers</p>
-											<p className="text-4xl font-bold text-lime-400">
-												{totalStakers ? Number(totalStakers).toString() : "0"}
+											<p className="text-sm font-medium text-slate-900 dark:text-white">
+												+15% APY
+											</p>
+											<p className="text-xs text-slate-500 dark:text-slate-400">
+												Learning Bonus
 											</p>
 										</div>
 									</div>
-								</CardContent>
-							</Card>
-							<Card className="relative overflow-hidden dark:bg-gradient-to-r from-slate-800/50 to-slate-800/30 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm">
-								<div className="absolute inset-0 bg-gradient-to-r from-lime-400/10 to-yellow-400/10 dark:opacity-10"></div>
-								<CardContent className="p-6">
-									<div className="flex items-center justify-between">
-										<div className="p-3 bg-lime-500/20 rounded-xl">
-											<Coins className="size-8 text-lime-400" />
+
+									<div className="absolute -bottom-6 -left-6 bg-white dark:bg-slate-800 rounded-lg p-3 shadow-lg border border-slate-200 dark:border-slate-700/50 flex items-center gap-3">
+										<div className="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
+											<Users className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
 										</div>
 										<div>
-											<p className="text-md text-slate-400">
-												Token Balance (YDU)
+											<p className="text-sm font-medium text-slate-900 dark:text-white">
+												10,000+
 											</p>
-											<p className="text-4xl font-bold text-lime-400">
-												{results?.data?.formatted
-													? parseFloat(results.data.formatted).toFixed(2)
-													: "0.00"}
+											<p className="text-xs text-slate-500 dark:text-slate-400">
+												Active Learners
 											</p>
 										</div>
 									</div>
-								</CardContent>
-							</Card>
+								</motion.div>
+							</div>
 						</div>
-						<Performance />
+					</div>
+				</section>
 
-						<div className="grid grid-cols-1 lg:grid-cols-3 space-y-6 lg:space-y-0 lg:gap-6 h-auto">
-							<StakingCard />
-							<PositionOverview
-								setPositions={setPositions}
-								positions={positions}
+				<section
+					id="features"
+					className="py-20 bg-slate-200/50 dark:bg-slate-900/30"
+				>
+					<div className="container mx-auto px-4">
+						<motion.div
+							initial={{ opacity: 0, y: 20 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.7, ease: "easeOut" }}
+							viewport={{ once: true }}
+							className="text-center mb-16"
+						>
+							<Badge className="mb-4 bg-lime-100 dark:bg-lime-900/30 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-700/30 px-3 py-1">
+								Platform Features
+							</Badge>
+							<h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+								Why Choose{" "}
+								<span className="bg-clip-text text-transparent bg-gradient-to-r from-lime-500 to-yellow-500">
+									YieldEdu
+								</span>
+							</h2>
+							<p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+								Our platform combines educational content with real DeFi staking
+								opportunities, creating a unique learn-to-earn ecosystem.
+							</p>
+						</motion.div>
+
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+							<FeatureCard
+								icon={<GraduationCap className="w-6 h-6 text-lime-500" />}
+								title="Interactive Learning"
+								description="Engaging lessons on DeFi, staking, and blockchain fundamentals with quizzes and hands-on exercises."
+							/>
+							<FeatureCard
+								icon={<LineChart className="w-6 h-6 text-lime-500" />}
+								title="Real Yield Staking"
+								description="Stake your tokens and earn competitive APY while learning about DeFi mechanisms."
+							/>
+							<FeatureCard
+								icon={<Trophy className="w-6 h-6 text-yellow-500" />}
+								title="Learning Rewards"
+								description="Earn APY boosts and bonus tokens by completing educational modules and quizzes."
+							/>
+							<FeatureCard
+								icon={<Shield className="w-6 h-6 text-yellow-500" />}
+								title="Secure Platform"
+								description="Enterprise-grade security with OCID authentication and multi-layer protection."
+							/>
+							<FeatureCard
+								icon={<Users className="w-6 h-6 text-lime-500" />}
+								title="Community Learning"
+								description="Connect with other students and educators in our vibrant community forums."
+							/>
+							<FeatureCard
+								icon={<Sparkles className="w-6 h-6 text-yellow-500" />}
+								title="Educator Tools"
+								description="Comprehensive tools for educators to create courses, track student progress, and earn rewards."
 							/>
 						</div>
-						<ActivePositions
-							setModalType={setModalType}
-							setShowWithDrawModal={setShowWithDrawModal}
-							positions={positions}
-						/>
-
-						<WithdrawModal
-							modalType={modalType}
-							setModalType={setModalType}
-							positions={positions}
-							setShowWithDrawModal={setShowWithDrawModal}
-							showWithdrawModal={showWithdrawModal}
-						/>
 					</div>
-				</div>
-			</main>
-			{/* <DepositForm
-				setShowModal={setShowModal}
-				showModal={showModal}
-				balance={results?.data?.formatted}
-			/> */}
+				</section>
 
-			{/* <footer className="flex  p-4 md:p-8 justify-between items-center text-white py-4">
-				<a
-					className="hover:underline"
-					href="kamasahdickson.vercel.app"
-					rel="noopener noreferrer"
-					target="_blank"
-				>
-					Made with ❤️ by Kamasah Dickson
-				</a>
-				<ul>
-					<li>
-						<Link
-							rel="noopener noreferrer"
-							target="_blank"
-							href="https://x.com/bruh_codes"
+				{/* How It Works */}
+				<section id="how-it-works" className="py-20">
+					<div className="container mx-auto px-4">
+						<motion.div
+							initial={{ opacity: 0, y: 20 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.7, ease: "easeOut" }}
+							viewport={{ once: true }}
+							className="text-center mb-16"
 						>
-							<Image src={X} alt="bruh_codes" />
-						</Link>
-					</li>
-				</ul>
-			</footer> */}
-		</>
-	);
-};
+							<Badge className="mb-4 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-700/30 px-3 py-1">
+								Simple Process
+							</Badge>
+							<h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+								How YieldEdu{" "}
+								<span className="bg-clip-text text-transparent bg-gradient-to-r from-lime-500 to-yellow-500">
+									Works
+								</span>
+							</h2>
+							<p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+								Get started in just a few simple steps and begin your journey to
+								earning while learning.
+							</p>
+						</motion.div>
 
-export default FixedYieldDashboard;
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+							<StepCard
+								number="01"
+								title="Connect with OCID"
+								description="Securely authenticate using OpenID Connect as a student or educator."
+							/>
+							<StepCard
+								number="02"
+								title="Learn DeFi Concepts"
+								description="Complete interactive lessons and quizzes to understand DeFi fundamentals."
+							/>
+							<StepCard
+								number="03"
+								title="Stake & Earn Rewards"
+								description="Apply your knowledge by staking tokens and earning real yield with APY boosts."
+							/>
+						</div>
+
+						<motion.div
+							initial={{ opacity: 0, y: 20 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.7, ease: "easeOut" }}
+							viewport={{ once: true }}
+							className="mt-16 text-center"
+						>
+							<Button
+								disabled
+								size="lg"
+								className="bg-gradient-to-r from-lime-500 to-yellow-500 text-slate-900 font-semibold hover:opacity-90 px-8"
+							>
+								Start Your Journey
+								<ArrowRight className="ml-2 h-5 w-5" />
+							</Button>
+						</motion.div>
+					</div>
+				</section>
+
+				{/* Testimonials */}
+				<section
+					id="testimonials"
+					className="py-20 bg-slate-200/50 dark:bg-slate-900/30"
+				>
+					<div className="container mx-auto px-4">
+						<motion.div
+							initial={{ opacity: 0, y: 20 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.7, ease: "easeOut" }}
+							viewport={{ once: true }}
+							className="text-center mb-16"
+						>
+							<Badge className="mb-4 bg-lime-100 dark:bg-lime-900/30 text-lime-700 dark:text-lime-400 border-lime-200 dark:border-lime-700/30 px-3 py-1">
+								Success Stories
+							</Badge>
+							<h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+								What Our Users{" "}
+								<span className="bg-clip-text text-transparent bg-gradient-to-r from-lime-500 to-yellow-500">
+									Say
+								</span>
+							</h2>
+							<p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+								Hear from students and educators who have transformed their DeFi
+								knowledge and earnings.
+							</p>
+						</motion.div>
+
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+							<TestimonialCard
+								quote="YieldEdu completely changed how I approach DeFi education. My students are more engaged and I'm earning passive income while teaching."
+								name="Dr. Sarah Johnson"
+								role="Blockchain Professor"
+								image=""
+								type="educator"
+							/>
+							<TestimonialCard
+								quote="I went from knowing nothing about DeFi to managing a diverse staking portfolio. The learning rewards made it financially rewarding from day one."
+								name="Michael Chen"
+								role="Student"
+								image=""
+								type="student"
+							/>
+							<TestimonialCard
+								quote="YieldEdu completely changed how I approach DeFi education. My students are more engaged and I'm earning passive income while teaching."
+								name="Emma Rodriguez"
+								role="DeFi Enthusiast"
+								image=""
+								type="educator"
+							/>
+						</div>
+					</div>
+				</section>
+
+				{/* CTA Section */}
+				<section className="py-20">
+					<div className="container mx-auto px-4">
+						<div className="relative overflow-hidden rounded-3xl">
+							<div className="absolute inset-0 bg-gradient-to-r from-lime-500 to-yellow-500 opacity-90"></div>
+							<div className="absolute inset-0 bg-[url('/placeholder.svg?height=600&width=1200')] mix-blend-overlay opacity-20"></div>
+
+							<motion.div
+								initial={{ opacity: 0, y: 20 }}
+								whileInView={{ opacity: 1, y: 0 }}
+								transition={{ duration: 0.7, ease: "easeOut" }}
+								viewport={{ once: true }}
+								className="relative py-16 px-8 md:py-24 md:px-16 text-center"
+							>
+								<h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
+									Ready to Start Your DeFi Learning Journey?
+								</h2>
+								<p className="text-lg text-white/90 max-w-2xl mx-auto mb-10">
+									Join thousands of students and educators on YieldEdu and
+									transform your understanding of DeFi while earning real
+									rewards.
+								</p>
+
+								<div className="flex flex-col sm:flex-row gap-4 justify-center">
+									<Button
+										disabled
+										size="lg"
+										className="bg-white text-slate-900 font-semibold hover:bg-white/60 px-8"
+									>
+										<GraduationCap className="mr-2 h-5 w-5" />
+										Join as Student
+									</Button>
+									<Button
+										disabled
+										size="lg"
+										className="bg-slate-900 text-white font-semibold hover:bg-slate-700 px-8"
+									>
+										<BookOpen className="mr-2 h-5 w-5" />
+										Join as Educator
+									</Button>
+								</div>
+							</motion.div>
+						</div>
+					</div>
+				</section>
+			</main>
+
+			{/* Footer */}
+			<Footer />
+		</div>
+	);
+}
+
+function FeatureCard({
+	icon,
+	title,
+	description,
+}: {
+	icon: React.ReactNode;
+	title: string;
+	description: string;
+}) {
+	return (
+		<Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
+			<CardContent className="p-6">
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.7, ease: "easeOut" }}
+					viewport={{ once: true }}
+				>
+					<div className="w-12 h-12 rounded-lg bg-lime-100 dark:bg-lime-900/30 flex items-center justify-center mb-4">
+						{icon}
+					</div>
+					<h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">
+						{title}
+					</h3>
+					<p className="text-slate-600 dark:text-slate-300">{description}</p>
+				</motion.div>
+			</CardContent>
+		</Card>
+	);
+}
+
+function StepCard({
+	number,
+	title,
+	description,
+}: {
+	number: string;
+	title: string;
+	description: string;
+}) {
+	return (
+		<motion.div
+			className="relative"
+			initial={{ opacity: 0, y: 20 }}
+			whileInView={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.7, ease: "easeOut" }}
+			viewport={{ once: true }}
+		>
+			<div className="absolute -left-4 top-0 w-8 h-8 rounded-full bg-gradient-to-r from-lime-500 to-yellow-500 flex items-center justify-center text-white font-bold text-sm">
+				{number}
+			</div>
+			<Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm ml-6">
+				<CardContent className="p-6">
+					<h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">
+						{title}
+					</h3>
+					<p className="text-slate-600 dark:text-slate-300">{description}</p>
+				</CardContent>
+			</Card>
+		</motion.div>
+	);
+}
+
+function TestimonialCard({
+	quote,
+	name,
+	role,
+	image,
+	type,
+}: {
+	quote: string;
+	name: string;
+	role: string;
+	image: string;
+	type: string;
+}) {
+	return (
+		<Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm">
+			<CardContent className="p-6">
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					whileInView={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.7, ease: "easeOut" }}
+					viewport={{ once: true }}
+				>
+					<div
+						className={`w-full h-1 rounded-full ${
+							type === "educator" ? "bg-yellow-500" : "bg-lime-500"
+						} mb-6`}
+					></div>
+					<p className="text-slate-600 dark:text-slate-300 mb-6 italic">
+						`${quote}`
+					</p>
+					<div className="flex items-center gap-4">
+						<div className="w-12 h-12 rounded-full overflow-hidden">
+							<Image
+								src={image || YieldEDUIcon}
+								alt={name}
+								className="w-full h-full object-cover"
+							/>
+						</div>
+						<div>
+							<h4 className="font-semibold text-slate-900 dark:text-white">
+								{name}
+							</h4>
+							<p className="text-sm text-slate-500 dark:text-slate-400">
+								{role}
+							</p>
+						</div>
+					</div>
+				</motion.div>
+			</CardContent>
+		</Card>
+	);
+}

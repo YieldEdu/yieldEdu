@@ -1,25 +1,49 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { ClassValue } from "clsx";
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { useSearchParams } from "next/navigation";
-import { Timer } from "lucide-react";
+import { ExternalLink, Timer } from "lucide-react";
+import { ClassValue } from "clsx";
+
+export const ExploreTransactionButton = ({
+	transaction_hash,
+	className,
+}: {
+	transaction_hash: string;
+	className?: ClassValue;
+}) => {
+	const blockScout = process.env.NEXT_PUBLIC_EDU_BLOCKSCOUT_URL;
+	return (
+		<a
+			href={`${blockScout}/${transaction_hash}`}
+			target="_blank"
+			rel="noreferrer"
+			className={cn(
+				"flex items-center gap-2 ml-7 text-slate-700 underline dark:text-slate-300 hover:text-yellow-900 dark:hover:text-yellow-500 transition-colors duration-200",
+				className
+			)}
+		>
+			<ExternalLink className="size-5" />
+			<span className="font-medium">Explore Transaction</span>
+		</a>
+	);
+};
 
 const CountDownTimer = ({
 	startTime,
 	lockDuration,
 	isConnected,
-	className,
 	setShowWithDrawModal,
 	positionId,
+	transaction_hash,
 }: {
 	startTime: number;
 	lockDuration: number;
 	isConnected: boolean;
-	className?: ClassValue;
 	positionId: string;
+	transaction_hash?: string;
 	setShowWithDrawModal: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
 	const [timeLeft, setTimeLeft] = useState<number>(() => {
@@ -67,9 +91,9 @@ const CountDownTimer = ({
 	const formatTimeLeft = () => {
 		if (timeLeft <= 0) {
 			return (
-				<div className="flex items-center  text-lime-600 gap-3">
+				<div className="flex items-center text-lime-600 gap-3">
 					<Timer className="w-5 h-5" />
-					<p className="text-lime-600 font-medium text-lg">
+					<p className="text-lime-600 font-medium text-md">
 						Your position is available for withdrawal
 					</p>
 					<Button
@@ -80,6 +104,9 @@ const CountDownTimer = ({
 					>
 						Withdraw
 					</Button>
+					{transaction_hash && (
+						<ExploreTransactionButton transaction_hash={transaction_hash} />
+					)}
 				</div>
 			);
 		}
@@ -90,27 +117,56 @@ const CountDownTimer = ({
 		const seconds = timeLeft % 60;
 
 		if (days > 0) {
-			return `${days}d ${formatNumber(hours)}h ${formatNumber(
-				minutes
-			)}m ${formatNumber(seconds)}s`;
+			return (
+				<span>
+					Your position will be available for withdrawal in{" "}
+					<span className="dark:text-yellow-400 text-lg text-slate-800 font-semibold">
+						{days}d {formatNumber(hours)}h {formatNumber(minutes)}m{" "}
+						{formatNumber(seconds)}s
+					</span>
+				</span>
+			);
 		}
 		if (hours > 0) {
-			return `${hours}h ${formatNumber(minutes)}m ${formatNumber(seconds)}s`;
+			return (
+				<span>
+					Your position will be available for withdrawal in{" "}
+					<span className="dark:text-yellow-400 text-lg text-slate-800 font-semibold">
+						{hours}h {formatNumber(minutes)}m {formatNumber(seconds)}s
+					</span>
+				</span>
+			);
 		}
 		if (minutes > 0) {
-			return `${minutes}m ${formatNumber(seconds)}s`;
+			return (
+				<span>
+					Your position will be available for withdrawal in{" "}
+					<span className="dark:text-yellow-400 text-lg text-slate-800 font-semibold">
+						{minutes}m {formatNumber(seconds)}s
+					</span>
+				</span>
+			);
 		}
-		return `Your position will be available for withdrawal in ${seconds}s`;
+		return (
+			<span>
+				Your position will be available for withdrawal in{" "}
+				<span className="dark:text-yellow-400 text-lg text-slate-800 font-semibold">
+					{formatNumber(seconds)}s
+				</span>
+			</span>
+		);
 	};
 
 	return (
 		<p
 			className={cn(
-				"font-normal text-md text-center text-green-600",
-				className
+				"font-normal text-md flex items-center flex-wrap justify-between text-center dark:text-white text-lime-700"
 			)}
 		>
 			{!isConnected ? "Connect your wallet!" : formatTimeLeft()}
+			{transaction_hash && (
+				<ExploreTransactionButton transaction_hash={transaction_hash} />
+			)}
 		</p>
 	);
 };
