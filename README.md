@@ -1,5 +1,3 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
 # Getting started Solidity
 
 # 🌟 EDU Fixed Yield Protocol
@@ -186,6 +184,8 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 Built by [Kamasah Dickson](https://kamasahdickson.vercel.app)
 
 ## Getting Started Frontend
+
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 First, run the development server:
 
