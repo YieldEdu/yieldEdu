@@ -22,7 +22,7 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import YieldEDUIcon from "@/public/icon.png";
 import { cn } from "@/lib/utils";
-import { featuresData } from "./features/page";
+import { featuresData } from "@/data/features";
 
 export default function Page() {
 	const { theme } = useTheme();
