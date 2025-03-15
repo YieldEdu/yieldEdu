@@ -51,7 +51,7 @@ export default function BlogPage() {
 									variant="ghost"
 									className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700/50 cursor-pointer px-3 py-1"
 								>
-									<Badge className="bg-transparent hover:bg-transparent text-white">
+									<Badge className="bg-transparent hover:bg-transparent text-slate-500">
 										{cat.name}{" "}
 										<span className="ml-1 text-slate-400 dark:text-slate-500">
 											({cat.value})

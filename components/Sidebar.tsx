@@ -59,23 +59,21 @@ const Sidebar = () => {
 					className={cn(
 						"fixed inset-y-0 left-0 z-50 bg-white dark:bg-slate-900/90 border-r border-slate-200 dark:border-slate-800/60 transform transition-all duration-100 ease-in-out lg:translate-x-0 lg:static lg:inset-auto lg:flex backdrop-blur-md",
 						{
-							"w-24": !sidebarOpen,
-							"w-3/4 sm:w-1/2 md:w-1/3 lg:w-full": sidebarOpen,
-						},
-						{
-							"translate-x-0": sidebarOpen,
-							"-translate-x-full": !sidebarOpen,
+							"-translate-x-full w-24": !sidebarOpen,
+							"translate-x-0 w-3/4 sm:w-1/2 md:w-1/3 lg:w-full": sidebarOpen,
 						}
 					)}
 				>
-					<div className=" flex flex-col justify-center h-full w-full">
+					<div className=" overflow-x-clip flex flex-col justify-center h-full w-full">
 						<div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800">
 							<div className="flex items-center justify-between gap-3 w-full">
-								<Image
-									src={YieldEDUIcon}
-									alt="YieldEdu Logo"
-									className="size-14 aspect-square"
-								/>
+								<Link href={"/"}>
+									<Image
+										src={YieldEDUIcon}
+										alt="YieldEdu Logo"
+										className="size-14 shrink-0 aspect-square"
+									/>
+								</Link>
 								{sidebarOpen && (
 									<div>
 										<h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-lime-500 to-yellow-500">

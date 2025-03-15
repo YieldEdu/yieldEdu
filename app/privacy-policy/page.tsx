@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
 				<div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-20"></div>
 			</div>
 			<Header />
-			<main className="space-y-6 py-28 mx-auto container md:max-w-5xl">
+			<main className="space-y-6 py-28 px-5 mx-auto container md:max-w-5xl">
 				<section className="mb-8">
 					<p className="mb-4 text-lime-500 dark:text-lime-400">
 						<strong>Last Updated:</strong> March 11, 2025
@@ -132,10 +132,6 @@ export default function PrivacyPolicyPage() {
 						<li>Data portability.</li>
 						<li>Withdraw consent where processing is based on consent.</li>
 					</ul>
-					<p className="mt-4">
-						To exercise these rights, please contact us at
-						privacy@YieldEdu.protocol.
-					</p>
 				</section>
 
 				<section className="mb-8">

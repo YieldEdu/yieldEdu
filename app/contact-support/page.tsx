@@ -10,6 +10,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 const page = () => {
+	const MINIMUM_EDU_TOKENS = " 100 EDU tokens";
 	return (
 		<>
 			<div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none dark:block hidden bg-gradient-animated bg-400 animate-gradient">
@@ -106,15 +107,15 @@ const page = () => {
 						/>
 						<FaqItem
 							question="What tokens can I stake on YieldEdu?"
-							answer="Currently, YieldEdu supports staking of EDU tokens, our native platform token. We plan to expand support for additional tokens in the future based on community feedback and governance decisions."
+							answer="Currently, YieldEdu supports staking of EDU tokens and our native platform token. We plan to expand support for additional tokens in the future based on community feedback and governance decisions."
 						/>
 						<FaqItem
 							question="Is there a minimum amount required to stake?"
-							answer="Yes, the minimum staking amount is 100 EDU tokens. This minimum helps ensure efficient operation of the staking protocol and meaningful rewards for participants."
+							answer={`Yes, the minimum staking amount is ${MINIMUM_EDU_TOKENS}. This minimum helps ensure efficient operation of the staking protocol and meaningful rewards for participants.`}
 						/>
 						<FaqItem
 							question="How secure is YieldEdu Protocol?"
-							answer="Security is our top priority. We use OCID authentication, implement industry-standard security practices, and our smart contracts have undergone rigorous audits by leading security firms. We also maintain a bug bounty program to continuously improve our security posture."
+							answer="Security is our top priority. We use OCID for student authentication, implement industry-standard security practices, and our smart contracts have undergone rigorous audits by security auditors. We also maintain a bug bounty program to continuously improve our security posture."
 						/>
 					</div>
 				</section>

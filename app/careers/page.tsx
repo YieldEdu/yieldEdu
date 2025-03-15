@@ -25,7 +25,7 @@ export default function CareersPage() {
 				<div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-20"></div>
 			</div>
 			<Header />
-			<main className="space-y-8 container mx-auto md:max-w-5xl py-28">
+			<main className="space-y-8 container mx-auto px-5 md:max-w-5xl py-28">
 				<section className="mb-10">
 					<p className="mb-6 text-lg text-slate-600 dark:text-slate-300">
 						YieldEdu Protocol is on a mission to revolutionize DeFi education

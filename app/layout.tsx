@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Mono } from "next/font/google";
+import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import WagmiContextProvider from "@/components/WagmiContextProvider";
 import { headers } from "next/headers";
@@ -8,10 +8,10 @@ import { ThemeProvider } from "@/components/theme-provider";
 import YieldEDUIcon from "@/public/icon.png";
 import GlobalContextProvider from "@/context/globalContext";
 
-const spaceMono = Space_Mono({
+const spaceMono = Space_Grotesk({
 	variable: "--font-space-mono",
-	subsets: ["latin"],
-	weight: "400",
+	subsets: ["latin", "latin-ext", "vietnamese"],
+	weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {

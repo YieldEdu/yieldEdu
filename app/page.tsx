@@ -6,9 +6,6 @@ import {
 	ArrowRight,
 	BookOpen,
 	GraduationCap,
-	LineChart,
-	Shield,
-	Sparkles,
 	Trophy,
 	Users,
 } from "lucide-react";
@@ -19,16 +16,18 @@ import { Badge } from "@/components/ui/badge";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import dashboardImage from "@/public/dashboard.png";
+import dashboardWhiteImage from "@/public/dashboard-white.png";
 import { Particles } from "@/components/Particles";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import YieldEDUIcon from "@/public/icon.png";
 import { cn } from "@/lib/utils";
+import { featuresData } from "./features/page";
 
 export default function Page() {
 	const { theme } = useTheme();
 	const [color, setColor] = useState("#ffffff");
-	const [userType, setUserType] = useState<"student" | "educator" | null>(null);
+	const [userType, setUserType] = useState<"student" | "educator">("educator");
 
 	useEffect(() => {
 		setColor(theme === "dark" ? "#a3e635" : "#000000");
@@ -82,13 +81,13 @@ export default function Page() {
 
 									<div className="space-y-6">
 										<Tabs
-											defaultValue="student"
+											defaultValue={userType}
 											className="w-full max-w-md"
 											onValueChange={(value) =>
 												setUserType(value as "student" | "educator")
 											}
 										>
-											<TabsList className="grid w-full grid-cols-2 dark:bg-slate-800 bg-slate-950">
+											<TabsList className="grid w-full grid-cols-2 dark:bg-slate-800 bg-slate-200">
 												<TabsTrigger
 													disabled
 													value="educator"
@@ -149,9 +148,11 @@ export default function Page() {
 											</Button>
 										</div>
 
-										<p className="text-sm text-slate-500 dark:text-slate-400">
-											Secure authentication via OpenID Connect (OCID)
-										</p>
+										{userType == "student" && (
+											<p className="text-sm text-slate-500 dark:text-slate-400">
+												Secure authentication via OpenID Connect (OCID)
+											</p>
+										)}
 									</div>
 								</motion.div>
 							</div>
@@ -166,11 +167,13 @@ export default function Page() {
 									<div className="absolute -inset-0.5 bg-gradient-to-r from-lime-500 to-yellow-500 rounded-2xl blur opacity-30 dark:opacity-50"></div>
 									<div className="relative bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700/50 shadow-xl">
 										<Image
-											src={dashboardImage}
+											src={
+												theme == "dark" ? dashboardImage : dashboardWhiteImage
+											}
 											alt="YieldEDU"
 											className="w-full h-auto"
 										/>
-										<div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent flex items-end p-8">
+										<div className="absolute inset-0 bg-gradient-to-t from-slate-500/80 dark:from-slate-900/80 to-transparent flex items-end p-8">
 											<div className="pb-7">
 												<h3 className="text-white text-xl font-semibold">
 													Interactive Learning
@@ -245,42 +248,22 @@ export default function Page() {
 						</motion.div>
 
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-							<FeatureCard
-								icon={<GraduationCap className="w-6 h-6 text-lime-500" />}
-								title="Interactive Learning"
-								description="Engaging lessons on DeFi, staking, and blockchain fundamentals with quizzes and hands-on exercises."
-							/>
-							<FeatureCard
-								icon={<LineChart className="w-6 h-6 text-lime-500" />}
-								title="Real Yield Staking"
-								description="Stake your tokens and earn competitive APY while learning about DeFi mechanisms."
-							/>
-							<FeatureCard
-								icon={<Trophy className="w-6 h-6 text-yellow-500" />}
-								title="Learning Rewards"
-								description="Earn APY boosts and bonus tokens by completing educational modules and quizzes."
-							/>
-							<FeatureCard
-								icon={<Shield className="w-6 h-6 text-yellow-500" />}
-								title="Secure Platform"
-								description="Enterprise-grade security with OCID authentication and multi-layer protection."
-							/>
-							<FeatureCard
-								icon={<Users className="w-6 h-6 text-lime-500" />}
-								title="Community Learning"
-								description="Connect with other students and educators in our vibrant community forums."
-							/>
-							<FeatureCard
-								icon={<Sparkles className="w-6 h-6 text-yellow-500" />}
-								title="Educator Tools"
-								description="Comprehensive tools for educators to create courses, track student progress, and earn rewards."
-							/>
+							{featuresData.map(({ Icon, title, description }) => {
+								return (
+									<FeatureCard
+										key={title}
+										icon={<Icon className="w-6 h-6 text-yellow-500" />}
+										title=""
+										description={description}
+									/>
+								);
+							})}
 						</div>
 					</div>
 				</section>
 
 				{/* How It Works */}
-				<section id="how-it-works" className="py-20">
+				<section id="how-it-works" className="py-20 px-5">
 					<div className="container mx-auto px-4">
 						<motion.div
 							initial={{ opacity: 0, y: 20 }}

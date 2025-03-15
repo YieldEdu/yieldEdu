@@ -1,14 +1,22 @@
 import type { Metadata } from "next";
-// import { Space_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import YieldEDUIcon from "@/public/icon.png";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/DashboardHeader";
 // import Loading from "../loading";
-// const spaceMono = Space_Mono({
-//     variable: "--font-space-mono",
-//     subsets: ["latin"],
-//     weight: "400",
-// });
+const inter = Inter({
+	variable: "--font-inter",
+	subsets: [
+		"latin",
+		"cyrillic",
+		"latin-ext",
+		"vietnamese",
+		"cyrillic-ext",
+		"greek",
+		"latin",
+	],
+	weight: "400",
+});
 
 export const metadata: Metadata = {
 	title: "YieldEDU - Earn Guaranteed Yields",
@@ -19,7 +27,7 @@ export const metadata: Metadata = {
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
-		<>
+		<div className={inter.className}>
 			{/* Animated background - only visible in dark mode */}
 			<div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none dark:block hidden bg-gradient-animated bg-400 animate-gradient">
 				<div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,#1a365d80,#0A0B1E)]"></div>
@@ -35,7 +43,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 					</div>
 				</main>
 			</div>
-		</>
+		</div>
 	);
 };
 

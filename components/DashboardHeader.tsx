@@ -15,6 +15,7 @@ import {
 import { useTheme } from "next-themes";
 import { GlobalContext } from "@/context/globalContext";
 import AppKitButton from "./AppKitButton";
+import Feedback from "./Feedback";
 const DashboardHeader = () => {
 	const { open } = useAppKit();
 	const { theme } = useTheme();
@@ -68,6 +69,14 @@ const DashboardHeader = () => {
 							</div>
 						</div>
 						<div className="flex items-center gap-4">
+							<Feedback className="hidden md:flex">
+								<Button
+									className="hover:bg-transparent border-none bg-transparent text-slate-600 font-semibold dark:text-white hover:text-lime-500 dark:hover:text-lime-500"
+									variant="outline"
+								>
+									Feedback
+								</Button>
+							</Feedback>
 							<ThemeSwitcher />
 							<Button
 								variant="ghost"

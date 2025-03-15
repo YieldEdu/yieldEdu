@@ -34,7 +34,7 @@ export default function CommunityPage() {
 				<div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500 to-transparent opacity-20"></div>
 			</div>
 			<Header />
-			<div className="space-y-8 container mx-auto py-28 md:max-w-5xl">
+			<div className="space-y-8 container mx-auto px-5 py-28 md:max-w-5xl">
 				<section className="mb-10">
 					<p className="mb-6 text-lg text-slate-600 dark:text-slate-300">
 						YieldEdu community brings together students, educators, and DeFi

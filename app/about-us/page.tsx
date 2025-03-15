@@ -15,21 +15,20 @@ export default function AboutPage() {
 			<main className="space-y-20 py-28 px-5 container mx-auto md:max-w-4xl">
 				<section className="mb-10">
 					<div className=" mt-6">
-						<h2 className="text-3xl font-bold mb-4 text-slate-900 dark:text-lime-400">
+						<h2 className="text-3xl font-bold mb-4 text-lime-500 dark:text-lime-400">
 							Kamasah Dickson Founder & CEO
 						</h2>
-						<p className="text-sm text-slate-600 dark:text-slate-300">
+						<p className="text-md text-slate-600 italic dark:text-slate-300">
 							A DeFi enthusiast, blockchain developer, and educator committed to
 							making decentralized finance more accessible, practical, and
-							rewarding. With hands-on experience building Web3 applications,
-							smart contracts, and DeFi protocols, he is passionate about
-							bringing financial empowerment through education and staking
-							incentives.
+							rewarding in education. With hands-on experience in building Web3
+							dapps, smart contracts, and DeFi protocols, he is bringing
+							financial empowerment through education and staking incentives.
 						</p>
 					</div>
 				</section>
 				<section className="mb-10">
-					<h2 className="text-3xl font-bold mb-4 text-slate-900 dark:text-white">
+					<h2 className="text-3xl font-bold mb-4 text-lime-500 dark:text-lime-400">
 						Our Mission
 					</h2>
 					<p className="mb-4">
@@ -47,22 +46,29 @@ export default function AboutPage() {
 				</section>
 
 				<section className="mb-10">
-					<h2 className="text-3xl font-bold mb-4 text-slate-900 dark:text-white">
+					<h2 className="text-3xl font-bold mb-4 text-lime-500 dark:text-lime-400">
 						Our Story
 					</h2>
 					<p className="mb-4">
-						YieldStake was conceived in 2023 by a passionate DeFi developer and
-						educator who saw a critical gap in the market: plenty of educational
-						resources existed for blockchain and DeFi, but few connected
-						learning directly to earning opportunities.
+						YieldEdu was formally YieldStake and was conceived in 2024 by
+						Kamasah Dickson who saw a critical gap in the market: plenty of
+						educational resources existed for blockchain and DeFi, but few
+						connected learning directly to earning opportunities.
 					</p>
 					<p className="mb-4">
-						Determined to change this, we launched YieldStake in January 2024,
-						combining interactive learning, staking opportunities, and on-chain
+						Determined to change this, we launched YieldEdu in 2024, combining
+						interactive learning, staking opportunities, and on-chain
 						incentives. Our approach quickly gained traction, and in 2025, we
-						placed 4th in the DeFi category at the EduChain Semester 2
-						Hackathon, validating our vision of bridging education with real
-						financial opportunities.
+						placed 4th in the DeFi category at the{" "}
+						<a
+							href="https://x.com/educhain_xyz"
+							target="_blank"
+							className="text-lime-400 underline"
+						>
+							EduChain{" "}
+						</a>{" "}
+						Semester 2 Hackathon, validating our vision of bridging education
+						with real financial opportunities.
 					</p>
 					<p>
 						Since then, we have helped thousands of students understand DeFi
@@ -72,7 +78,7 @@ export default function AboutPage() {
 				</section>
 
 				<section className="mb-10">
-					<h2 className="text-3xl font-bold mb-4 text-slate-900 dark:text-white">
+					<h2 className="text-3xl font-bold mb-4 text-lime-500 dark:text-lime-400">
 						Join the Community
 					</h2>
 					<p className="mb-4">
@@ -89,7 +95,7 @@ export default function AboutPage() {
 					</p>
 				</section>
 				<section className="mb-10">
-					<h2 className="text-3xl font-bold mb-4 text-slate-900 dark:text-white">
+					<h2 className="text-3xl font-bold mb-4 text-lime-500 dark:text-lime-400">
 						Our Values
 					</h2>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">

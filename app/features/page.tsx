@@ -17,6 +17,44 @@ import {
 } from "lucide-react";
 import React from "react";
 
+export const featuresData = [
+	{
+		Icon: GraduationCap,
+		title: "Interactive Learning",
+		description:
+			"Engaging lessons on DeFi, staking, and blockchain fundamentals with quizzes and hands-on exercises.",
+	},
+	{
+		Icon: LineChart,
+		title: "Real Yield Staking",
+		description:
+			"Stake your tokens and earn competitive APY while learning about DeFi mechanisms.",
+	},
+	{
+		Icon: Trophy,
+		title: "Learning Rewards",
+		description:
+			"Earn APY boosts and bonus tokens by completing educational modules and quizzes.",
+	},
+	{
+		Icon: Shield,
+		title: "Secure Platform",
+		description:
+			"Enterprise-grade security with OCID authentication and multi-layer protection.",
+	},
+	{
+		Icon: Users,
+		title: "Community Learning",
+		description:
+			"Connect with other students and educators in our vibrant community forums.",
+	},
+	{
+		Icon: Sparkles,
+		title: "Educator Tools",
+		description:
+			"Comprehensive tools for educators to create courses, track student progress, and earn rewards.",
+	},
+];
 export default function FeaturesPage() {
 	return (
 		<>
@@ -38,8 +76,8 @@ export default function FeaturesPage() {
 					</p>
 					<p>
 						Our platform is designed for both students looking to learn about
-						DeFi while earning rewards and educators seeking to monetize their
-						expertise and create engaging learning experiences.
+						DeFi while earning rewards and educators seeking to create engaging
+						learning experiences and earn rewards.
 					</p>
 				</section>
 
@@ -49,36 +87,16 @@ export default function FeaturesPage() {
 					</h2>
 
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-						<FeatureCard
-							icon={<GraduationCap className="w-6 h-6 text-lime-500" />}
-							title="Interactive Learning"
-							description="Engaging lessons on DeFi, staking, and blockchain fundamentals with quizzes and hands-on exercises."
-						/>
-						<FeatureCard
-							icon={<LineChart className="w-6 h-6 text-lime-500" />}
-							title="Real Yield Staking"
-							description="Stake your tokens and earn competitive APY while learning about DeFi mechanisms."
-						/>
-						<FeatureCard
-							icon={<Trophy className="w-6 h-6 text-yellow-500" />}
-							title="Learning Rewards"
-							description="Earn APY boosts and bonus tokens by completing educational modules and quizzes."
-						/>
-						<FeatureCard
-							icon={<Shield className="w-6 h-6 text-yellow-500" />}
-							title="Secure Platform"
-							description="Enterprise-grade security with OCID authentication and multi-layer protection."
-						/>
-						<FeatureCard
-							icon={<Users className="w-6 h-6 text-lime-500" />}
-							title="Community Learning"
-							description="Connect with other students and educators in our vibrant community forums."
-						/>
-						<FeatureCard
-							icon={<Sparkles className="w-6 h-6 text-yellow-500" />}
-							title="Educator Tools"
-							description="Comprehensive tools for educators to create courses, track student progress, and earn rewards."
-						/>
+						{featuresData.map(({ Icon, title, description }) => {
+							return (
+								<FeatureCard
+									key={title}
+									icon={<Icon className="w-6 h-6 text-yellow-500" />}
+									title=""
+									description={description}
+								/>
+							);
+						})}
 					</div>
 				</section>
 
@@ -139,7 +157,7 @@ export default function FeaturesPage() {
 									APY Boost
 								</Badge>
 								<span className="text-slate-700 dark:text-slate-300">
-									Increase your staking APY by up to 15% based on learning
+									Increase your staking APY by 15%+ based on learning
 									achievements
 								</span>
 							</li>
@@ -249,10 +267,10 @@ export default function FeaturesPage() {
 									Premium
 								</Badge>
 								<span className="text-slate-700 dark:text-slate-300">
-									Option to offer premium courses with direct payment in tokens
+									Option to offer premium courses.
 								</span>
 							</li>
-							<li className="flex items-start gap-2">
+							{/* <li className="flex items-start gap-2">
 								<Badge className="mt-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-700/30">
 									Royalties
 								</Badge>
@@ -260,7 +278,7 @@ export default function FeaturesPage() {
 									Ongoing royalties when your content is used in affiliated
 									platforms
 								</span>
-							</li>
+							</li> */}
 						</ul>
 					</div>
 				</section>
@@ -279,8 +297,8 @@ export default function FeaturesPage() {
 								</h3>
 								<p className="text-slate-700 dark:text-slate-300">
 									Secure authentication via OpenID Connect (OCID) ensures your
-									identity is verified through trusted providers while
-									maintaining privacy and security.
+									identity is verified as a student through trusted providers
+									while maintaining privacy and security.
 								</p>
 							</li>
 							<li>
@@ -290,8 +308,8 @@ export default function FeaturesPage() {
 								</h3>
 								<p className="text-slate-700 dark:text-slate-300">
 									All staking operations are governed by audited smart contracts
-									that have undergone rigorous security assessments by leading
-									blockchain security firms.
+									that have undergone rigorous security assessments by
+									blockchain security auditors.
 								</p>
 							</li>
 							<li>
