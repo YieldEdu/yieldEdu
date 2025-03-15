@@ -55,7 +55,31 @@ export const featuresData = [
 			"Comprehensive tools for educators to create courses, track student progress, and earn rewards.",
 	},
 ];
-export default function FeaturesPage() {
+function FeatureCard({
+	icon,
+	title,
+	description,
+}: {
+	icon: React.ReactNode;
+	title: string;
+	description: string;
+}) {
+	return (
+		<Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
+			<CardContent className="p-6">
+				<div className="w-12 h-12 rounded-lg bg-lime-100 dark:bg-lime-900/30 flex items-center justify-center mb-4">
+					{icon}
+				</div>
+				<h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">
+					{title}
+				</h3>
+				<p className="text-slate-600 dark:text-slate-300">{description}</p>
+			</CardContent>
+		</Card>
+	);
+}
+
+const FeaturesPage = () => {
 	return (
 		<>
 			<div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none dark:block hidden bg-gradient-animated bg-400 animate-gradient">
@@ -341,28 +365,6 @@ export default function FeaturesPage() {
 			<Footer />
 		</>
 	);
-}
+};
 
-function FeatureCard({
-	icon,
-	title,
-	description,
-}: {
-	icon: React.ReactNode;
-	title: string;
-	description: string;
-}) {
-	return (
-		<Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow">
-			<CardContent className="p-6">
-				<div className="w-12 h-12 rounded-lg bg-lime-100 dark:bg-lime-900/30 flex items-center justify-center mb-4">
-					{icon}
-				</div>
-				<h3 className="text-xl font-semibold mb-2 text-slate-900 dark:text-white">
-					{title}
-				</h3>
-				<p className="text-slate-600 dark:text-slate-300">{description}</p>
-			</CardContent>
-		</Card>
-	);
-}
+export default FeaturesPage;
