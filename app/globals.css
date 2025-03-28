@@ -72,3 +72,35 @@ body {
 		scroll-behavior: smooth;
 	}
 }
+
+@keyframes ping-slow {
+	75%,
+	100% {
+		transform: scale(2);
+		opacity: 0;
+	}
+}
+
+@keyframes ping-slower {
+	75%,
+	100% {
+		transform: scale(2.5);
+		opacity: 0;
+	}
+}
+
+.animate-ping-slow {
+	animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.animate-ping-slower {
+	animation: ping-slower 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.scale-150 {
+	transform: scale(1.5);
+}
+
+.scale-200 {
+	transform: scale(2);
+}

@@ -37,10 +37,8 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 			<Header />
 			<div className="flex w-full h-full">
 				<Sidebar />
-				<main className="flex flex-col w-full flex-1 py-5 px-5 h-screen overflow-y-auto">
-					<div className="container md:max-w-8xl mx-auto mt-24 space-y-6">
-						{children}
-					</div>
+				<main className="flex flex-col w-full flex-1 px-5 h-screen overflow-y-auto">
+					<div className="mt-24 space-y-6">{children}</div>
 				</main>
 			</div>
 		</div>

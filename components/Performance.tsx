@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import {
 	Card,
 	CardContent,
@@ -7,7 +7,6 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "./ui/tabs";
-import { LineChart, Sparkles, Trophy } from "lucide-react";
 import {
 	Area,
 	AreaChart,
@@ -65,26 +64,6 @@ const Performance = () => {
 				</div>
 			</CardHeader>
 			<CardContent>
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-					<StatsCard
-						title="Total Staked"
-						value="1,234.56 EDU"
-						change="+12.3%"
-						icon={<LineChart className="w-4 h-4" />}
-					/>
-					<StatsCard
-						title="Current APY"
-						value="12.5%"
-						change="+2.5%"
-						icon={<Sparkles className="w-4 h-4" />}
-					/>
-					<StatsCard
-						title="Rewards Earned"
-						value="45.67 EDU"
-						change="+3.4%"
-						icon={<Trophy className="w-4 h-4" />}
-					/>
-				</div>
 				<div className="h-[300px] mt-4 ">
 					<ResponsiveContainer
 						width="100%"
@@ -129,43 +108,3 @@ const Performance = () => {
 };
 
 export default Performance;
-
-function StatsCard({
-	title,
-	value,
-	change,
-	icon,
-}: {
-	title: string;
-	value: string;
-	icon: ReactNode;
-	change: string;
-}) {
-	const isPositive = change.startsWith("+");
-	return (
-		<div className="bg-slate-100 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700/50">
-			<div className="flex justify-between items-start mb-2">
-				<span className="text-slate-500 dark:text-slate-400 text-sm">
-					{title}
-				</span>
-				<div className="p-2 bg-white dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700/50">
-					{icon}
-				</div>
-			</div>
-			<div className="flex items-baseline gap-2">
-				<span className="text-xl font-semibold text-slate-900 dark:text-white">
-					{value}
-				</span>
-				<span
-					className={`text-sm ${
-						isPositive
-							? "text-lime-600 dark:text-lime-400"
-							: "text-red-500 dark:text-red-400"
-					}`}
-				>
-					{change}
-				</span>
-			</div>
-		</div>
-	);
-}

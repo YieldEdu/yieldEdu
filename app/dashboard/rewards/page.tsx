@@ -49,7 +49,7 @@ const Page = () => {
 
 	return (
 		<>
-			<div className="flex justify-between items-center mb-6">
+			<div className="flex justify-between flex-wrap gap-5 items-center mb-6">
 				<div>
 					<h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
 						Your Rewards
@@ -129,7 +129,7 @@ const Page = () => {
 						</div>
 
 						<div className="bg-gradient-to-r from-lime-50 to-yellow-50 dark:from-lime-500/10 dark:to-yellow-500/10 rounded-xl p-5 border border-lime-200 dark:border-lime-500/30 mb-6">
-							<div className="flex items-center gap-3 mb-3">
+							<div className="flex flex-wrap items-center gap-3 mb-3">
 								<div className="p-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm">
 									<GraduationCap className="w-5 h-5 text-lime-600 dark:text-lime-400" />
 								</div>

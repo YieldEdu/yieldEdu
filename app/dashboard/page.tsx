@@ -123,8 +123,6 @@ const FixedYieldDashboard = () => {
 					</CardContent>
 				</Card>
 			</div>
-			{/* !!Todo Add Performance Component */}
-			{/* <Performance /> */}
 
 			<div className="grid grid-cols-1 xl:grid-cols-3 lg:space-y-0  xl:gap-6 h-auto">
 				<StakingCard />
@@ -147,28 +145,6 @@ const FixedYieldDashboard = () => {
 				setShowWithDrawModal={setShowWithDrawModal}
 				showWithdrawModal={showWithdrawModal}
 			/>
-
-			{/* <footer className="flex  p-4 md:p-8 justify-between items-center text-white py-4">
-                <a
-                    className="hover:underline"
-                    href="kamasahdickson.vercel.app"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                >
-                    Made with ❤️ by Kamasah Dickson
-                </a>
-                <ul>
-                    <li>
-                        <Link
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            href="https://x.com/bruh_codes"
-                        >
-                            <Image src={X} alt="bruh_codes" />
-                        </Link>
-                    </li>
-                </ul>
-            </footer> */}
 		</>
 	);
 };

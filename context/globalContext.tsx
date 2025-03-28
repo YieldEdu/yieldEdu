@@ -13,7 +13,7 @@ export const GlobalContext = createContext<GlobalContextInterface>({
 });
 
 const GlobalContextProvider = ({ children }: { children: React.ReactNode }) => {
-	const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+	const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
 
 	return (
 		<GlobalContext.Provider value={{ sidebarOpen, setSidebarOpen }}>

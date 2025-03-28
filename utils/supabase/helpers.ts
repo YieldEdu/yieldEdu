@@ -1,3 +1,4 @@
+import { lessonsInterface } from "@/data/lessons";
 import { supabase } from "./server";
 
 export const storeTransaction = async (transaction: {
@@ -43,4 +44,13 @@ export const removeTransaction = async (
 		.eq("owner", owner);
 
 	return { error };
+};
+
+export const addLesson = async (lesson: lessonsInterface[]) => {
+	const { data, error } = await supabase.from("lessons").insert(lesson);
+	if (error) {
+		console.error("Error adding lesson:", error);
+	} else {
+		console.log("Lesson added:", data);
+	}
 };

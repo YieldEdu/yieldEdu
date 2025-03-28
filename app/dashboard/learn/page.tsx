@@ -1,5 +1,3 @@
-"use client";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,6 +7,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { getAllLessons } from "@/data/lessons";
 import { cn } from "@/lib/utils";
 import {
 	Check,
@@ -18,45 +17,13 @@ import {
 	Sparkles,
 	Trophy,
 } from "lucide-react";
+import Link from "next/link";
 
-const Page = () => {
-	const lessons = [
-		{
-			title: "Introduction to DeFi",
-			description: "Learn the basics of decentralized finance and how it works",
-			duration: "15 minutes",
-			completed: true,
-		},
-		{
-			title: "Understanding Staking",
-			description: "Discover how staking works and its benefits",
-			duration: "20 minutes",
-			completed: true,
-		},
-		{
-			title: "Yield Farming Strategies",
-			description: "Advanced strategies to maximize your yield farming returns",
-			duration: "25 minutes",
-			completed: true,
-		},
-		{
-			title: "Risk Management in DeFi",
-			description:
-				"Learn how to manage risks when participating in DeFi protocols",
-			duration: "30 minutes",
-			completed: false,
-		},
-		{
-			title: "Tokenomics Fundamentals",
-			description: "Understanding the economics behind tokens and their value",
-			duration: "25 minutes",
-			completed: false,
-		},
-	];
-
+const Page = async () => {
+	const lessons = getAllLessons();
 	return (
 		<>
-			<div className="flex justify-between items-center mb-6">
+			<div className="flex justify-between flex-wrap items-center gap-5 mb-6">
 				<div>
 					<h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
 						Learning Center
@@ -65,7 +32,7 @@ const Page = () => {
 						Complete lessons to earn rewards and boost your APY
 					</p>
 				</div>
-				<div className="flex items-center gap-3">
+				<div className="flex flex-wrap items-center gap-3">
 					<Badge className="bg-lime-100 dark:bg-lime-400/20 text-lime-600 dark:text-lime-400 border-lime-200 dark:border-lime-400/30 px-3 py-1">
 						<GraduationCap className="w-4 h-4 mr-1" />
 						Level 2 Scholar
@@ -76,90 +43,6 @@ const Page = () => {
 					</Badge>
 				</div>
 			</div>
-
-			{/* Learning Progress */}
-			<Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm mb-8">
-				<CardHeader>
-					<CardTitle className="text-slate-900 dark:text-white text-2xl">
-						Your Learning Journey
-					</CardTitle>
-					<CardDescription className="text-slate-500 dark:text-slate-400">
-						Track your progress and unlock rewards
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<div className="relative">
-						<div className="absolute left-3 h-full w-0.5 bg-slate-200 dark:bg-slate-700/50"></div>
-						<div className="space-y-8 relative">
-							{lessons.map((lesson, index) => (
-								<div key={index} className="ml-9 relative">
-									<div
-										className={`absolute -left-9 top-0 flex items-center justify-center w-6 h-6 rounded-full border-2 ${
-											lesson.completed
-												? "bg-lime-500 border-lime-500"
-												: "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600"
-										}`}
-									>
-										{lesson.completed && (
-											<Check className="w-3 h-3 text-white" />
-										)}
-									</div>
-									<div
-										className={`p-4 rounded-xl border ${
-											lesson.completed
-												? "bg-lime-50 dark:bg-lime-500/10 border-lime-200 dark:border-lime-500/30"
-												: "bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50"
-										}`}
-									>
-										<div className="flex justify-between items-start mb-2">
-											<h3
-												className={`font-medium ${
-													lesson.completed
-														? "text-lime-700 dark:text-lime-400"
-														: "text-slate-900 dark:text-white"
-												}`}
-											>
-												{lesson.title}
-											</h3>
-											<Badge
-												className={
-													lesson.completed
-														? "bg-lime-100 dark:bg-lime-400/20 text-lime-600 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
-														: "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-600"
-												}
-											>
-												{lesson.completed ? "Completed" : "Incomplete"}
-											</Badge>
-										</div>
-										<p className="text-slate-500 dark:text-slate-400 text-sm mb-3">
-											{lesson.description}
-										</p>
-										<div className="flex justify-between items-center">
-											<div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-												<Clock className="w-4 h-4" />
-												<span>{lesson.duration}</span>
-											</div>
-											<Button
-												variant={lesson.completed ? "outline" : "default"}
-												className={cn("transition-all", {
-													"border-lime-200 dark:border-lime-500/30 text-lime-600 dark:text-lime-400 hover:bg-lime-50 dark:hover:bg-lime-500/10":
-														lesson.completed,
-
-													"bg-gradient-to-r from-lime-500 to-yellow-500 text-white dark:text-slate-900":
-														!lesson.completed,
-												})}
-											>
-												{lesson.completed ? "Review Lesson" : "Start Lesson"}
-											</Button>
-										</div>
-									</div>
-								</div>
-							))}
-						</div>
-					</div>
-				</CardContent>
-			</Card>
-
 			{/* Rewards for Learning */}
 			<Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm">
 				<CardHeader>
@@ -245,6 +128,109 @@ const Page = () => {
 									EDU Tokens
 								</span>
 							</div>
+						</div>
+					</div>
+				</CardContent>
+			</Card>
+
+			{/* Learning Progress */}
+			<Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm">
+				<CardHeader>
+					<CardTitle className="text-slate-900 dark:text-white text-2xl">
+						Your Learning Journey
+					</CardTitle>
+					<CardDescription className="text-slate-500 dark:text-slate-400">
+						Track your progress and unlock rewards
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<div className="relative">
+						{/* <div className="absolute left-3 h-full w-0.5 bg-slate-200 dark:bg-slate-700/50"></div> */}
+						<div className="space-y-8 relative">
+							{lessons.map((lesson, index) => (
+								<div key={index} className="ml-9 relative">
+									<div
+										className={`absolute -left-9 top-0 flex items-center justify-center w-6 h-6 rounded-full border-2 ${
+											lesson.completed
+												? "bg-lime-500 border-lime-500"
+												: "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600"
+										}`}
+									>
+										{lesson.completed && (
+											<Check className="w-3 h-3 text-white" />
+										)}
+									</div>
+									<div
+										className={cn(
+											"absolute -left-6 top-6 min-h-full h-48 md:h-36 w-0.5 bg-slate-200 dark:bg-slate-700/50",
+											{
+												"bg-lime-500 dark:bg-lime-500": lesson.completed,
+											}
+										)}
+									></div>
+									<div
+										className={`p-4 rounded-xl border ${
+											lesson.completed
+												? "bg-lime-50 dark:bg-lime-500/10 border-lime-200 dark:border-lime-500/30"
+												: "bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50"
+										}`}
+									>
+										<div className="flex justify-between gap-2 md:flex-nowrap flex-wrap-reverse items-start mb-2">
+											<h3
+												className={`font-medium ${
+													lesson.completed
+														? "text-lime-700 dark:text-lime-400"
+														: "text-slate-900 dark:text-white"
+												}`}
+											>
+												{lesson.title}
+											</h3>
+											<Badge
+												className={
+													lesson.completed
+														? "bg-lime-100 dark:bg-lime-400/20 text-lime-600 dark:text-lime-400 border-lime-200 dark:border-lime-400/30"
+														: "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-600"
+												}
+											>
+												{lesson.completed ? "Completed" : "Incomplete"}
+											</Badge>
+										</div>
+										<p className="text-slate-500 dark:text-slate-400 text-sm mb-3">
+											{lesson.description}
+										</p>
+										<div className="flex md:flex-nowrap flex-wrap gap-2 justify-between items-center">
+											<div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+												<Clock className="w-4 h-4" />
+												<span>{lesson.duration}</span>
+											</div>
+											<Link
+												className="w-full md:w-fit"
+												href={
+													lesson.completed
+														? `/dashboard/learn/review-lesson/${lesson.id}`
+														: `/dashboard/learn/start-lesson/${lesson.id}`
+												}
+											>
+												<Button
+													variant={lesson.completed ? "outline" : "default"}
+													className={cn(
+														"transition-all  ease-linear duration-75",
+														{
+															"border-lime-200 dark:border-lime-500/30 hover:border-slate-900 text-lime-600 dark:text-lime-400 hover:bg-lime-50 dark:hover:bg-lime-500/10":
+																lesson.completed,
+
+															"bg-gradient-to-r from-lime-500 to-yellow-500 hover:to-yellow-500/60 text-white dark:text-slate-900":
+																!lesson.completed,
+														}
+													)}
+												>
+													{lesson.completed ? "Review Lesson" : "Start Lesson"}
+												</Button>
+											</Link>
+										</div>
+									</div>
+								</div>
+							))}
 						</div>
 					</div>
 				</CardContent>

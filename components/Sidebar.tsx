@@ -27,7 +27,7 @@ import YieldEDUIcon from "@/public/icon.png";
 import { GlobalContext } from "@/context/globalContext";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const Sidebar = () => {
 	const pathname = usePathname();
@@ -40,6 +40,20 @@ const Sidebar = () => {
 				JSON.parse(localStorage.getItem("sidebarOpen")!) || sidebarOpen
 			);
 		}
+	}, [setSidebarOpen, sidebarOpen]);
+
+	useEffect(() => {
+		const handleResize = () => {
+			if (window.innerWidth <= 1024) {
+				setSidebarOpen(false);
+			} else {
+				setSidebarOpen(true);
+			}
+		};
+		window.addEventListener("resize", handleResize);
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
 	}, [setSidebarOpen, sidebarOpen]);
 
 	const handleSidebarToggle = () => {
@@ -250,13 +264,22 @@ function SidebarLink({
 	icon: React.JSX.Element;
 	link: string;
 }) {
-	const { sidebarOpen } = useContext(GlobalContext);
+	const { sidebarOpen, setSidebarOpen } = useContext(GlobalContext);
+	const router = useRouter();
+	const handleLinkClicked = (link: string) => {
+		if (window.innerWidth >= 1024) {
+			router.push(link);
+		} else {
+			setSidebarOpen(false);
+			router.push(link);
+		}
+	};
 
 	return (
 		<Tooltip disableHoverableContent={false}>
 			<TooltipTrigger className={cn("flex items-center  w-full")}>
-				<Link
-					href={link}
+				<div
+					onClick={() => handleLinkClicked(link)}
 					className={cn(
 						"flex items-center gap-3 w-full px-3 overflow-x-clip py-2 rounded-lg transition-colors",
 						{
@@ -284,7 +307,7 @@ function SidebarLink({
 							<span className="font-medium">{label}</span>
 						</TooltipContent>
 					)}
-				</Link>
+				</div>
 			</TooltipTrigger>
 		</Tooltip>
 	);
