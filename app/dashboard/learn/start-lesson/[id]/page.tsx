@@ -126,7 +126,7 @@ export default function CoursePage({ params }: CoursePageProps) {
 
 								<div className="bg-slate-100 dark:bg-slate-900/50  border-slate-200 dark:border-slate-700 rounded-lg p-4 border border-border/10 mb-6">
 									<h3 className="font-bold mb-2 text-secondary">
-										What You'll Learn
+										What You&apos;ll Learn
 									</h3>
 									<ul className="space-y-3">
 										{courseData.topics.map((topic, index) => (
@@ -198,9 +198,9 @@ export default function CoursePage({ params }: CoursePageProps) {
 									</h3>
 									<p className="text-gray-300 mb-4">
 										This course is delivered through interactive conversations
-										with our specialized AI mentor. You'll engage in natural
-										dialogue, receive real-time feedback, and earn verifiable
-										credentials upon completion.
+										with our specialized AI mentor. You&apos;ll engage in
+										natural dialogue, receive real-time feedback, and earn
+										verifiable credentials upon completion.
 									</p>
 
 									<Button className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-background font-medium py-6 text-lg">

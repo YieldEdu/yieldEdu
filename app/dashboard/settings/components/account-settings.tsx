@@ -31,7 +31,7 @@ export function AccountSettings() {
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
 	// In a real app, this would be fetched from an API
-	const [accountData, setAccountData] = useState({
+	const [accountData] = useState({
 		walletAddress: "0x1234...5678",
 		level: 2,
 		memberSince: "March 2023",

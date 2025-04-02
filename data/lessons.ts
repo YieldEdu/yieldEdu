@@ -17,7 +17,6 @@ export interface lessonsInterface {
 			  }
 		)[];
 	}[];
-	quiz: { question: string; options: string[]; correctAnswer: number }[];
 }
 
 export const getAllLessons = (): lessonsInterface[] => {
@@ -70,26 +69,6 @@ export const getAllLessons = (): lessonsInterface[] => {
 					],
 				},
 			],
-			quiz: [
-				{
-					question: "What is DeFi primarily built on?",
-					options: [
-						"Traditional banks",
-						"Blockchain technology",
-						"Government regulations",
-					],
-					correctAnswer: 1,
-				},
-				{
-					question: "Which of the following is NOT a benefit of DeFi?",
-					options: [
-						"Lower fees",
-						"Centralized control",
-						"Global accessibility",
-					],
-					correctAnswer: 1,
-				},
-			],
 		},
 
 		// Lesson 2: Blockchain & Smart Contracts
@@ -139,26 +118,6 @@ export const getAllLessons = (): lessonsInterface[] => {
 					],
 				},
 			],
-			quiz: [
-				{
-					question: "What is a smart contract?",
-					options: [
-						"A legal document",
-						"A self-executing contract on blockchain",
-						"A bank agreement",
-					],
-					correctAnswer: 1,
-				},
-				{
-					question: "Which of the following is a feature of blockchain?",
-					options: [
-						"Centralized control",
-						"Immutable ledger",
-						"High transaction fees",
-					],
-					correctAnswer: 1,
-				},
-			],
 		},
 
 		// Lesson 3: DeFi Lending & Borrowing
@@ -199,18 +158,6 @@ export const getAllLessons = (): lessonsInterface[] => {
 						},
 						{ type: "list", items: ["Aave", "Compound", "MakerDAO"] },
 					],
-				},
-			],
-			quiz: [
-				{
-					question: "What is required for most DeFi loans?",
-					options: ["A credit score", "Collateral", "A bank account"],
-					correctAnswer: 1,
-				},
-				{
-					question: "Which of the following is a DeFi lending platform?",
-					options: ["Uniswap", "Aave", "Bitcoin"],
-					correctAnswer: 1,
 				},
 			],
 		},
@@ -263,22 +210,6 @@ export const getAllLessons = (): lessonsInterface[] => {
 					],
 				},
 			],
-			quiz: [
-				{
-					question: "What is the main purpose of staking?",
-					options: [
-						"Speculation",
-						"Network security & earning rewards",
-						"Short-term trading",
-					],
-					correctAnswer: 1,
-				},
-				{
-					question: "What is a risk associated with yield farming?",
-					options: ["Impermanent loss", "Fixed returns", "No risk involved"],
-					correctAnswer: 0,
-				},
-			],
 		},
 
 		// Lesson 5: DeFi Trading & DEXs
@@ -326,22 +257,6 @@ export const getAllLessons = (): lessonsInterface[] => {
 							],
 						},
 					],
-				},
-			],
-			quiz: [
-				{
-					question: "What is a DEX primarily used for?",
-					options: ["Staking tokens", "Trading crypto assets", "Storing NFTs"],
-					correctAnswer: 1,
-				},
-				{
-					question: "What is slippage in trading?",
-					options: [
-						"A type of fee",
-						"The difference between expected and executed price",
-						"A type of cryptocurrency",
-					],
-					correctAnswer: 1,
 				},
 			],
 		},
@@ -393,26 +308,6 @@ export const getAllLessons = (): lessonsInterface[] => {
 					],
 				},
 			],
-			quiz: [
-				{
-					question: "Which of these is a common DeFi security risk?",
-					options: [
-						"Fixed interest rates",
-						"Flash loan attacks",
-						"CeFi integration",
-					],
-					correctAnswer: 1,
-				},
-				{
-					question: "What is a recommended security practice in DeFi?",
-					options: [
-						"Use hardware wallets",
-						"Share private keys",
-						"Invest without research",
-					],
-					correctAnswer: 0,
-				},
-			],
 		},
 
 		// Lesson 7: DeFi Governance
@@ -456,22 +351,6 @@ export const getAllLessons = (): lessonsInterface[] => {
 							items: ["Uniswap (UNI)", "Compound (COMP)", "MakerDAO (MKR)"],
 						},
 					],
-				},
-			],
-			quiz: [
-				{
-					question: "What is the purpose of governance tokens?",
-					options: [
-						"To trade on exchanges",
-						"To vote on protocol changes",
-						"To store value",
-					],
-					correctAnswer: 1,
-				},
-				{
-					question: "Which of the following is a governance token?",
-					options: ["UNI", "BTC", "ETH"],
-					correctAnswer: 0,
 				},
 			],
 		},
@@ -519,22 +398,6 @@ export const getAllLessons = (): lessonsInterface[] => {
 					],
 				},
 			],
-			quiz: [
-				{
-					question: "What does DeFi insurance protect against?",
-					options: [
-						"Market volatility",
-						"Smart contract failures",
-						"Regulatory changes",
-					],
-					correctAnswer: 1,
-				},
-				{
-					question: "Which of the following is a DeFi insurance platform?",
-					options: ["Nexus Mutual", "Uniswap", "Aave"],
-					correctAnswer: 0,
-				},
-			],
 		},
 
 		// Lesson 9: DeFi Derivatives
@@ -578,22 +441,6 @@ export const getAllLessons = (): lessonsInterface[] => {
 							items: ["Synthetix", "dYdX", "Opyn"],
 						},
 					],
-				},
-			],
-			quiz: [
-				{
-					question: "What are DeFi derivatives?",
-					options: [
-						"Physical assets",
-						"Financial contracts based on underlying assets",
-						"Governance tokens",
-					],
-					correctAnswer: 1,
-				},
-				{
-					question: "Which platform is known for DeFi derivatives?",
-					options: ["Synthetix", "Uniswap", "Compound"],
-					correctAnswer: 0,
 				},
 			],
 		},
@@ -643,26 +490,6 @@ export const getAllLessons = (): lessonsInterface[] => {
 							],
 						},
 					],
-				},
-			],
-			quiz: [
-				{
-					question: "What is a major regulatory challenge for DeFi?",
-					options: [
-						"Lack of innovation",
-						"Compliance with AML/KYC",
-						"No challenges",
-					],
-					correctAnswer: 1,
-				},
-				{
-					question: "What is the future of DeFi regulation?",
-					options: [
-						"No regulation",
-						"Stricter frameworks",
-						"DeFi will remain unregulated",
-					],
-					correctAnswer: 1,
 				},
 			],
 		},

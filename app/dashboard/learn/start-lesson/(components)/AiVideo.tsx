@@ -1,17 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import AudioVisualizer from "./AudioVisualizer";
 import { cn } from "@/lib/utils";
+import { ClassValue } from "clsx";
 
-interface AIVideoProps {
-	className?: string;
-}
-
-const AIVideo: React.FC<AIVideoProps> = ({ className = "" }) => {
-	const [isSpeaking] = useState(false);
-
+const AIVideo = ({
+	// type,
+	// userId,
+	// username,
+	className,
+	isSpeaking,
+}: {
+	type?: string;
+	username?: string;
+	className?: ClassValue;
+	isSpeaking: boolean;
+}) => {
 	return (
 		<div
 			className={cn(

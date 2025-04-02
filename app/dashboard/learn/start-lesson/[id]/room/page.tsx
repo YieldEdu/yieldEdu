@@ -11,17 +11,37 @@ import {
 	Minimize2,
 	VolumeX,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "@/hooks/use-toast";
+import { vapi } from "@/utils/vapi.sdk";
+
+export enum CallStatus {
+	INACTIVE = "INACTIVE",
+	CONNECTING = "CONNECTING",
+	ACTIVE = "ACTIVE",
+	FINISHED = "FINISHED",
+}
+
+interface SavedMessages {
+	role: "user" | "system" | "assistant";
+	content: string;
+}
+
+interface Message {
+	type: "transcript";
+	transcriptType: "final";
+	transcript: string;
+	role: "assistant" | "user" | "system";
+}
 
 const VideoInterface: React.FC = () => {
-	const router = useRouter();
+	// const router = useRouter();
 	const containerRef = useRef<HTMLDivElement>(null);
 	const containerRef2 = useRef<HTMLDivElement>(null);
-	const [isConnected, setIsConnected] = useState(false);
+	// const [isConnected, setIsConnected] = useState(false);
 	const [isMuted, setIsMuted] = useState(false);
 	const [volume, setVolume] = useState(1);
 	const [isFullscreen, setIsFullScreen] = useState(false);
@@ -29,15 +49,6 @@ const VideoInterface: React.FC = () => {
 	const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 	const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 	const [gainNode, setGainNode] = useState<GainNode | null>(null);
-
-	useEffect(() => {
-		// Simulate connection delay
-		const timer = setTimeout(() => {
-			setIsConnected(true);
-		}, 1000);
-
-		return () => clearTimeout(timer);
-	}, []);
 
 	useEffect(() => {
 		// Get initial microphone access
@@ -96,10 +107,6 @@ const VideoInterface: React.FC = () => {
 		};
 	}, [containerRef2]);
 
-	const handleEndCall = () => {
-		router.push("/dashboard/learn"); // Adjust the path as needed
-	};
-
 	const handleVolumeChange = (value: number[]) => {
 		setVolume(value[0]);
 		if (gainNode) {
@@ -117,7 +124,81 @@ const VideoInterface: React.FC = () => {
 		}
 	};
 
-	if (!isConnected) {
+	// ===================vapi==========================
+	const [isSpeaking, setIsSpeaking] = useState(false);
+	const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
+	const [messages, setMessages] = useState<SavedMessages[]>([]);
+
+	useEffect(() => {
+		const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
+		const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
+		const onMessage = (message: Message) => {
+			if (message.type === "transcript" && message.transcriptType == "final") {
+				const newMessage = { role: message.role, content: message.transcript };
+
+				setMessages((prevMessages) => [...prevMessages, newMessage]);
+			}
+		};
+
+		const onSpeechStart = () => setIsSpeaking(true);
+		const onSpeechEnd = () => setIsSpeaking(false);
+
+		const onError = (error: Error) => console.log("error", error);
+
+		vapi.on("call-start", onCallStart);
+		vapi.on("call-end", onCallEnd);
+		vapi.on("message", onMessage);
+		vapi.on("speech-start", onSpeechStart);
+		vapi.on("speech-end", onSpeechEnd);
+		vapi.on("error", onError);
+
+		return () => {
+			vapi.off("call-start", onCallStart);
+			vapi.off("call-end", onCallEnd);
+			vapi.off("message", onMessage);
+			vapi.off("speech-start", onSpeechStart);
+			vapi.off("speech-end", onSpeechEnd);
+			vapi.off("error", onError);
+		};
+	}, []);
+
+	// useEffect(() => {
+	// 	if (callStatus === CallStatus.FINISHED) router.push("/dashboard/learn");
+	// }, [callStatus, router]);
+
+	// const ansistantOptons = {};
+
+	const handleCall = async () => {
+		setCallStatus(CallStatus.CONNECTING);
+		try {
+			await vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISTANT!, {
+				variableValues: {
+					// userId: userId,
+					username: "Dickson",
+				},
+			});
+		} catch (error) {
+			console.log(error);
+			vapi.stop();
+
+			toast({
+				title: "Error starting call",
+
+				description: "Unable to connect to the call.",
+				variant: "destructive",
+			});
+		}
+	};
+	const handleCallDisconnect = async () => {
+		setCallStatus(CallStatus.FINISHED);
+		vapi.stop();
+	};
+
+	const isCallInactiveOrFinsished =
+		callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED;
+	// const isCallActive = callStatus === CallStatus.ACTIVE;
+
+	if (callStatus === CallStatus.CONNECTING) {
 		return (
 			<div className="flex items-center justify-center">
 				<div className="p-8 rounded-2xl text-center animate-pulse-soft">
@@ -165,10 +246,6 @@ const VideoInterface: React.FC = () => {
 		}
 	};
 
-	const messages = [
-		"Use the chat to ask questions or share your thoughts.",
-		"	You can also use the raise hand feature to ask questions.",
-	];
 	return (
 		<div
 			ref={containerRef}
@@ -189,81 +266,98 @@ const VideoInterface: React.FC = () => {
 				</div>
 
 				<div className="grid grid-cols-1 md:grid-cols-2 md:h-[400] gap-6">
-					<AIVideo className="aspect-auto" />
+					<AIVideo
+						isSpeaking={isSpeaking}
+						username={""}
+						type=""
+						className="aspect-auto"
+					/>
 					<UserVideo isMuted={isMuted} className="aspect-auto" />
 				</div>
 
 				{messages.length > 0 && (
 					<p className="sticky bottom-36 md:relative md:bottom-0 text-sm text-center p-4 text-lime-700 font-medium dark:text-gray-300 select-none ">
-						{messages.at(-1)}
+						{messages.at(-1)!.content}
 					</p>
 				)}
 
 				<div className="sticky bottom-5 md:relative md:bottom-0 flex w-fit mx-auto items-center justify-center gap-4 p-5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-full border border-gray-200 dark:border-gray-700 shadow-lg">
-					<button
-						onClick={handleMicrophoneToggle}
-						className={`p-4 rounded-full transition-colors ${
-							isMuted
-								? "bg-gray-200 dark:bg-gray-700"
-								: "hover:bg-gray-100 dark:hover:bg-gray-700"
-						}`}
-						aria-label="Toggle microphone"
-					>
-						{isMuted ? (
-							<MicOff className="text-gray-400 size-6" />
-						) : (
-							<Mic className={`w-6 h-6 text-gray-700 dark:text-gray-300`} />
-						)}
-					</button>
-
-					<button
-						onClick={handleEndCall}
-						className="p-4 rounded-full bg-red-500 hover:bg-red-600 transition-colors"
-						aria-label="End call"
-					>
-						<Phone className="w-6 h-6 text-white" />
-					</button>
-
-					<div className="relative" ref={containerRef2}>
+					{isCallInactiveOrFinsished ? (
 						<button
-							onClick={() => setIsVolumeOpen(!isVolumeOpen)}
-							className={`p-4 rounded-full transition-colors hover:bg-gray-100 dark:hover:bg-gray-700`}
-							aria-label="Volume settings"
+							onClick={handleCall}
+							className="p-4 rounded-full bg-green-500 hover:bg-green-600 transition-colors"
+							aria-label="Connect call"
 						>
-							{volume === 0 ? (
-								<VolumeX className="w-6 h-6 text-gray-400" />
-							) : (
-								<Volume2
-									className={`w-6 h-6 text-gray-700 dark:text-gray-300`}
-								/>
-							)}
+							<Phone className="w-6 h-6 text-white" />
 						</button>
-
-						{isVolumeOpen && (
-							<div
-								className="absolute top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 z-50"
-								style={{ position: "absolute" }}
+					) : (
+						<>
+							<button
+								onClick={handleMicrophoneToggle}
+								className={`p-4 rounded-full transition-colors ${
+									isMuted
+										? "bg-gray-200 dark:bg-gray-700"
+										: "hover:bg-gray-100 dark:hover:bg-gray-700"
+								}`}
+								aria-label="Toggle microphone"
 							>
-								<div className="flex items-center space-x-2">
-									<VolumeX
-										className="h-4 w-4 cursor-pointer"
-										onClick={() => handleVolumeChange([0])}
-									/>
-									<Slider
-										value={[volume]}
-										max={1}
-										step={0.1}
-										onValueChange={handleVolumeChange}
-										className="w-full cursor-pointer"
-									/>
-									<Volume2
-										className="h-4 w-4 cursor-pointer"
-										onClick={() => handleVolumeChange([1])}
-									/>
-								</div>
+								{isMuted ? (
+									<MicOff className="text-gray-400 size-6" />
+								) : (
+									<Mic className={`w-6 h-6 text-gray-700 dark:text-gray-300`} />
+								)}
+							</button>
+
+							<button
+								onClick={handleCallDisconnect}
+								className="p-4 rounded-full bg-red-500 hover:bg-red-600 transition-colors"
+								aria-label="End call"
+							>
+								<Phone className="w-6 h-6 text-white" />
+							</button>
+
+							<div className="relative" ref={containerRef2}>
+								<button
+									onClick={() => setIsVolumeOpen(!isVolumeOpen)}
+									className={`p-4 rounded-full transition-colors hover:bg-gray-100 dark:hover:bg-gray-700`}
+									aria-label="Volume settings"
+								>
+									{volume === 0 ? (
+										<VolumeX className="w-6 h-6 text-gray-400" />
+									) : (
+										<Volume2
+											className={`w-6 h-6 text-gray-700 dark:text-gray-300`}
+										/>
+									)}
+								</button>
+
+								{isVolumeOpen && (
+									<div
+										className="absolute top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 z-50"
+										style={{ position: "absolute" }}
+									>
+										<div className="flex items-center space-x-2">
+											<VolumeX
+												className="h-4 w-4 cursor-pointer"
+												onClick={() => handleVolumeChange([0])}
+											/>
+											<Slider
+												value={[volume]}
+												max={1}
+												step={0.1}
+												onValueChange={handleVolumeChange}
+												className="w-full cursor-pointer"
+											/>
+											<Volume2
+												className="h-4 w-4 cursor-pointer"
+												onClick={() => handleVolumeChange([1])}
+											/>
+										</div>
+									</div>
+								)}
 							</div>
-						)}
-					</div>
+						</>
+					)}
 				</div>
 			</div>
 		</div>

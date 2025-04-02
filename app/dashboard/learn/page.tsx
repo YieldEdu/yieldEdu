@@ -13,8 +13,8 @@ import {
 	Check,
 	Clock,
 	GraduationCap,
-	Lock,
-	Sparkles,
+	// Lock,
+	// Sparkles,
 	Trophy,
 } from "lucide-react";
 import Link from "next/link";
@@ -44,7 +44,7 @@ const Page = async () => {
 				</div>
 			</div>
 			{/* Rewards for Learning */}
-			<Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm">
+			{/* <Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm">
 				<CardHeader>
 					<CardTitle className="text-slate-900 dark:text-white">
 						Learning Rewards
@@ -131,7 +131,7 @@ const Page = async () => {
 						</div>
 					</div>
 				</CardContent>
-			</Card>
+			</Card> */}
 
 			{/* Learning Progress */}
 			<Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm">
