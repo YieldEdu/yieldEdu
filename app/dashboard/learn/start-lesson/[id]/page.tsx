@@ -1,75 +1,33 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { getLesson, lessonsInterface } from "@/data/lessons";
 import { ArrowLeft, Brain, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
 interface CoursePageProps {
 	params: {
-		slug: string;
+		id: string;
 	};
 }
 
-export default function CoursePage({ params }: CoursePageProps) {
+export default async function CoursePage({ params }: CoursePageProps) {
 	// This would normally come from a database or API
-	const courseData = {
-		"web3-fundamentals": {
-			title: "Web3 Fundamentals",
-			description:
-				"Learn the core concepts of blockchain, smart contracts, and decentralized applications.",
-			level: "Beginner",
-			sessions: 4,
-			enrolled: 1245,
-			icon: <Brain className="h-16 w-16 text-primary" />,
-			topics: [
-				"Blockchain Architecture",
-				"Consensus Mechanisms",
-				"Smart Contract Basics",
-				"Web3 Applications",
-			],
-			color: "rgb(var(--primary))",
-		},
-		"cryptography-basics": {
-			title: "Cryptography Basics",
-			description:
-				"Master the principles of cryptography that power blockchain security and privacy.",
-			level: "Intermediate",
-			sessions: 3,
-			enrolled: 876,
-			icon: <Brain className="h-16 w-16 text-secondary" />,
-			topics: [
-				"Public & Private Keys",
-				"Hash Functions",
-				"Digital Signatures",
-				"Zero-Knowledge Proofs",
-			],
-			color: "rgb(var(--secondary))",
-		},
-		"dao-governance": {
-			title: "DAO Governance",
-			description:
-				"Understand how decentralized autonomous organizations operate and make decisions.",
-			level: "Advanced",
-			sessions: 5,
-			enrolled: 542,
-			icon: <Brain className="h-16 w-16 text-accent" />,
-			topics: [
-				"DAO Structures",
-				"Voting Mechanisms",
-				"Treasury Management",
-				"Governance Proposals",
-				"Legal Considerations",
-			],
-			color: "rgb(var(--accent))",
-		},
-	}[params.slug] || {
-		title: "Course Not Found",
-		description: "This course does not exist.",
-		level: "N/A",
-		sessions: 0,
-		enrolled: 0,
-		icon: <Brain className="h-16 w-16 text-gray-400" />,
-		topics: [],
-		color: "#84cc16 ",
+
+	const course = await getLesson(await params.id);
+	const courseData = course.data?.[0];
+
+	const courseData2:lessonsInterface = {
+	topics: [
+		"Introduction to AI in Education",
+		"Understanding AI Algorithms",
+		"AI Tools for Learning",
+		"Ethical Considerations in AI",
+		"Future of AI in Education",
+	],
+	level: "Intermediate",
+	sessions: 5,
+	enrolled: 10,
+	color: "#FF5733",
 	};
 
 	return (
@@ -87,32 +45,8 @@ export default function CoursePage({ params }: CoursePageProps) {
 						<div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
 							<div>
 								<h1 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-accent">
-									{courseData.title}
+									{courseData?.title}
 								</h1>
-								<div className="flex flex-wrap gap-3">
-									<span className="text-gray-400">Student: 0x7a...3f9b</span>
-									<span className="text-gray-400">Date: March 22, 2025</span>
-								</div>
-							</div>
-
-							<div className="mt-4 md:mt-0 flex items-center">
-								<div className="w-16 h-16 rounded-full bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/30 flex items-center justify-center text-2xl font-bold mr-4">
-									{courseData.enrolled > 0
-										? Math.floor(Math.random() * 30) + 70
-										: 0}
-								</div>
-								<div>
-									<div
-										className="text-lg font-bold"
-										style={{ color: courseData.color }}
-									>
-										Score
-									</div>
-									<div className="flex items-center text-primary">
-										<div className="h-2 w-2 rounded-full bg-primary mr-1"></div>{" "}
-										In Progress
-									</div>
-								</div>
 							</div>
 						</div>
 
@@ -122,14 +56,14 @@ export default function CoursePage({ params }: CoursePageProps) {
 									<Brain className="h-5 w-5 mr-2" /> Course Overview
 								</h2>
 
-								<p className="text-gray-300 mb-6">{courseData.description}</p>
+								<p className="text-gray-300 mb-6">{courseData?.description}</p>
 
 								<div className="bg-slate-100 dark:bg-slate-900/50  border-slate-200 dark:border-slate-700 rounded-lg p-4 border border-border/10 mb-6">
 									<h3 className="font-bold mb-2 text-secondary">
 										What You&apos;ll Learn
 									</h3>
 									<ul className="space-y-3">
-										{courseData.topics.map((topic, index) => (
+										{/* {courseData.topics.map((topic, index) => (
 											<li key={index} className="flex items-start">
 												<div
 													className="mr-3 mt-1 h-5 w-5 bg-[#1a0b2e]/80 rounded-full flex items-center justify-center text-xs"
@@ -139,7 +73,7 @@ export default function CoursePage({ params }: CoursePageProps) {
 												</div>
 												<span>{topic}</span>
 											</li>
-										))}
+										))} */}
 									</ul>
 								</div>
 							</div>
@@ -199,8 +133,8 @@ export default function CoursePage({ params }: CoursePageProps) {
 									<p className="text-gray-300 mb-4">
 										This course is delivered through interactive conversations
 										with our specialized AI mentor. You&apos;ll engage in
-										natural dialogue, receive real-time feedback, and earn
-										verifiable credentials upon completion.
+										natural dialogue, receive real-time feedback upon
+										completion.
 									</p>
 
 									<Button className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-background font-medium py-6 text-lg">

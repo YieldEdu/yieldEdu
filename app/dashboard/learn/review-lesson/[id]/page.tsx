@@ -12,16 +12,21 @@ import { getAllLessons, lessonsInterface } from "@/data/lessons";
 
 // This would be fetched from an API in a real application
 
-export default function ReviewLessonPage({
+export default async function ReviewLessonPage({
 	params,
 }: {
 	params: { id: string };
 }) {
-	const getLessonById = (id: string): lessonsInterface | undefined => {
-		const lessons = getAllLessons().find((lesson) => lesson.id === id);
+	const getLessonById = async (
+		id: string
+	): Promise<lessonsInterface | undefined> => {
+		const getLessons = await getAllLessons();
+		const lessons = getLessons.data?.find((lesson) => lesson.id === id);
+
 		if (lessons) return lessons;
 	};
-	const lesson = getLessonById(params?.id);
+
+	const lesson = await getLessonById(params?.id);
 
 	if (!lesson) {
 		return <div className="text-center py-10">Lesson not found</div>;
@@ -64,7 +69,7 @@ export default function ReviewLessonPage({
 					</CardDescription>
 				</CardHeader>
 				<CardContent className="space-y-6">
-					{lesson.sections.map((section, sectionIndex) => (
+					{/* {lesson.sections.map((section, sectionIndex) => (
 						<div key={sectionIndex}>
 							<h2 className="text-xl font-semibold mt-6">{section.title}</h2>
 
@@ -98,7 +103,7 @@ export default function ReviewLessonPage({
 								return null;
 							})}
 						</div>
-					))}
+					))} */}
 				</CardContent>
 			</Card>
 
@@ -110,7 +115,7 @@ export default function ReviewLessonPage({
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					{lesson.quiz.map((question, index) => (
+					{/* {lesson.quiz.map((question, index) => (
 						<div key={index} className="mb-6">
 							<h3 className="font-medium mb-2">
 								Question {index + 1}: {question.question}
@@ -151,7 +156,7 @@ export default function ReviewLessonPage({
 								))}
 							</div>
 						</div>
-					))}
+					))} */}
 				</CardContent>
 			</Card>
 

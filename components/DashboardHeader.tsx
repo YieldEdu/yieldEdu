@@ -15,17 +15,31 @@ import { useTheme } from "next-themes";
 import { GlobalContext } from "@/context/globalContext";
 import AppKitButton from "./AppKitButton";
 import Feedback from "./Feedback";
+import { handleUserUpdate } from "@/utils/supabase/helpers";
 const DashboardHeader = () => {
 	const { open } = useAppKit();
 	const { theme } = useTheme();
 	const { setThemeMode } = useAppKitTheme();
-	const { isConnected } = useAppKitAccount();
+	const { isConnected, address } = useAppKitAccount();
 
 	const { setSidebarOpen, sidebarOpen } = useContext(GlobalContext);
 
 	useEffect(() => {
 		setThemeMode(theme as ThemeMode);
 	}, [theme, setThemeMode]);
+
+	useEffect(() => {
+		const updateUser = async () => {
+			if (isConnected && address) {
+				// Update the user in the database
+				await handleUserUpdate(isConnected, address);
+			} else {
+				console.error("Wallet connection failed or address is unavailable.");
+			}
+		};
+
+		updateUser();
+	}, [address, isConnected]);
 
 	return (
 		<>
