@@ -257,7 +257,7 @@ const VideoInterface: React.FC = () => {
 					</Button>
 				</div>
 
-				<div className="grid grid-cols-1 md:grid-cols-2 md:h-[400] gap-6">
+				<div className="grid grid-cols-1 md:grid-cols-2 md:h-[400px] gap-6">
 					<AIVideo
 						isSpeaking={isSpeaking}
 						username={""}
