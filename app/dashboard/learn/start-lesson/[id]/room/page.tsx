@@ -191,7 +191,7 @@ const VideoInterface: React.FC = () => {
 
 	const isCallInactiveOrFinsished =
 		callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED;
-	const isCallActive = callStatus === CallStatus.ACTIVE;
+	// const isCallActive = callStatus === CallStatus.ACTIVE;
 
 	const onToggleFullscreen = () => {
 		if (!document.fullscreenElement && containerRef.current) {
