@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { getLesson, lessonsInterface } from "@/data/lessons";
+import { getLesson } from "@/data/lessons";
 import { ArrowLeft, Brain, BarChart3 } from "lucide-react";
 import Link from "next/link";
 
@@ -13,22 +13,8 @@ interface CoursePageProps {
 export default async function CoursePage({ params }: CoursePageProps) {
 	// This would normally come from a database or API
 
-	const course = await getLesson(await params.id);
+	const course = await getLesson(await params?.id);
 	const courseData = course.data?.[0];
-
-	const courseData2:lessonsInterface = {
-	topics: [
-		"Introduction to AI in Education",
-		"Understanding AI Algorithms",
-		"AI Tools for Learning",
-		"Ethical Considerations in AI",
-		"Future of AI in Education",
-	],
-	level: "Intermediate",
-	sessions: 5,
-	enrolled: 10,
-	color: "#FF5733",
-	};
 
 	return (
 		<div className="min-h-screen text-foreground overflow-hidden relative">
@@ -57,25 +43,6 @@ export default async function CoursePage({ params }: CoursePageProps) {
 								</h2>
 
 								<p className="text-gray-300 mb-6">{courseData?.description}</p>
-
-								<div className="bg-slate-100 dark:bg-slate-900/50  border-slate-200 dark:border-slate-700 rounded-lg p-4 border border-border/10 mb-6">
-									<h3 className="font-bold mb-2 text-secondary">
-										What You&apos;ll Learn
-									</h3>
-									<ul className="space-y-3">
-										{/* {courseData.topics.map((topic, index) => (
-											<li key={index} className="flex items-start">
-												<div
-													className="mr-3 mt-1 h-5 w-5 bg-[#1a0b2e]/80 rounded-full flex items-center justify-center text-xs"
-													style={{ color: courseData.color }}
-												>
-													{index + 1}
-												</div>
-												<span>{topic}</span>
-											</li>
-										))} */}
-									</ul>
-								</div>
 							</div>
 
 							<div>
@@ -87,41 +54,26 @@ export default async function CoursePage({ params }: CoursePageProps) {
 									<div className="bg-slate-100 dark:bg-slate-900/50  border-slate-200 dark:border-slate-700 rounded-lg p-4 border border-border/10">
 										<div className="grid grid-cols-2 gap-4">
 											<div>
-												<p className="text-sm text-gray-400">Level</p>
+												<p className="text-sm text-gray-400">Duration</p>
 												<p
 													className="font-medium"
-													style={{ color: courseData.color }}
+													// style={{ color: courseData.color }}
 												>
-													{courseData.level}
+													{courseData?.duration}
 												</p>
 											</div>
-											<div>
-												<p className="text-sm text-gray-400">Sessions</p>
-												<p
-													className="font-medium"
-													style={{ color: courseData.color }}
-												>
-													{courseData.sessions}
-												</p>
-											</div>
-											<div>
-												<p className="text-sm text-gray-400">Enrolled</p>
-												<p
-													className="font-medium"
-													style={{ color: courseData.color }}
-												>
-													{courseData.enrolled}
-												</p>
-											</div>
-											<div>
-												<p className="text-sm text-gray-400">Token Reward</p>
-												<p
-													className="font-medium"
-													style={{ color: courseData.color }}
-												>
-													250 LEARN
-												</p>
-											</div>
+
+											{courseData?.reward && (
+												<div>
+													<p className="text-sm text-gray-400">Reward</p>
+													<p
+														className="font-medium"
+														// style={{ color: courseData.color }}
+													>
+														{courseData.reward || "0"}
+													</p>
+												</div>
+											)}
 										</div>
 									</div>
 								</div>
@@ -132,14 +84,18 @@ export default async function CoursePage({ params }: CoursePageProps) {
 									</h3>
 									<p className="text-gray-300 mb-4">
 										This course is delivered through interactive conversations
-										with our specialized AI mentor. You&apos;ll engage in
-										natural dialogue, receive real-time feedback upon
+										with our specialized AI educator Harry. You&apos;ll engage
+										in natural dialogue and receive real-time feedback upon
 										completion.
 									</p>
 
-									<Button className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-background font-medium py-6 text-lg">
-										Start the Session
-									</Button>
+									<Link
+										href={`/dashboard/learn/start-lesson/${params.id}/room`}
+									>
+										<Button className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-background font-medium py-6 text-lg">
+											Start the Session
+										</Button>
+									</Link>
 								</div>
 							</div>
 						</div>

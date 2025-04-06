@@ -171,12 +171,7 @@ const VideoInterface: React.FC = () => {
 	const handleCall = async () => {
 		setCallStatus(CallStatus.CONNECTING);
 		try {
-			await vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISTANT!, {
-				variableValues: {
-					// userId: userId,
-					username: "Dickson",
-				},
-			});
+			await vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISTANT!);
 		} catch (error) {
 			console.log(error);
 			vapi.stop();
@@ -196,33 +191,7 @@ const VideoInterface: React.FC = () => {
 
 	const isCallInactiveOrFinsished =
 		callStatus === CallStatus.INACTIVE || callStatus === CallStatus.FINISHED;
-	// const isCallActive = callStatus === CallStatus.ACTIVE;
-
-	if (callStatus === CallStatus.CONNECTING) {
-		return (
-			<div className="flex items-center justify-center">
-				<div className="p-8 rounded-2xl text-center animate-pulse-soft">
-					<h2 className="text-xl font-medium mb-4">
-						Connecting to your meeting...
-					</h2>
-					<div className="flex justify-center space-x-2">
-						<div
-							className="w-3 h-3 rounded-full bg-primary animate-bounce"
-							style={{ animationDelay: "0ms" }}
-						></div>
-						<div
-							className="w-3 h-3 rounded-full bg-primary animate-bounce"
-							style={{ animationDelay: "150ms" }}
-						></div>
-						<div
-							className="w-3 h-3 rounded-full bg-primary animate-bounce"
-							style={{ animationDelay: "300ms" }}
-						></div>
-					</div>
-				</div>
-			</div>
-		);
-	}
+	const isCallActive = callStatus === CallStatus.ACTIVE;
 
 	const onToggleFullscreen = () => {
 		if (!document.fullscreenElement && containerRef.current) {
@@ -249,10 +218,33 @@ const VideoInterface: React.FC = () => {
 	return (
 		<div
 			ref={containerRef}
-			className={cn("p-4 md:p-8 flex flex-col justify-center", {
+			className={cn("p-4 relative md:p-8 flex flex-col justify-center", {
 				"bg-slate-50 dark:bg-slate-900": isFullscreen,
 			})}
 		>
+			{callStatus === CallStatus.CONNECTING && (
+				<div className="flex md:absolute top-0 right-0 left-0 items-center justify-center">
+					<div className="p-8 rounded-2xl text-center animate-pulse-soft">
+						<h2 className="text-xl font-medium mb-4">
+							Connecting to your meeting...
+						</h2>
+						<div className="flex justify-center space-x-2">
+							<div
+								className="w-3 h-3 rounded-full bg-primary animate-bounce"
+								style={{ animationDelay: "0ms" }}
+							></div>
+							<div
+								className="w-3 h-3 rounded-full bg-primary animate-bounce"
+								style={{ animationDelay: "150ms" }}
+							></div>
+							<div
+								className="w-3 h-3 rounded-full bg-primary animate-bounce"
+								style={{ animationDelay: "300ms" }}
+							></div>
+						</div>
+					</div>
+				</div>
+			)}
 			<div className="w-full max-w-7xl mx-auto space-y-7 md:space-y-14">
 				<div className="flex items-center justify-between">
 					<h1 className="text-2xl font-bold">Meeting Room</h1>
@@ -281,17 +273,76 @@ const VideoInterface: React.FC = () => {
 					</p>
 				)}
 
-				<div className="sticky bottom-5 md:relative md:bottom-0 flex w-fit mx-auto items-center justify-center gap-4 p-5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-full border border-gray-200 dark:border-gray-700 shadow-lg">
+				<div className="sticky bottom-5 md:relative md:bottom-0 flex w-fit mx-auto items-center justify-center gap-4 p-5">
 					{isCallInactiveOrFinsished ? (
-						<button
-							onClick={handleCall}
-							className="p-4 rounded-full bg-green-500 hover:bg-green-600 transition-colors"
-							aria-label="Connect call"
-						>
-							<Phone className="w-6 h-6 text-white" />
-						</button>
+						<div className="flex w-fit p-4 items-center justify-center gap-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-full border border-gray-200 dark:border-gray-700 shadow-lg">
+							<button
+								onClick={handleMicrophoneToggle}
+								className={`p-4 rounded-full transition-colors ${
+									isMuted
+										? "bg-gray-200 dark:bg-gray-700"
+										: "hover:bg-gray-100 dark:hover:bg-gray-700"
+								}`}
+								aria-label="Toggle microphone"
+							>
+								{isMuted ? (
+									<MicOff className="text-gray-400 size-6" />
+								) : (
+									<Mic className={`w-6 h-6 text-gray-700 dark:text-gray-300`} />
+								)}
+							</button>
+
+							<button
+								onClick={handleCall}
+								className="p-4 rounded-full bg-green-500 hover:bg-green-600 transition-colors"
+								aria-label="Connect call"
+							>
+								<Phone className="w-6 h-6 text-white" />
+							</button>
+
+							<div className="relative" ref={containerRef2}>
+								<button
+									onClick={() => setIsVolumeOpen(!isVolumeOpen)}
+									className={`p-4 rounded-full transition-colors hover:bg-gray-100 dark:hover:bg-gray-700`}
+									aria-label="Volume settings"
+								>
+									{volume === 0 ? (
+										<VolumeX className="w-6 h-6 text-gray-400" />
+									) : (
+										<Volume2
+											className={`w-6 h-6 text-gray-700 dark:text-gray-300`}
+										/>
+									)}
+								</button>
+
+								{isVolumeOpen && (
+									<div
+										className="absolute top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 z-50"
+										style={{ position: "absolute" }}
+									>
+										<div className="flex items-center space-x-2">
+											<VolumeX
+												className="h-4 w-4 cursor-pointer"
+												onClick={() => handleVolumeChange([0])}
+											/>
+											<Slider
+												value={[volume]}
+												max={1}
+												step={0.1}
+												onValueChange={handleVolumeChange}
+												className="w-full cursor-pointer"
+											/>
+											<Volume2
+												className="h-4 w-4 cursor-pointer"
+												onClick={() => handleVolumeChange([1])}
+											/>
+										</div>
+									</div>
+								)}
+							</div>
+						</div>
 					) : (
-						<>
+						<div className="flex w-fit p-4 items-center justify-center gap-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-full border border-gray-200 dark:border-gray-700 shadow-lg">
 							<button
 								onClick={handleMicrophoneToggle}
 								className={`p-4 rounded-full transition-colors ${
@@ -356,7 +407,7 @@ const VideoInterface: React.FC = () => {
 									</div>
 								)}
 							</div>
-						</>
+						</div>
 					)}
 				</div>
 			</div>

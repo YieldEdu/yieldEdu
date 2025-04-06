@@ -4,8 +4,10 @@ export interface lessonsInterface {
 	id: string;
 	title: string;
 	description: string;
+	reward?: string | null;
 	duration: string;
 	completed?: boolean;
+	isLocked?: boolean;
 }
 
 export const getAllLessons = async (): Promise<{

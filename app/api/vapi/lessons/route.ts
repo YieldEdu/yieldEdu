@@ -15,9 +15,9 @@ export const GET = async () => {
 export const POST = async (request: Request) => {
 	try {
 		const body = await request.json();
-		const { lessonCount, topic, address, email, name } = body;
+		const { lessonCount, topic, address, lessonId } = body;
 
-		if (!topic || !lessonCount || !address || !email || !name) {
+		if (!topic || !lessonCount || !address || !lessonId) {
 			return Response.json(
 				{
 					error: "Missing required fields",
@@ -40,10 +40,11 @@ export const POST = async (request: Request) => {
 		});
 
 		const newLessonToDb = {
-			address,
+			user_wallet: address,
 			lesson,
 			lesson_count: lessonCount,
 			topic,
+			lesson_id: lessonId,
 		};
 
 		// Check if user exists
@@ -56,9 +57,7 @@ export const POST = async (request: Request) => {
 		if (!userExists) {
 			const { error: userError } = await supabase.from("users").insert([
 				{
-					address,
-					email,
-					name,
+					user_wallet: address,
 				},
 			]);
 
@@ -66,7 +65,7 @@ export const POST = async (request: Request) => {
 				if (userError.code === "23505") {
 					return Response.json(
 						{
-							error: "Email already exists",
+							error: "user address already exists",
 							success: false,
 						},
 						{ status: 400 }
