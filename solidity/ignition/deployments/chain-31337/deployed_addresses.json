@@ -1,0 +1,13 @@
+{
+  "YieldPoolProxyModule#YieldToken": "0x0E801D84Fa97b50751Dbf25036d067dCf18858bF",
+  "YieldTokenProxyModule#YieldToken": "0x8f86403A4DE0BB5791fa46B8e795C547942fE4Cf",
+  "upgradeModule#YieldPoolV2": "0x9d4454B023096f34B160D6B654540c56A1F81688",
+  "YieldPoolProxyModule#YieldPool": "0x5eb3Bc0a489C5A8288765d2336659EbCA68FCd00",
+  "YieldTokenProxyModule#TransparentUpgradeableProxy": "0x36C02dA8a0983159322a80FFE9F24b1acfF8B570",
+  "YieldPoolProxyModule#TransparentUpgradeableProxy": "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
+  "YieldTokenProxyModule#ProxyAdmin": "0xeaF6B7a8eb2E3ff41E43a0d97cbCd749FA0cE94a",
+  "YieldPoolProxyModule#ProxyAdmin": "0x7046717d32AfcA450DC5D6e75724D4282DFAd16E",
+  "YieldTokenModule#YieldToken": "0x36C02dA8a0983159322a80FFE9F24b1acfF8B570",
+  "YieldTokenV2Module#YieldTokenV2": "0x36C02dA8a0983159322a80FFE9F24b1acfF8B570",
+  "yieldPoolV2Module#YieldPoolV2": "0x809d550fca64d94Bd9F66E60752A544199cfAC3D"
+}
