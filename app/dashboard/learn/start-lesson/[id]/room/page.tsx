@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "@/hooks/use-toast";
 import { vapi } from "@/utils/vapi.sdk";
+import { useAppKitAccount } from "@reown/appkit/react";
 
 export enum CallStatus {
 	INACTIVE = "INACTIVE",
@@ -49,7 +50,7 @@ const VideoInterface: React.FC = () => {
 	const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 	const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 	const [gainNode, setGainNode] = useState<GainNode | null>(null);
-
+	const { address } = useAppKitAccount();
 	useEffect(() => {
 		// Get initial microphone access
 		const initializeMicrophone = async () => {
@@ -171,7 +172,13 @@ const VideoInterface: React.FC = () => {
 	const handleCall = async () => {
 		setCallStatus(CallStatus.CONNECTING);
 		try {
-			await vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISTANT!);
+			const lessonId = window.location.pathname.split("/").slice(-2, -1)[0]; // Get the second last part of the URL
+			await vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISTANT!, {
+				variableValues: {
+					lessonId: lessonId,
+					userWallet: address,
+				},
+			});
 		} catch (error) {
 			console.log(error);
 			vapi.stop();
