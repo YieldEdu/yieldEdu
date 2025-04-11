@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "@/hooks/use-toast";
 import { vapi } from "@/utils/vapi.sdk";
+import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 
 export enum CallStatus {
 	INACTIVE = "INACTIVE",
@@ -49,6 +50,7 @@ const VideoInterface: React.FC = () => {
 	const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 	const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 	const [gainNode, setGainNode] = useState<GainNode | null>(null);
+	const { isConnected } = useAppKitAccount();
 
 	useEffect(() => {
 		// Get initial microphone access
@@ -128,6 +130,7 @@ const VideoInterface: React.FC = () => {
 	const [isSpeaking, setIsSpeaking] = useState(false);
 	const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
 	const [messages, setMessages] = useState<SavedMessages[]>([]);
+	const { open } = useAppKit();
 
 	useEffect(() => {
 		const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
@@ -162,6 +165,9 @@ const VideoInterface: React.FC = () => {
 		};
 	}, []);
 
+	useEffect(() => {
+		if (!isConnected) open({ view: "Connect" });
+	}, [isConnected, open, callStatus]);
 	// useEffect(() => {
 	// 	if (callStatus === CallStatus.FINISHED) router.push("/dashboard/learn");
 	// }, [callStatus, router]);
@@ -245,6 +251,7 @@ const VideoInterface: React.FC = () => {
 					</div>
 				</div>
 			)}
+
 			<div className="w-full max-w-7xl mx-auto space-y-7 md:space-y-14">
 				<div className="flex items-center justify-between">
 					<h1 className="text-2xl font-bold">Meeting Room</h1>
@@ -273,143 +280,156 @@ const VideoInterface: React.FC = () => {
 					</p>
 				)}
 
-				<div className="sticky bottom-5 md:relative md:bottom-0 flex w-fit mx-auto items-center justify-center gap-4 p-5">
-					{isCallInactiveOrFinsished ? (
-						<div className="flex w-fit p-4 items-center justify-center gap-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-full border border-gray-200 dark:border-gray-700 shadow-lg">
-							<button
-								onClick={handleMicrophoneToggle}
-								className={`p-4 rounded-full transition-colors ${
-									isMuted
-										? "bg-gray-200 dark:bg-gray-700"
-										: "hover:bg-gray-100 dark:hover:bg-gray-700"
-								}`}
-								aria-label="Toggle microphone"
-							>
-								{isMuted ? (
-									<MicOff className="text-gray-400 size-6" />
-								) : (
-									<Mic className={`w-6 h-6 text-gray-700 dark:text-gray-300`} />
-								)}
-							</button>
+				{!isConnected && (
+					<span className="text-red-500 text-center">
+						connect your wallet to start a call{" "}
+					</span>
+				)}
 
-							<button
-								onClick={handleCall}
-								className="p-4 rounded-full bg-green-500 hover:bg-green-600 transition-colors"
-								aria-label="Connect call"
-							>
-								<Phone className="w-6 h-6 text-white" />
-							</button>
-
-							<div className="relative" ref={containerRef2}>
+				{isConnected && (
+					<div className="sticky bottom-5 md:relative md:bottom-0 flex w-fit mx-auto items-center justify-center gap-4 p-5">
+						{isCallInactiveOrFinsished ? (
+							<div className="flex w-fit p-4 items-center justify-center gap-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-full border border-gray-200 dark:border-gray-700 shadow-lg">
 								<button
-									onClick={() => setIsVolumeOpen(!isVolumeOpen)}
-									className={`p-4 rounded-full transition-colors hover:bg-gray-100 dark:hover:bg-gray-700`}
-									aria-label="Volume settings"
+									onClick={handleMicrophoneToggle}
+									className={`p-4 rounded-full transition-colors ${
+										isMuted
+											? "bg-gray-200 dark:bg-gray-700"
+											: "hover:bg-gray-100 dark:hover:bg-gray-700"
+									}`}
+									aria-label="Toggle microphone"
 								>
-									{volume === 0 ? (
-										<VolumeX className="w-6 h-6 text-gray-400" />
+									{isMuted ? (
+										<MicOff className="text-gray-400 size-6" />
 									) : (
-										<Volume2
+										<Mic
 											className={`w-6 h-6 text-gray-700 dark:text-gray-300`}
 										/>
 									)}
 								</button>
 
-								{isVolumeOpen && (
-									<div
-										className="absolute top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 z-50"
-										style={{ position: "absolute" }}
-									>
-										<div className="flex items-center space-x-2">
-											<VolumeX
-												className="h-4 w-4 cursor-pointer"
-												onClick={() => handleVolumeChange([0])}
-											/>
-											<Slider
-												value={[volume]}
-												max={1}
-												step={0.1}
-												onValueChange={handleVolumeChange}
-												className="w-full cursor-pointer"
-											/>
-											<Volume2
-												className="h-4 w-4 cursor-pointer"
-												onClick={() => handleVolumeChange([1])}
-											/>
-										</div>
-									</div>
-								)}
-							</div>
-						</div>
-					) : (
-						<div className="flex w-fit p-4 items-center justify-center gap-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-full border border-gray-200 dark:border-gray-700 shadow-lg">
-							<button
-								onClick={handleMicrophoneToggle}
-								className={`p-4 rounded-full transition-colors ${
-									isMuted
-										? "bg-gray-200 dark:bg-gray-700"
-										: "hover:bg-gray-100 dark:hover:bg-gray-700"
-								}`}
-								aria-label="Toggle microphone"
-							>
-								{isMuted ? (
-									<MicOff className="text-gray-400 size-6" />
-								) : (
-									<Mic className={`w-6 h-6 text-gray-700 dark:text-gray-300`} />
-								)}
-							</button>
-
-							<button
-								onClick={handleCallDisconnect}
-								className="p-4 rounded-full bg-red-500 hover:bg-red-600 transition-colors"
-								aria-label="End call"
-							>
-								<Phone className="w-6 h-6 text-white" />
-							</button>
-
-							<div className="relative" ref={containerRef2}>
 								<button
-									onClick={() => setIsVolumeOpen(!isVolumeOpen)}
-									className={`p-4 rounded-full transition-colors hover:bg-gray-100 dark:hover:bg-gray-700`}
-									aria-label="Volume settings"
+									disabled={!isConnected}
+									onClick={handleCall}
+									className="p-4 rounded-full bg-green-500 disabled:opacity-40 enabled:hover:bg-green-600 transition-colors"
+									aria-label="Connect call"
 								>
-									{volume === 0 ? (
-										<VolumeX className="w-6 h-6 text-gray-400" />
+									<Phone className="w-6 h-6 text-white" />
+								</button>
+
+								<div className="relative" ref={containerRef2}>
+									<button
+										onClick={() => setIsVolumeOpen(!isVolumeOpen)}
+										className={`p-4 rounded-full transition-colors hover:bg-gray-100 dark:hover:bg-gray-700`}
+										aria-label="Volume settings"
+									>
+										{volume === 0 ? (
+											<VolumeX className="w-6 h-6 text-gray-400" />
+										) : (
+											<Volume2
+												className={`w-6 h-6 text-gray-700 dark:text-gray-300`}
+											/>
+										)}
+									</button>
+
+									{isVolumeOpen && (
+										<div
+											className="absolute top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 z-50"
+											style={{ position: "absolute" }}
+										>
+											<div className="flex items-center space-x-2">
+												<VolumeX
+													className="h-4 w-4 cursor-pointer"
+													onClick={() => handleVolumeChange([0])}
+												/>
+												<Slider
+													value={[volume]}
+													max={1}
+													step={0.1}
+													onValueChange={handleVolumeChange}
+													className="w-full cursor-pointer"
+												/>
+												<Volume2
+													className="h-4 w-4 cursor-pointer"
+													onClick={() => handleVolumeChange([1])}
+												/>
+											</div>
+										</div>
+									)}
+								</div>
+							</div>
+						) : (
+							<div className="flex w-fit p-4 items-center justify-center gap-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-full border border-gray-200 dark:border-gray-700 shadow-lg">
+								<button
+									onClick={handleMicrophoneToggle}
+									className={`p-4 rounded-full transition-colors ${
+										isMuted
+											? "bg-gray-200 dark:bg-gray-700"
+											: "hover:bg-gray-100 dark:hover:bg-gray-700"
+									}`}
+									aria-label="Toggle microphone"
+								>
+									{isMuted ? (
+										<MicOff className="text-gray-400 size-6" />
 									) : (
-										<Volume2
+										<Mic
 											className={`w-6 h-6 text-gray-700 dark:text-gray-300`}
 										/>
 									)}
 								</button>
 
-								{isVolumeOpen && (
-									<div
-										className="absolute top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 z-50"
-										style={{ position: "absolute" }}
+								<button
+									onClick={handleCallDisconnect}
+									className="p-4 rounded-full bg-red-500 hover:bg-red-600 transition-colors"
+									aria-label="End call"
+								>
+									<Phone className="w-6 h-6 text-white" />
+								</button>
+
+								<div className="relative" ref={containerRef2}>
+									<button
+										onClick={() => setIsVolumeOpen(!isVolumeOpen)}
+										className={`p-4 rounded-full transition-colors hover:bg-gray-100 dark:hover:bg-gray-700`}
+										aria-label="Volume settings"
 									>
-										<div className="flex items-center space-x-2">
-											<VolumeX
-												className="h-4 w-4 cursor-pointer"
-												onClick={() => handleVolumeChange([0])}
-											/>
-											<Slider
-												value={[volume]}
-												max={1}
-												step={0.1}
-												onValueChange={handleVolumeChange}
-												className="w-full cursor-pointer"
-											/>
+										{volume === 0 ? (
+											<VolumeX className="w-6 h-6 text-gray-400" />
+										) : (
 											<Volume2
-												className="h-4 w-4 cursor-pointer"
-												onClick={() => handleVolumeChange([1])}
+												className={`w-6 h-6 text-gray-700 dark:text-gray-300`}
 											/>
+										)}
+									</button>
+
+									{isVolumeOpen && (
+										<div
+											className="absolute top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 z-50"
+											style={{ position: "absolute" }}
+										>
+											<div className="flex items-center space-x-2">
+												<VolumeX
+													className="h-4 w-4 cursor-pointer"
+													onClick={() => handleVolumeChange([0])}
+												/>
+												<Slider
+													value={[volume]}
+													max={1}
+													step={0.1}
+													onValueChange={handleVolumeChange}
+													className="w-full cursor-pointer"
+												/>
+												<Volume2
+													className="h-4 w-4 cursor-pointer"
+													onClick={() => handleVolumeChange([1])}
+												/>
+											</div>
 										</div>
-									</div>
-								)}
+									)}
+								</div>
 							</div>
-						</div>
-					)}
-				</div>
+						)}
+					</div>
+				)}
 			</div>
 		</div>
 	);

@@ -14,6 +14,7 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/utils/supabase/server";
 import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
+
 import {
 	Check,
 	Clock,
@@ -82,8 +83,9 @@ const Page = () => {
 		if (isConnected && lesson.completed)
 			router.push(`/dashboard/learn/review-lesson/${lesson.id}`);
 
-		if (isConnected && !lesson.completed)
+		if (isConnected && !lesson.completed) {
 			router.push(`/dashboard/learn/start-lesson/${lesson.id}`);
+		}
 	};
 	return (
 		<>

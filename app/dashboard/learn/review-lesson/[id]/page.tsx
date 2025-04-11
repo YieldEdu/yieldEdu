@@ -26,7 +26,8 @@ export default async function ReviewLessonPage({
 		if (lessons) return lessons;
 	};
 
-	const lesson = await getLessonById(params?.id);
+	const lessonId = await params;
+	const lesson = await getLessonById(lessonId.id);
 
 	if (!lesson) {
 		return <div className="text-center py-10">Lesson not found</div>;

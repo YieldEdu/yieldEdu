@@ -1,9 +1,8 @@
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { getLesson } from "@/data/lessons";
 import { ArrowLeft, Brain, BarChart3 } from "lucide-react";
 import Link from "next/link";
-
+import StartLessonButton from "@/components/StartLessonButton";
 interface CoursePageProps {
 	params: {
 		id: string;
@@ -12,8 +11,8 @@ interface CoursePageProps {
 
 export default async function CoursePage({ params }: CoursePageProps) {
 	// This would normally come from a database or API
-
-	const course = await getLesson(await params?.id);
+	const lessonId = await params;
+	const course = await getLesson(lessonId.id);
 	const courseData = course.data?.[0];
 
 	return (
@@ -89,13 +88,10 @@ export default async function CoursePage({ params }: CoursePageProps) {
 										completion.
 									</p>
 
-									<Link
-										href={`/dashboard/learn/start-lesson/${params.id}/room`}
-									>
-										<Button className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-background font-medium py-6 text-lg">
-											Start the Session
-										</Button>
-									</Link>
+									<StartLessonButton
+										title={courseData?.title}
+										lessonId={lessonId.id}
+									/>
 								</div>
 							</div>
 						</div>
