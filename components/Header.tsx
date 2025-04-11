@@ -87,7 +87,7 @@ const Header = () => {
 							</Feedback>
 							<a href="/dashboard">
 								<Button
-									className="text-slate-600 bg-lime-400/30 hover:bg-lime-400 dark:hover:bg-lime-400/80 dark:hover:text-white hover:text-slate-900 dark:text-slate-300 transition-colors"
+									className=" bg-lime-400 hover:bg-lime-400 dark:hover:bg-lime-400/80 text-gray-900 hover:text-slate-900 font-semibold transition-colors"
 									variant="outline"
 								>
 									Dashboard

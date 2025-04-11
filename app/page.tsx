@@ -20,14 +20,13 @@ import dashboardWhiteImage from "@/public/dashboard-white.png";
 import { Particles } from "@/components/Particles";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import YieldEDUIcon from "@/public/icon.png";
 import { cn } from "@/lib/utils";
 import { featuresData } from "@/data/features";
 
 export default function Page() {
 	const { theme } = useTheme();
 	const [color, setColor] = useState("#ffffff");
-	const [userType, setUserType] = useState<"student" | "educator">("educator");
+	const [userType, setUserType] = useState<"student" | "educator">("student");
 
 	useEffect(() => {
 		setColor(theme === "dark" ? "#a3e635" : "#000000");
@@ -42,6 +41,8 @@ export default function Page() {
 			theme === "light" ? dashboardWhiteImage : dashboardImage
 		);
 	}, [theme]);
+
+	const handleOCIDConnect = () => {};
 
 	return (
 		<div className="min-h-screen bg-slate-50 dark:bg-[#0A0B1E] text-slate-900 dark:text-slate-100 transition-colors duration-200">
@@ -107,7 +108,6 @@ export default function Page() {
 													Educator
 												</TabsTrigger>
 												<TabsTrigger
-													disabled
 													value="student"
 													className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-lime-500 data-[state=active]:to-lime-500 data-[state=active]:text-white dark:data-[state=active]:text-slate-900"
 												>
@@ -120,7 +120,7 @@ export default function Page() {
 										<div className="flex flex-col sm:flex-row gap-4">
 											{userType === "student" ? (
 												<Button
-													disabled
+													onClick={handleOCIDConnect}
 													size="lg"
 													className={cn(
 														"text-white dark:text-slate-900 font-semibold hover:opacity-90 px-8",
@@ -148,19 +148,11 @@ export default function Page() {
 													Connect Wallet as Educator
 												</Button>
 											)}
-											<Button
-												disabled
-												variant="outline"
-												size="lg"
-												className="border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-											>
-												Learn More
-											</Button>
 										</div>
 
 										{userType == "student" && (
 											<p className="text-sm text-slate-500 dark:text-slate-400">
-												Secure authentication via OpenID Connect (OCID)
+												Secure authentication via Open Campus ID (OCID)
 											</p>
 										)}
 									</div>
@@ -321,11 +313,11 @@ export default function Page() {
 							className="mt-16 text-center"
 						>
 							<Button
-								disabled
+								onClick={handleOCIDConnect}
 								size="lg"
 								className="bg-gradient-to-r from-lime-500 to-yellow-500 text-slate-900 font-semibold hover:opacity-90 px-8"
 							>
-								Start Your Journey
+								Get started now
 								<ArrowRight className="ml-2 h-5 w-5" />
 							</Button>
 						</motion.div>
@@ -362,22 +354,22 @@ export default function Page() {
 
 						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 							<TestimonialCard
-								quote="YieldEdu completely changed how I approach DeFi education. My students are more engaged and I'm earning passive income while teaching."
-								name="Dr. Sarah Johnson"
-								role="Blockchain Professor"
+								quote="YieldEdu completely changed how I approach DeFi education."
+								name="Sarah"
+								role="Developer"
 								image=""
 								type="educator"
 							/>
 							<TestimonialCard
-								quote="I went from knowing nothing about DeFi to managing a diverse staking portfolio. The learning rewards made it financially rewarding from day one."
-								name="Michael Chen"
+								quote="I went from knowing nothing about DeFi to having a staking portfolio."
+								name="Michael"
 								role="Student"
 								image=""
 								type="student"
 							/>
 							<TestimonialCard
-								quote="YieldEdu completely changed how I approach DeFi education. My students are more engaged and I'm earning passive income while teaching."
-								name="Emma Rodriguez"
+								quote="I learnt more on defi on this platform and now I am earning passively"
+								name="Emma"
 								role="DeFi Enthusiast"
 								image=""
 								type="educator"
@@ -411,20 +403,12 @@ export default function Page() {
 
 								<div className="flex flex-col sm:flex-row gap-4 justify-center">
 									<Button
-										disabled
+										onClick={handleOCIDConnect}
 										size="lg"
 										className="bg-white text-slate-900 font-semibold hover:bg-white/60 px-8"
 									>
 										<GraduationCap className="mr-2 h-5 w-5" />
 										Join as Student
-									</Button>
-									<Button
-										disabled
-										size="lg"
-										className="bg-slate-900 text-white font-semibold hover:bg-slate-700 px-8"
-									>
-										<BookOpen className="mr-2 h-5 w-5" />
-										Join as Educator
 									</Button>
 								</div>
 							</motion.div>
@@ -530,13 +514,15 @@ function TestimonialCard({
 						} mb-6`}
 					></div>
 					<p className="text-slate-600 dark:text-slate-300 mb-6 italic">
-						`${quote}`
+						{quote}
 					</p>
 					<div className="flex items-center gap-4">
 						<div className="w-12 h-12 rounded-full overflow-hidden">
 							<Image
-								src={image || YieldEDUIcon}
+								src={image || "/placeholder.png"}
 								alt={name}
+								width={48}
+								height={48}
 								className="w-full h-full object-cover"
 							/>
 						</div>
