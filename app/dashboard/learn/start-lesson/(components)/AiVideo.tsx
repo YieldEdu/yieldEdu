@@ -10,6 +10,7 @@ const AIVideo = ({
 	// type,
 	// userId,
 	// username,
+
 	className,
 	isSpeaking,
 }: {

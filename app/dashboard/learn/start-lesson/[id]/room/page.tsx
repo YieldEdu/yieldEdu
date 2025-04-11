@@ -11,14 +11,15 @@ import {
 	Minimize2,
 	VolumeX,
 } from "lucide-react";
-// import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "@/hooks/use-toast";
 import { vapi } from "@/utils/vapi.sdk";
-import { useAppKitAccount } from "@reown/appkit/react";
-
+import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
+import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 export enum CallStatus {
 	INACTIVE = "INACTIVE",
 	CONNECTING = "CONNECTING",
@@ -39,7 +40,6 @@ interface Message {
 }
 
 const VideoInterface: React.FC = () => {
-	// const router = useRouter();
 	const containerRef = useRef<HTMLDivElement>(null);
 	const containerRef2 = useRef<HTMLDivElement>(null);
 	// const [isConnected, setIsConnected] = useState(false);
@@ -50,7 +50,8 @@ const VideoInterface: React.FC = () => {
 	const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
 	const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 	const [gainNode, setGainNode] = useState<GainNode | null>(null);
-	const { address } = useAppKitAccount();
+	const { address, isConnected } = useAppKitAccount();
+
 	useEffect(() => {
 		// Get initial microphone access
 		const initializeMicrophone = async () => {
@@ -171,18 +172,63 @@ const VideoInterface: React.FC = () => {
 	// 	if (callStatus === CallStatus.FINISHED) router.push("/dashboard/learn");
 	// }, [callStatus, router]);
 
-	// const ansistantOptons = {};
+	const { data } = useQuery({
+		queryKey: ["lesson"],
+		queryFn: () => {
+			const lesson = axios.get(
+				`${process.env.NEXT_PUBLIC_WEBSITE_URL}/api/vapi/generate`,
+				{
+					params: {
+						lesson_id: window.location.pathname.split("/").at(-2),
+						user_wallet: address,
+					},
+				}
+			);
+
+			return lesson;
+		},
+		enabled: isConnected,
+	});
+	const lesson = data?.data.lesson.lesson;
+
+	const assistantOptions: CreateAssistantDTO = {
+		name: "educator",
+		firstMessage:
+			"Hello, I am your educator. Are you ready to dive into the lesson?",
+
+		transcriber: {
+			provider: "deepgram",
+			model: "nova-2",
+			language: "en-US",
+		},
+
+		voice: {
+			provider: "11labs",
+			voiceId: "Harry",
+			stability: 0.4,
+			similarityBoost: 0.8,
+			speed: 0.9,
+			style: 0.5,
+			useSpeakerBoost: true,
+		},
+		model: {
+			provider: "openai",
+			model: "gpt-4",
+			messages: [
+				{
+					role: "system",
+					content:
+						"You are a helpful assistant that helps the user learn and understand the lesson. You are friendly and engaging. You can also answer questions related to the lesson. make sure the session is not longer than 5 minutes. If the user asks a question that is not related to the lesson, politely redirect them back to the lesson. use this lesson as a reference: " +
+						lesson,
+				},
+			],
+		},
+	};
 
 	const handleCall = async () => {
 		setCallStatus(CallStatus.CONNECTING);
 		try {
-			const lessonId = window.location.pathname.split("/").slice(-2, -1)[0]; // Get the second last part of the URL
-			await vapi.start(process.env.NEXT_PUBLIC_VAPI_ASSISTANT!, {
-				variableValues: {
-					lessonId: lessonId,
-					userWallet: address,
-				},
-			});
+			await vapi.start(assistantOptions);
 		} catch (error) {
 			console.log(error);
 			vapi.stop();

@@ -4,8 +4,8 @@ import { supabase } from "@/utils/supabase/server";
 
 export const GET = async (request: Request) => {
 	const url = new URL(request.url);
-	const lessonId = url.pathname.split("/").pop(); // Get the last part of the URL
-	const userWallet = url.searchParams.get("user_wallet"); // Get user_wallet from query params	try {
+	const lessonId = url.searchParams.get("lesson_id");
+	const userWallet = url.searchParams.get("user_wallet");
 
 	if (!lessonId) {
 		return Response.json(
@@ -18,10 +18,11 @@ export const GET = async (request: Request) => {
 	}
 	try {
 		// Query the database for the lesson
+
 		const { data: lesson, error } = await supabase
 			.from("user_lessons")
 			.select("*")
-			.eq("id", lessonId)
+			.eq("lesson_id", lessonId)
 			.eq("user_wallet", userWallet)
 			.single();
 
@@ -37,7 +38,7 @@ export const GET = async (request: Request) => {
 
 		return Response.json(
 			{
-				data: lesson,
+				lesson,
 				success: true,
 			},
 			{ status: 200 }

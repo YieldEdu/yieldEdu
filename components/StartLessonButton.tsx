@@ -67,7 +67,10 @@ const StartLessonButton = ({
 			) : !isConnected ? (
 				"Connect your wallet to start the lesson"
 			) : isSuccess ? (
-				"Preparing room..."
+				<>
+					<div className="size-6 rounded-full animate-[spin_0.6s_linear_infinite;] border-b-transparent border-[3px] border-black"></div>
+					Preparing room...
+				</>
 			) : (
 				"Start the Session"
 			)}
