@@ -2,14 +2,57 @@ import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 import { supabase } from "@/utils/supabase/server";
 
-export const GET = async () => {
-	return Response.json(
-		{
-			data: "Thank you!",
-			success: true,
-		},
-		{ status: 200 }
-	);
+export const GET = async (request: Request) => {
+	const url = new URL(request.url);
+	const lessonId = url.pathname.split("/").pop(); // Get the last part of the URL
+	const userWallet = url.searchParams.get("user_wallet"); // Get user_wallet from query params	try {
+
+	if (!lessonId) {
+		return Response.json(
+			{
+				error: "Lesson ID is required",
+				success: false,
+			},
+			{ status: 400 }
+		);
+	}
+	try {
+		// Query the database for the lesson
+		const { data: lesson, error } = await supabase
+			.from("user_lessons")
+			.select("*")
+			.eq("id", lessonId)
+			.eq("user_wallet", userWallet)
+			.single();
+
+		if (error) {
+			return Response.json(
+				{
+					error: error.message || "Lesson not found",
+					success: false,
+				},
+				{ status: 404 }
+			);
+		}
+
+		return Response.json(
+			{
+				data: lesson,
+				success: true,
+			},
+			{ status: 200 }
+		);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} catch (error: any) {
+		console.error("Error:", error);
+		return Response.json(
+			{
+				error: error.message || "Failed to process request",
+				success: false,
+			},
+			{ status: 500 }
+		);
+	}
 };
 
 export const POST = async (request: Request) => {

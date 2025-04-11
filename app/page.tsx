@@ -33,6 +33,16 @@ export default function Page() {
 		setColor(theme === "dark" ? "#a3e635" : "#000000");
 	}, [theme]);
 
+	const [themedDashboardImage, setThemedDashboardImage] = useState(
+		theme === "dark" ? dashboardWhiteImage : dashboardImage
+	);
+
+	useEffect(() => {
+		setThemedDashboardImage(
+			theme === "light" ? dashboardWhiteImage : dashboardImage
+		);
+	}, [theme]);
+
 	return (
 		<div className="min-h-screen bg-slate-50 dark:bg-[#0A0B1E] text-slate-900 dark:text-slate-100 transition-colors duration-200">
 			{/* Animated background - only visible in dark mode */}
@@ -167,9 +177,7 @@ export default function Page() {
 									<div className="absolute -inset-0.5 bg-gradient-to-r from-lime-500 to-yellow-500 rounded-2xl blur opacity-30 dark:opacity-50"></div>
 									<div className="relative bg-white dark:bg-slate-900 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700/50 shadow-xl">
 										<Image
-											src={
-												theme == "dark" ? dashboardImage : dashboardWhiteImage
-											}
+											src={themedDashboardImage}
 											alt="YieldEDU"
 											className="w-full h-auto"
 										/>
