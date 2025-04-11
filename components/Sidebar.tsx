@@ -28,10 +28,11 @@ import { GlobalContext } from "@/context/globalContext";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { ClassValue } from "clsx";
 
 const Sidebar = () => {
 	const pathname = usePathname();
-
+	const router = useRouter();
 	const { setSidebarOpen, sidebarOpen } = useContext(GlobalContext);
 
 	useEffect(() => {
@@ -41,6 +42,13 @@ const Sidebar = () => {
 			);
 		}
 	}, [setSidebarOpen, sidebarOpen]);
+
+	useEffect(() => {
+		console.log(pathname);
+		if (pathname === "/dashboard/learn") {
+			router.push("/dashboard");
+		}
+	}, [pathname, router]);
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -137,10 +145,11 @@ const Sidebar = () => {
 										/>
 
 										<SidebarLink
+											className="opacity-25 cursor-not-allowed disabled"
 											icon={<Book className="w-5 h-5" />}
 											label="Learn"
 											active={pathname === "/dashboard/learn"}
-											link={"/dashboard/learn"}
+											link={"/dashboard"}
 										/>
 
 										<SidebarLink
@@ -258,11 +267,13 @@ function SidebarLink({
 	label,
 	active,
 	link,
+	className,
 }: {
 	active: boolean;
 	label: string;
 	icon: React.JSX.Element;
 	link: string;
+	className?: ClassValue;
 }) {
 	const { sidebarOpen, setSidebarOpen } = useContext(GlobalContext);
 	const router = useRouter();
@@ -277,7 +288,7 @@ function SidebarLink({
 
 	return (
 		<Tooltip disableHoverableContent={false}>
-			<TooltipTrigger className={cn("flex items-center  w-full")}>
+			<TooltipTrigger className={cn("flex items-center  w-full", className)}>
 				<div
 					onClick={() => handleLinkClicked(link)}
 					className={cn(

@@ -21,6 +21,7 @@ import ActivePositions from "@/components/ActivePositions";
 
 const FixedYieldDashboard = () => {
 	const { address } = useAppKitAccount();
+
 	const [positions, setPositions] = useState<ActivePosition[] | []>([]);
 	const [modalType, setModalType] = useState<"withdraw" | "unstake" | null>(
 		null
