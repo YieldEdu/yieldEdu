@@ -2,9 +2,9 @@ import { supabase } from "@/utils/supabase/server";
 
 export const GET = async (
 	req: Request,
-	{ params }: { params: { lessonId: Promise<string> } }
+	{ params }: { params: Promise<{ lessonId: string }> }
 ) => {
-	const lessonId = await params.lessonId;
+	const { lessonId } = await params;
 
 	if (!lessonId) {
 		return Response.json(

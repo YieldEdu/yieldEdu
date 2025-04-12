@@ -6,9 +6,9 @@ import StartLessonButton from "@/components/StartLessonButton";
 import { Metadata } from "next";
 import { yieldEduMetadata } from "@/utils/metadata";
 interface CoursePageProps {
-	params: {
+	params: Promise<{
 		id: string;
-	};
+	}>;
 }
 
 export async function generateMetadata({

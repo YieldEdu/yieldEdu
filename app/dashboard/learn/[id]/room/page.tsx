@@ -1,7 +1,5 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import AIVideo from "../../(components)/AiVideo";
-import UserVideo from "../../(components)/UserVideo";
 import {
 	Mic,
 	Phone,
@@ -20,12 +18,17 @@ import { useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import { CreateAssistantDTO } from "@vapi-ai/web/dist/api";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-export enum CallStatus {
-	INACTIVE = "INACTIVE",
-	CONNECTING = "CONNECTING",
-	ACTIVE = "ACTIVE",
-	FINISHED = "FINISHED",
-}
+import AIVideo from "../(components)/AiVideo";
+import UserVideo from "../(components)/UserVideo";
+
+const CallStatus = {
+	INACTIVE: "INACTIVE",
+	CONNECTING: "CONNECTING",
+	ACTIVE: "ACTIVE",
+	FINISHED: "FINISHED",
+} as const;
+
+type CallStatus = (typeof CallStatus)[keyof typeof CallStatus];
 
 interface SavedMessages {
 	role: "user" | "system" | "assistant";

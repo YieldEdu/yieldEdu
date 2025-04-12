@@ -15,7 +15,7 @@ import { getAllLessons, lessonsInterface } from "@/data/lessons";
 export default async function ReviewLessonPage({
 	params,
 }: {
-	params: { id: string };
+	params: Promise<{ id: string }>;
 }) {
 	const getLessonById = async (
 		id: string
