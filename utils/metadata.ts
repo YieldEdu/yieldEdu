@@ -7,7 +7,7 @@ export const yieldEduMetadata: Metadata = {
 	description:
 		"A Web3 protocol that lets you earn guaranteed yields on your EDU tokens while learning about Web3.",
 	applicationName: "YieldEdu",
-	icons: icon.src,
+	icons: [icon.src],
 
 	authors: [{ name: "Kamasah Dickson", url: "https://github.com/Bruh-Codes" }],
 	keywords: [
@@ -31,7 +31,7 @@ export const yieldEduMetadata: Metadata = {
 		siteName: "YieldEdu",
 		description:
 			"A Web3 protocol that lets you earn guaranteed yields on your EDU tokens while learning about Web3.",
-		images: [{ url: openGraphImage.src }, { url: icon.src }],
+		images: [openGraphImage.src, icon.src],
 	},
 
 	twitter: {
@@ -39,7 +39,7 @@ export const yieldEduMetadata: Metadata = {
 		title: "YieldEdu",
 		description:
 			"A Web3 protocol that lets you earn guaranteed yields on your EDU tokens while learning about Web3.",
-		images: [{ url: openGraphImage.src }],
+		images: [openGraphImage.src, icon.src],
 		creator: "@bruh_codes",
 	},
 	metadataBase: new URL(process.env.NEXT_PUBLIC_WEBSITE_URL as string),
