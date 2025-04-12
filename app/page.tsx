@@ -172,6 +172,7 @@ export default function Page() {
 											src={themedDashboardImage}
 											alt="YieldEDU"
 											className="w-full h-auto"
+											priority
 										/>
 										<div className="absolute inset-0 bg-gradient-to-t from-slate-500/80 dark:from-slate-900/80 to-transparent flex items-end p-8">
 											<div className="pb-7">

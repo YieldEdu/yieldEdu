@@ -68,6 +68,7 @@ const DashboardHeader = () => {
 								src={YieldEDUIcon}
 								alt="YieldEdu Logo"
 								className="size-14 aspect-square"
+								priority
 							/>
 							<div>
 								<h1 className="text-2xl  font-bold bg-clip-text text-transparent bg-gradient-to-r from-lime-500 to-yellow-500">

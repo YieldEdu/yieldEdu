@@ -39,6 +39,8 @@ const config = {
 		"edu-testnet": {
 			url: "https://rpc.open-campus-codex.gelato.digital",
 			accounts: [ACCOUNT_PRIVATE_KEY],
+			// gas: 600000000, // Set the gas limit here
+			// gasPrice: "auto",
 		},
 	},
 
@@ -54,6 +56,8 @@ const config = {
 					apiURL: "https://edu-chain-testnet.blockscout.com/api",
 					browserURL: "https://edu-chain-testnet.blockscout.com",
 				},
+				gas: 600000000, // Set the gas limit here
+				gasPrice: "auto",
 			},
 		],
 	},

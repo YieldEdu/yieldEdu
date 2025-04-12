@@ -91,6 +91,7 @@ const Sidebar = () => {
 									<Image
 										src={YieldEDUIcon}
 										alt="YieldEdu Logo"
+										priority
 										className="size-14 shrink-0 aspect-square"
 									/>
 								</Link>

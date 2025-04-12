@@ -25,7 +25,7 @@ const Header = () => {
 				<div className="container mx-auto px-4 py-2 md:py-4">
 					<div className="flex justify-between items-center">
 						<Link href={"/"} className="flex items-center gap-3">
-							<Image
+							
 								src={YieldEDUIcon}
 								alt="YieldEdu Logo"
 								className="size-14 aspect-square"
