@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import YieldEDUIcon from "@/public/icon.png";
+import YieldEDUIcon from "@/public/icon2.png";
 import Link from "next/link";
 
 const Footer = () => {

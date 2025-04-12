@@ -5,6 +5,15 @@ import { Button } from "@/components/ui/button";
 // import Link from "next/link";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import { Metadata } from "next";
+import { yieldEduMetadata } from "@/utils/metadata";
+
+export const metadata: Metadata = {
+	...yieldEduMetadata,
+	title: "YieldEdu - Blogs",
+	description:
+		"Explore our latest blogs and articles on DeFi, tutorials, and education. Stay updated with YieldEdu's insights and community news.",
+};
 
 export default function BlogPage() {
 	const categories = [

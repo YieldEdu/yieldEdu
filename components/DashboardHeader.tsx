@@ -3,7 +3,7 @@
 import React, { useContext, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import YieldEDUIcon from "@/public/icon.png";
+import YieldEDUIcon from "@/public/icon2.png";
 import { Crown, Menu } from "lucide-react";
 import {
 	ThemeMode,

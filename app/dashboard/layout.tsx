@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import YieldEDUIcon from "@/public/icon.png";
+import YieldEDUIcon from "@/public/icon2.png";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/DashboardHeader";
 // import Loading from "../loading";

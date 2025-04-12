@@ -1,9 +1,16 @@
-"use client";
-
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import { yieldEduMetadata } from "@/utils/metadata";
+import { Metadata } from "next";
 
-export default function AboutPage() {
+export const metadata: Metadata = {
+	...yieldEduMetadata,
+	title: "YieldEdu - About Us",
+	description:
+		"Learn more about YieldEdu, our mission, and our story. Join us in revolutionizing DeFi education.",
+};
+
+export default function Page() {
 	return (
 		<>
 			<div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none dark:block hidden bg-gradient-animated bg-400 animate-gradient">

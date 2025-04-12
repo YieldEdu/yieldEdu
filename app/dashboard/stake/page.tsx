@@ -1,5 +1,3 @@
-"use client";
-
 import Performance from "@/components/Performance";
 import StakingCard from "@/components/StakingCard";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +9,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { yieldEduMetadata } from "@/utils/metadata";
 import {
 	Book,
 	GraduationCap,
@@ -19,8 +18,15 @@ import {
 	Sparkles,
 	Trophy,
 } from "lucide-react";
+import { Metadata } from "next";
 import Link from "next/link";
-import React from "react";
+
+export const metadata: Metadata = {
+	...yieldEduMetadata,
+	title: "YieldEdu - Stake tokens",
+	description:
+		"Stake your EDU tokens to earn rewards, track your staking stats, and boost your APY by completing lessons.",
+};
 
 const Page = () => {
 	return (
@@ -43,24 +49,21 @@ const Page = () => {
 			</div>
 
 			<div className="flex flex-col lg:flex-row gap-6">
-				<StakingCard
-					className="col-span-2 flex-1"
-					ExtraComponent={() => (
-						<div className="bg-slate-100 dark:bg-slate-900/50 rounded-xl p-4">
-							<div className="flex justify-between mb-2">
-								<span className="text-slate-700 dark:text-slate-300 font-medium">
-									Estimated Rewards
-								</span>
-								<span className="text-yellow-600 dark:text-yellow-400 font-medium">
-									+168.75 EDU
-								</span>
-							</div>
-							<p className="text-xs text-slate-500 dark:text-slate-400">
-								Based on current APY and selected lock period
-							</p>
+				<StakingCard className="col-span-2 flex-1">
+					<div className="bg-slate-100 dark:bg-slate-900/50 rounded-xl p-4">
+						<div className="flex justify-between mb-2">
+							<span className="text-slate-700 dark:text-slate-300 font-medium">
+								Estimated Rewards
+							</span>
+							<span className="text-yellow-600 dark:text-yellow-400 font-medium">
+								+168.75 EDU
+							</span>
 						</div>
-					)}
-				/>
+						<p className="text-xs text-slate-500 dark:text-slate-400">
+							Based on current APY and selected lock period
+						</p>
+					</div>
+				</StakingCard>
 
 				<div>
 					<Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 backdrop-blur-sm shadow-sm">

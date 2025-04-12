@@ -1,10 +1,9 @@
-"use client";
-
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { featuresData } from "@/data/features";
+import { yieldEduMetadata } from "@/utils/metadata";
 import {
 	GraduationCap,
 	Lock,
@@ -14,7 +13,14 @@ import {
 	BookOpen,
 	Wallet,
 } from "lucide-react";
-import React from "react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+	...yieldEduMetadata,
+	title: "YieldEdu - Features",
+	description:
+		"Discover the unique features of YieldEdu Protocol. Learn-to-earn, staking rewards, and more.",
+};
 
 function FeatureCard({
 	icon,

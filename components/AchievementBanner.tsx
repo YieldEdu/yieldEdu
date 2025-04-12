@@ -42,9 +42,7 @@ const AchievementBanner = () => {
 						size="sm"
 						className="bg-[#a3e635]/20 text-sm w-fit hover:bg-[#a3e635]/30 text-[#a3e635] border border-[#a3e635]/30"
 					>
-						<Link href="/dashboard/learn/advanced-smart-contracts">
-							Continue
-						</Link>
+						<Link href="/dashboard/learn">Continue</Link>
 					</Button>
 				</div>
 			</div>

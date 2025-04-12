@@ -34,10 +34,10 @@ import { ClassValue } from "clsx";
 
 const StakingCard = ({
 	className,
-	ExtraComponent,
+	children,
 }: {
 	className?: ClassValue;
-	ExtraComponent?: React.ComponentType;
+	children?: React.ReactNode;
 }) => {
 	const [amount, setAmount] = useState("");
 	const [lockDuration, setLockDuration] = useState(30);
@@ -475,7 +475,7 @@ const StakingCard = ({
 								"Stake Now"
 							)}
 						</Button>
-						{ExtraComponent && <ExtraComponent />}
+						{children}
 					</form>
 				</CardContent>
 			</Card>

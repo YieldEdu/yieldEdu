@@ -1,14 +1,22 @@
-"use client";
-
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 
-import { Mail, Phone, MessageCircle, ChevronDown } from "lucide-react";
+import { Mail, Phone, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Metadata } from "next";
+
+import { yieldEduMetadata } from "@/utils/metadata";
+import FaqItem from "@/components/FaqItem";
+export const metadata: Metadata = {
+	...yieldEduMetadata,
+	title: "YieldEdu - Support",
+	description:
+		"YieldEdu - Contact our support team for assistance with your YieldEdu account, staking, and more.",
+};
+
 const page = () => {
 	const MINIMUM_EDU_TOKENS = " 100 EDU tokens";
 	return (
@@ -215,33 +223,6 @@ const page = () => {
 };
 
 export default page;
-
-function FaqItem({ question, answer }: { question: string; answer: string }) {
-	const [isOpen, setIsOpen] = useState(false);
-
-	return (
-		<div className="bg-white dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700/50 overflow-hidden">
-			<button
-				className="w-full flex items-center justify-between p-4 text-left focus:outline-none"
-				onClick={() => setIsOpen(!isOpen)}
-			>
-				<h3 className="font-medium text-slate-900 dark:text-white">
-					{question}
-				</h3>
-				<ChevronDown
-					className={`w-5 h-5 text-slate-400 transition-transform ${
-						isOpen ? "transform rotate-180" : ""
-					}`}
-				/>
-			</button>
-			{isOpen && (
-				<div className="px-4 pb-4 text-slate-600 dark:text-slate-300 border-t border-slate-200 dark:border-slate-700/50">
-					<p>{answer}</p>
-				</div>
-			)}
-		</div>
-	);
-}
 
 // function HelpLink({ title }: { title: string }) {
 // 	return (

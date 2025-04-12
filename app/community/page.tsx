@@ -24,6 +24,15 @@ import {
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import React from "react";
+import { yieldEduMetadata } from "@/utils/metadata";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+	...yieldEduMetadata,
+	title: "YieldEdu - Community",
+	description:
+		"Join the YieldEdu community to learn, share, and grow in the world of DeFi education. Connect with fellow students, educators, and enthusiasts.",
+};
 
 export default function CommunityPage() {
 	return (

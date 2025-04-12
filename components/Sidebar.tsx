@@ -9,7 +9,6 @@ import {
 	Lock,
 	Settings,
 	Trophy,
-	Users,
 	Wallet,
 	PanelLeft,
 } from "lucide-react";
@@ -23,7 +22,7 @@ import {
 
 import Image from "next/image";
 import React, { useContext, useEffect } from "react";
-import YieldEDUIcon from "@/public/icon.png";
+import YieldEDUIcon from "@/public/icon2.png";
 import { GlobalContext } from "@/context/globalContext";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -44,7 +43,6 @@ const Sidebar = () => {
 	}, [setSidebarOpen, sidebarOpen]);
 
 	useEffect(() => {
-		console.log(pathname);
 		if (pathname === "/dashboard/learn") {
 			router.push("/dashboard");
 		}
@@ -184,13 +182,6 @@ const Sidebar = () => {
 											label="Protocol Stats"
 											active={pathname === "/dashboard/protocol-stats"}
 											link={"/dashboard/protocol-stats"}
-										/>
-
-										<SidebarLink
-											icon={<Users className="w-5 h-5" />}
-											label="Community"
-											active={pathname === "/dashboard/community"}
-											link={"/dashboard/community"}
 										/>
 									</TooltipProvider>
 								</nav>

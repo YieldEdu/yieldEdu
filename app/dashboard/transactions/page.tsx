@@ -5,6 +5,15 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { yieldEduMetadata } from "@/utils/metadata";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+	...yieldEduMetadata,
+	title: "YieldEdu - Transactions",
+	description:
+		"View and manage your transaction history effortlessly with YieldEdu. Keep track of your recent activities in one place.",
+};
 
 const page = () => {
 	return (

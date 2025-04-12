@@ -5,8 +5,8 @@ import WagmiContextProvider from "@/components/WagmiContextProvider";
 import { headers } from "next/headers";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
-import YieldEDUIcon from "@/public/icon.png";
 import GlobalContextProvider from "@/context/globalContext";
+import { yieldEduMetadata } from "@/utils/metadata";
 
 const spaceMono = Space_Grotesk({
 	variable: "--font-space-mono",
@@ -14,12 +14,7 @@ const spaceMono = Space_Grotesk({
 	weight: ["300", "400", "500", "600", "700"],
 });
 
-export const metadata: Metadata = {
-	title: "YieldEDU - Earn Guaranteed Yields",
-	description:
-		"A decentralized fixed-yield protocol that earns users guaranteed yields on their EDU tokens.",
-	icons: [YieldEDUIcon.src],
-};
+export const metadata: Metadata = yieldEduMetadata;
 
 export default async function RootLayout({
 	children,

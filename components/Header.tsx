@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Menu, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import YieldEDUIcon from "@/public/icon.png";
+import YieldEDUIcon from "@/public/icon2.png";
 import Link from "next/link";
 import MobileHeader from "@/components/MobileHeader";
 import Feedback from "./Feedback";

@@ -5,7 +5,16 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { yieldEduMetadata } from "@/utils/metadata";
 import { BarChart2, Lock, Users } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+	...yieldEduMetadata,
+	title: "YieldEdu - Protocol stats",
+	description:
+		"Explore key metrics and performance indicators of the YieldEdu protocol, including Total Value Locked, Active Stakers, and Average APY.",
+};
 
 function StatsCard({
 	title,

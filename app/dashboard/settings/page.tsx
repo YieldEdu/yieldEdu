@@ -4,6 +4,13 @@ import { ProfileSettings } from "./components/profile-settings";
 // import { SecuritySettings } from "./components/security-settings";
 import { AccountSettings } from "./components/account-settings";
 import { AppearanceSettings } from "./components/appearance-settings";
+import { yieldEduMetadata } from "@/utils/metadata";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+	...yieldEduMetadata,
+	title: "YieldEdu - Settings",
+};
 
 export default function SettingsPage() {
 	return (

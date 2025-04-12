@@ -16,8 +16,17 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { yieldEduMetadata } from "@/utils/metadata";
 import { DollarSign, GraduationCap, LineChart, Trophy } from "lucide-react";
+import { Metadata } from "next";
 import React from "react";
+
+export const metadata: Metadata = {
+	...yieldEduMetadata,
+	title: "YieldEdu - Rewards",
+	description:
+		"View and manage staking rewards, track progress, and claim earnings effortlessly.",
+};
 
 const Page = () => {
 	const rewardsData = [

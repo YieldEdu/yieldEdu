@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +12,15 @@ import {
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import React from "react";
+import { Metadata } from "next";
+import { yieldEduMetadata } from "@/utils/metadata";
+
+export const metadata: Metadata = {
+	...yieldEduMetadata,
+	title: "YieldEdu - Careers",
+	description:
+		"Join the YieldEdu team and help us revolutionize DeFi education and staking. Explore our open positions and apply today.",
+};
 
 export default function CareersPage() {
 	return (
