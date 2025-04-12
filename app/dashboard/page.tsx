@@ -13,16 +13,15 @@ import { useState } from "react";
 import WithdrawModal from "@/components/WithdrawModal";
 import AchievementBanner from "@/components/AchievementBanner";
 import StakingCard from "@/components/StakingCard";
-import PositionOverview, {
-	ActivePosition,
-} from "@/components/PositionOverview";
+import PositionOverview from "@/components/PositionOverview";
 // import Performance from "@/components/Performance";
 import ActivePositions from "@/components/ActivePositions";
+import usePositions from "@/hooks/usePositions";
 
 const FixedYieldDashboard = () => {
 	const { address } = useAppKitAccount();
+	const { positions } = usePositions();
 
-	const [positions, setPositions] = useState<ActivePosition[] | []>([]);
 	const [modalType, setModalType] = useState<"withdraw" | "unstake" | null>(
 		null
 	);
@@ -128,7 +127,6 @@ const FixedYieldDashboard = () => {
 			<div className="grid grid-cols-1 xl:grid-cols-3 lg:space-y-0  xl:gap-6 h-auto">
 				<StakingCard />
 				<PositionOverview
-					setPositions={setPositions}
 					positions={positions}
 					setShowWithDrawModal={setShowWithDrawModal}
 				/>

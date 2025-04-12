@@ -1,6 +1,5 @@
 import Performance from "@/components/Performance";
 import StakingCard from "@/components/StakingCard";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -10,16 +9,10 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { yieldEduMetadata } from "@/utils/metadata";
-import {
-	Book,
-	GraduationCap,
-	Wallet,
-	LineChart,
-	Sparkles,
-	Trophy,
-} from "lucide-react";
+import { Book, GraduationCap } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
+import StakingStats from "./StakingStats";
 
 export const metadata: Metadata = {
 	...yieldEduMetadata,
@@ -39,12 +32,6 @@ const Page = () => {
 					<p className="text-slate-500 dark:text-slate-400">
 						Earn rewards by staking your EDU tokens
 					</p>
-				</div>
-				<div className="flex items-center gap-3">
-					<Badge className="bg-lime-100 dark:bg-lime-400/20 text-lime-600 dark:text-lime-400 border-lime-200 dark:border-lime-400/30 px-3 py-1">
-						<Wallet className="w-4 h-4 mr-1" />
-						Balance: 5,432 EDU
-					</Badge>
 				</div>
 			</div>
 
@@ -76,40 +63,7 @@ const Page = () => {
 							</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-6">
-							<div className="bg-slate-100 dark:bg-slate-900/50 rounded-xl p-4">
-								<div className="flex justify-between items-center mb-3">
-									<span className="text-slate-500 dark:text-slate-400 text-sm">
-										Total Staked
-									</span>
-									<Badge className="bg-lime-100 dark:bg-lime-400/20 text-lime-600 dark:text-lime-400 border-lime-200 dark:border-lime-400/30">
-										4 Positions
-									</Badge>
-								</div>
-								<div className="text-2xl flex justify-between font-bold text-slate-900 dark:text-white">
-									3,500 EDU
-									<LineChart />
-								</div>
-							</div>
-
-							<div className="bg-slate-100 dark:bg-slate-900/50 rounded-xl p-4">
-								<div className="text-slate-500 dark:text-slate-400 text-sm mb-3">
-									Total Rewards Earned
-								</div>
-								<div className="text-2xl flex justify-between font-bold text-yellow-600 dark:text-yellow-400">
-									+245.32 EDU
-									<Trophy />
-								</div>
-							</div>
-
-							<div className="bg-slate-100 dark:bg-slate-900/50 rounded-xl p-4">
-								<div className="text-slate-500 dark:text-slate-400 text-sm mb-3">
-									Average APY
-								</div>
-								<div className="text-2xl flex justify-between font-bold text-lime-600 dark:text-lime-400">
-									11.8%
-									<Sparkles />
-								</div>
-							</div>
+							<StakingStats />
 
 							<div className="bg-gradient-to-r from-lime-100 to-yellow-100 dark:from-lime-500/20 dark:to-yellow-500/20 rounded-xl p-4 border border-lime-200 dark:border-lime-500/30">
 								<div className="flex items-center gap-2 mb-2">
