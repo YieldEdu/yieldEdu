@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "./ui/button";
 import Link from "next/link";
 const AchievementBanner = () => {
-	const [progress] = useState(65);
+	const [progress] = useState(1);
 
 	return (
 		<div className="dark:bg-gradient-to-r from-slate-800/50 to-slate-800/30 rounded-2xl p-6 border border-slate-200 dark:border-slate-700/50 shadow-sm relative overflow-hidden">
