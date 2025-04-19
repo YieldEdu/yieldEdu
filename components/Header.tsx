@@ -11,10 +11,6 @@ import MobileHeader from "@/components/MobileHeader";
 import Feedback from "./Feedback";
 // import OCIDLoginButton from "@/components/OCIDLoginButton";
 
-export const Navigations = () => {
-	return;
-};
-
 const Header = () => {
 	const { theme, setTheme } = useTheme();
 	const [toggleMobileMenu, setToggleMobileMenu] = useState(false);

@@ -267,22 +267,13 @@ function SidebarLink({
 	link: string;
 	className?: ClassValue;
 }) {
-	const { sidebarOpen, setSidebarOpen } = useContext(GlobalContext);
-	const router = useRouter();
-	const handleLinkClicked = (link: string) => {
-		if (window.innerWidth >= 1024) {
-			router.push(link);
-		} else {
-			setSidebarOpen(false);
-			router.push(link);
-		}
-	};
+	const { sidebarOpen } = useContext(GlobalContext);
 
 	return (
 		<Tooltip disableHoverableContent={false}>
 			<TooltipTrigger className={cn("flex items-center  w-full", className)}>
-				<div
-					onClick={() => handleLinkClicked(link)}
+				<Link
+					href={link}
 					className={cn(
 						"flex items-center gap-3 w-full px-3 overflow-x-clip py-2 rounded-lg transition-colors",
 						{
@@ -310,7 +301,7 @@ function SidebarLink({
 							<span className="font-medium">{label}</span>
 						</TooltipContent>
 					)}
-				</div>
+				</Link>
 			</TooltipTrigger>
 		</Tooltip>
 	);
