@@ -212,9 +212,9 @@ const Page = () => {
 							</TableHeader>
 							<TableBody>
 								{rewardsData.length <= 0 ? (
-									<p className="text-slate-500 text-xl mx-auto p-5 dark:text-slate-400">
-										No rewards available.
-									</p>
+									<TableRow className="text-slate-500 text-xl mx-auto p-5 dark:text-slate-400">
+										<TableCell>No rewards available.</TableCell>
+									</TableRow>
 								) : (
 									rewardsData?.map((reward, index) => (
 										<TableRow
