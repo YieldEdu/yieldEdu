@@ -9,7 +9,6 @@ import { useAppKitAccount } from "@reown/appkit/react";
 import { getYieldPoolConfig, YieldTokenAddress } from "@/lib/utils";
 import { formatEther } from "viem";
 import { useState } from "react";
-// import FaucetButton from "@/components/ui/FaucetButton";
 import WithdrawModal from "@/components/WithdrawModal";
 import AchievementBanner from "@/components/AchievementBanner";
 import StakingCard from "@/components/StakingCard";

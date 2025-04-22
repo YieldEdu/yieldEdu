@@ -81,7 +81,7 @@ const FaucetButton = ({ userAddress }: { userAddress?: string }) => {
 			className="disabled:bg-green-700 bg-green-500 hover:bg-green-600 border-none hover:text-white font-semibold enabled:active:bg-green-600"
 		>
 			{isPending
-				? "Minting..."
+				? "Minting... approve from metamask"
 				: !userAddress
 				? "Waiting for address"
 				: simulateError?.cause
