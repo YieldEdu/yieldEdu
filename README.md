@@ -19,27 +19,26 @@ A decentralized fixed-yield protocol built on EDU Chain that enables users to ea
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/Bruh-Codes/EDU-chain-hackathon.git
-cd EDU-chain-hackathon
+git clone https://github.com/YieldEdu/yieldEdu.git
+cd YieldEdu
 ```
 
 1. **Install dependencies for hardhat**
 
 ```bash
-# Install root dependencies
+# Install dependencies
 pnpm install
 
-# Install frontend dependencies
-cd frontend
+# Install smartcontract dependencies
+cd solidity
 pnpm install
 ```
 
 1. **Set up environment variables**
 
 ```bash
-cd .. # // from frontend
+cd solidty
 
-# In the root directory
 npx hardhat vars set ACCOUNT_PRIVATE_KEY
 # Enter your wallet's private key when prompted
 ```
@@ -47,7 +46,6 @@ npx hardhat vars set ACCOUNT_PRIVATE_KEY
 1. **Compile Smart Contracts**
 
 ```bash
-# In the root directory
 npx hardhat compile
 
 # //it has already been deploy so there is no need. you can skip this step
@@ -73,7 +71,7 @@ npx hardhat coverage
 
 ```bash
 # In the frontend directory
-cd frontend
+cd into root or frontend
 pnpm install
 pnpm run dev
 ```
